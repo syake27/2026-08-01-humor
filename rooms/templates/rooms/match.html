@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ロシアンしりとり</title>
 </head>
-
 <body>
-    <h1>ロシアンしりとり</h1>
-    <a href="{% url 'rooms:match' %}">
-        マッチ
+    <h1>マッチ画面</h1>
+    <a href="{% url 'rooms:create' %}">
+        カジュアル
+    </a>
+    <a href="{% url 'rooms:rank' %}">
+        ランクマッチ
+    </a>
+    <a href="{% url 'rooms:join' %}">
+        参加
     </a>
     
-
 </body>
-
 </html>
