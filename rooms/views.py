@@ -20,5 +20,9 @@ def join(request):
 def rank(request):
     return render(request, "rooms/rank.html")
 
+
 def wait(request):
     return render(request, "rooms/waiting_room.html")
+
+def profile(request):
+    return render(request, "rooms/profile.html")

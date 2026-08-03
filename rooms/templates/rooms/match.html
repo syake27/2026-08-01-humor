@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>しりとり｜マッチ</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'rooms/match.css' %}">
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- 背景の飾り -->
+    <div class="decoration decoration-top-left"></div>
+    <div class="decoration-red"></div>
+    <div class="decoration-blue"></div>
+    <div class="decoration-purple"></div>
+    <div class="decoration-green-small"></div>
+    <div class="decoration-bottom-green"></div>
+
+    <!-- ヘッダー -->
+    <header class="header">
+
+      <a href="../index.html" class="back-button" aria-label="ホーム画面へ戻る">
+        ‹
+      </a>
+
+      <h1>マッチ</h1>
+
+      <div class="header-space"></div>
+
+    </header>
+
+    <!-- 説明文 -->
+    <section class="intro">
+
+      <span class="intro-line intro-line-left"></span>
+
+      <h2>対戦モードを選ぼう！</h2>
+
+      <span class="intro-line intro-line-right"></span>
+
+    </section>
+
+    <!-- 対戦モード一覧 -->
+    <section class="match-list">
+
+      <!-- 通常マッチ -->
+      <a href="normal-match.html" class="match-card normal-card">
+
+        <div class="match-icon normal-icon">
+
+          <div class="people-icon">
+            <span class="person person-large"></span>
+            <span class="person person-small"></span>
+          </div>
+
+          <span class="effect effect-blue effect-blue-1"></span>
+          <span class="effect effect-blue effect-blue-2"></span>
+
+        </div>
+
+        <div class="match-text">
+          <h2>通常マッチ</h2>
+
+          <p>
+            気軽にオンラインで対戦！<br>
+            勝敗はレートに影響しません
+          </p>
+        </div>
+
+        <span class="match-arrow">›</span>
+
+      </a>
+
+      <!-- ランクマッチ -->
+      <a href="rank-match.html" class="match-card rank-card">
+
+        <div class="match-icon rank-icon">
+
+          <div class="crown">
+            <span class="crown-point point-left"></span>
+            <span class="crown-point point-center"></span>
+            <span class="crown-point point-right"></span>
+
+            <span class="crown-body"></span>
+            <span class="crown-band"></span>
+          </div>
+
+          <span class="sparkle sparkle-1">◆</span>
+          <span class="sparkle sparkle-2">◆</span>
+          <span class="sparkle sparkle-3">◆</span>
+
+        </div>
+
+        <div class="match-text">
+          <h2>ランクマッチ</h2>
+
+          <p>
+            実力の近い相手と本気の勝負！<br>
+            勝敗によってレートが変動します
+          </p>
+        </div>
+
+        <span class="match-arrow">›</span>
+
+      </a>
+
+      <!-- ルーム -->
+      <a href="room.html" class="match-card room-card">
+
+        <div class="match-icon room-icon">
+
+          <div class="door">
+            <div class="door-panel">
+              <span class="door-knob"></span>
+            </div>
+
+            <div class="door-frame"></div>
+          </div>
+
+          <span class="effect effect-orange effect-orange-1"></span>
+          <span class="effect effect-orange effect-orange-2"></span>
+
+        </div>
+
+        <div class="match-text">
+          <h2>ルーム</h2>
+
+          <p>
+            友達とルームを作成・参加して<br>
+            一緒に対戦できます
+          </p>
+        </div>
+
+        <span class="match-arrow">›</span>
+
+      </a>
+
+    </section>
+
+    <!-- 下部ナビゲーション -->
+    <nav class="bottom-nav">
+
+      <a href="../index.html" class="nav-item nav-home">
+        <span class="nav-icon home-icon"></span>
+        <span class="nav-label">ホーム</span>
+      </a>
+
+      <a href="../rule/index.html" class="nav-item nav-rule">
+        <span class="nav-icon rule-icon"></span>
+        <span class="nav-label">ルール</span>
+      </a>
+
+      <a href="../ai/index.html" class="nav-item nav-ai">
+        <span class="nav-icon robot-icon">
+          <span class="robot-head">
+            <span class="robot-eye robot-eye-left"></span>
+            <span class="robot-eye robot-eye-right"></span>
+            <span class="robot-mouth"></span>
+          </span>
+        </span>
+        <span class="nav-label">AI</span>
+      </a>
+
+      <a href="../gacha/index.html" class="nav-item nav-gacha">
+        <span class="nav-icon gacha-icon">∞</span>
+        <span class="nav-label">ガチャ</span>
+      </a>
+
+      <a href="#" class="nav-item nav-match active">
+        <span class="nav-icon vs-icon">
+          <span class="vs-text">VS</span>
+          <span class="vs-people">♟♟</span>
+        </span>
+        <span class="nav-label">マッチ</span>
+      </a>
+
+    </nav>
+
+  </main>
+
+</body>
+
+</html>

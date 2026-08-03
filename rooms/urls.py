@@ -10,4 +10,5 @@ urlpatterns = [
     path("join/", views.join, name="join"),
     path("rank/", views.rank, name="rank"),
     path("wait/", views.wait, name="wait"),
+    path("profile/", views.profile, name="profile"),
 ]
