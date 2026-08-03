@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>しりとり｜プロフィール</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- 背景の飾り -->
+    <div class="decoration decoration-red"></div>
+    <div class="decoration decoration-blue"></div>
+    <div class="decoration decoration-purple"></div>
+    <div class="decoration decoration-green"></div>
+
+    <!-- ヘッダー -->
+    <header class="header">
+
+      <a href="#" class="back-button" aria-label="前の画面に戻る">
+        ‹
+      </a>
+
+      <h1>プロフィール</h1>
+
+      <div class="header-space"></div>
+
+    </header>
+
+    <!-- プロフィールカード -->
+    <section class="profile-card">
+
+      <div class="profile-main">
+
+        <div class="avatar-area">
+
+          <div class="avatar-circle">
+            <div class="avatar-face">
+
+              <div class="hair"></div>
+
+              <div class="face">
+                <span class="eye eye-left"></span>
+                <span class="eye eye-right"></span>
+                <span class="mouth"></span>
+              </div>
+
+              <div class="body-shape"></div>
+
+            </div>
+          </div>
+
+          <button class="edit-avatar-button" type="button">
+            ✎
+          </button>
+
+        </div>
+
+        <div class="user-info">
+
+          <h2>ひびき</h2>
+
+          <p class="user-id">
+            ID：HIBIKI_1234
+          </p>
+
+          <span class="rate-label">レート</span>
+
+          <p class="rate-number">1520</p>
+
+        </div>
+
+        <div class="rate-chart" aria-hidden="true">
+          <span class="bar bar-1"></span>
+          <span class="bar bar-2"></span>
+          <span class="bar bar-3"></span>
+          <span class="bar bar-4"></span>
+        </div>
+
+      </div>
+
+      <!-- 戦績 -->
+      <div class="stats">
+
+        <div class="stat-item">
+          <div class="stat-icon win-icon">🏆</div>
+          <p class="stat-label">勝利数</p>
+          <p class="stat-number win-number">
+            42<span>勝</span>
+          </p>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon lose-icon">×</div>
+          <p class="stat-label">敗北数</p>
+          <p class="stat-number lose-number">
+            18<span>敗</span>
+          </p>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-icon rate-icon">◔</div>
+          <p class="stat-label">勝率</p>
+          <p class="stat-number percentage-number">
+            70<span>%</span>
+          </p>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 最近の対戦 -->
+    <section class="content-card recent-card">
+
+      <div class="section-heading">
+        <h2>最近の対戦</h2>
+
+        <a href="#">
+          もっと見る
+          <span>›</span>
+        </a>
+      </div>
+
+      <div class="match-results">
+
+        <div class="match-result win">
+          <span>○</span>
+          <p>勝利</p>
+        </div>
+
+        <div class="match-result win">
+          <span>○</span>
+          <p>勝利</p>
+        </div>
+
+        <div class="match-result lose">
+          <span>×</span>
+          <p>敗北</p>
+        </div>
+
+        <div class="match-result win">
+          <span>○</span>
+          <p>勝利</p>
+        </div>
+
+        <div class="match-result win">
+          <span>○</span>
+          <p>勝利</p>
+        </div>
+
+        <div class="match-result win">
+          <span>○</span>
+          <p>勝利</p>
+        </div>
+
+        <div class="match-result lose">
+          <span>×</span>
+          <p>敗北</p>
+        </div>
+
+        <div class="match-result win">
+          <span>○</span>
+          <p>勝利</p>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 設定メニュー -->
+    <section class="content-card menu-card">
+
+      <a href="#" class="menu-item">
+
+        <div class="menu-icon icon-orange">
+          👤
+        </div>
+
+        <div class="menu-text">
+          <h3>アイコンを変更</h3>
+          <p>プロフィールアイコンを変更できます</p>
+        </div>
+
+        <span class="menu-arrow">›</span>
+
+      </a>
+
+      <a href="#" class="menu-item">
+
+        <div class="menu-icon icon-blue">
+          ✎
+        </div>
+
+        <div class="menu-text">
+          <h3>名前を変更</h3>
+          <p>表示する名前を変更できます</p>
+        </div>
+
+        <span class="menu-arrow">›</span>
+
+      </a>
+
+      <a href="#" class="menu-item">
+
+        <div class="menu-icon icon-green">
+          ▥
+        </div>
+
+        <div class="menu-text">
+          <h3>レート履歴</h3>
+          <p>これまでのレートの推移を確認できます</p>
+        </div>
+
+        <span class="menu-arrow">›</span>
+
+      </a>
+
+      <a href="#" class="menu-item">
+
+        <div class="menu-icon icon-red">
+          ★
+        </div>
+
+        <div class="menu-text">
+          <h3>称号一覧</h3>
+          <p>獲得した称号を確認できます</p>
+        </div>
+
+        <span class="menu-arrow">›</span>
+
+      </a>
+
+    </section>
+
+    <!-- 下部の波 -->
+    <div class="bottom-wave"></div>
+
+    <!-- 下部ナビゲーション -->
+    <nav class="bottom-nav">
+
+      <a href="#" class="nav-item nav-home">
+        <span class="nav-icon">⌂</span>
+        <span class="nav-label">ホーム</span>
+      </a>
+
+      <a href="#" class="nav-item nav-rule">
+        <span class="nav-icon">▣</span>
+        <span class="nav-label">ルール</span>
+      </a>
+
+      <a href="#" class="nav-item nav-ai">
+        <span class="nav-icon">🤖</span>
+        <span class="nav-label">AI</span>
+      </a>
+
+      <a href="#" class="nav-item nav-gacha">
+        <span class="nav-icon">∞</span>
+        <span class="nav-label">ガチャ</span>
+      </a>
+
+      <a href="#" class="nav-item nav-match">
+        <span class="nav-icon">VS</span>
+        <span class="nav-label">マッチ</span>
+      </a>
+
+    </nav>
+
+  </main>
+
+</body>
+</html>

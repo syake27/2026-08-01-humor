@@ -1,11 +1,138 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ロシアンしりとり</title>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>しりとりアプリ</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- アイコン用 -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+  >
 </head>
+
 <body>
-    <h1>ロシアンしりとり</h1>
+
+  <main class="app">
+
+    <!-- 背景装飾 -->
+    <div class="decoration decoration-blue"></div>
+    <div class="decoration decoration-green"></div>
+    <div class="small-circle circle-pink"></div>
+    <div class="small-circle circle-blue"></div>
+    <div class="small-circle circle-purple"></div>
+
+    <!-- タイトル -->
+    <section class="hero">
+
+      <h1 class="logo" aria-label="しりとり">
+        <span class="logo-red">し</span>
+        <span class="logo-blue">り</span>
+        <span class="logo-orange">と</span>
+        <span class="logo-green">り</span>
+      </h1>
+
+      <p class="catch-copy">
+        ことばでつなぐ、たのしいバトル！
+      </p>
+
+    </section>
+
+    <!-- メニュー -->
+    <nav class="menu">
+
+      <a href="#" class="menu-item menu-profile">
+
+        <span class="menu-icon">
+          <i class="fa-solid fa-user"></i>
+        </span>
+
+        <span class="menu-text">
+          プロフィール
+        </span>
+
+        <span class="menu-arrow">
+          <i class="fa-solid fa-chevron-right"></i>
+        </span>
+
+      </a>
+
+      <a href="#" class="menu-item menu-rule">
+
+        <span class="menu-icon">
+          <i class="fa-solid fa-clipboard-list"></i>
+        </span>
+
+        <span class="menu-text">
+          ルール
+        </span>
+
+        <span class="menu-arrow">
+          <i class="fa-solid fa-chevron-right"></i>
+        </span>
+
+      </a>
+
+      <a href="#" class="menu-item menu-ai">
+
+        <span class="menu-icon">
+          <i class="fa-solid fa-robot"></i>
+        </span>
+
+        <span class="menu-text">
+          AI
+        </span>
+
+        <span class="menu-arrow">
+          <i class="fa-solid fa-chevron-right"></i>
+        </span>
+
+      </a>
+
+      <a href="#" class="menu-item menu-gacha">
+
+        <span class="menu-icon">
+          <i class="fa-solid fa-capsules"></i>
+        </span>
+
+        <span class="menu-text">
+          ガチャ
+        </span>
+
+        <span class="menu-arrow">
+          <i class="fa-solid fa-chevron-right"></i>
+        </span>
+
+      </a>
+
+      <a href="#" class="menu-item menu-match">
+
+        <span class="menu-icon match-icon">
+          <i class="fa-solid fa-user-group"></i>
+          <small>VS</small>
+        </span>
+
+        <span class="menu-text">
+          マッチ
+        </span>
+
+        <span class="menu-arrow">
+          <i class="fa-solid fa-chevron-right"></i>
+        </span>
+
+      </a>
+
+    </nav>
+
+  </main>
+
 </body>
 </html>
