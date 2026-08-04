@@ -176,6 +176,10 @@ a {
     background 0.2s ease;
 }
 
+ .phone{
+  max-width: 492px;
+}
+
 .back-button:hover {
   background: #e5dbff;
   transform: translateX(-2px);
