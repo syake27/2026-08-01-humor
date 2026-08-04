@@ -29,7 +29,8 @@ SECRET_KEY = "django-insecure-3-w!ozwil@s+f&nicb_dtqkij-p-rm%^tkf#w$k9ahc*8uabvf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ローカル開発中は、同じネットワーク上のスマホからのアクセスも許可する。
+ALLOWED_HOSTS = ["*"] if DEBUG else []
 
 
 # Application definition
