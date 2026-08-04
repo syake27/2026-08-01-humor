@@ -46,7 +46,7 @@ button {
 .screen {
   position: relative;
 
-  width: min(100%, 828px);
+  width: min(100%, 390px);
   min-height: 100vh;
   margin: 0 auto;
   padding: 72px 21px 50px;
@@ -83,6 +83,20 @@ button {
 
   box-shadow:
     0 10px 26px rgba(59, 57, 80, 0.09);
+}
+
+  .phone{
+    position:relative;
+    width:100%;
+    max-width:480px;
+    height:100dvh;
+    min-height:100dvh;
+    background:var(--bg-app);
+    overflow:hidden;
+  }
+
+    .phone{
+  max-width: 492px;
 }
 
 .help {
