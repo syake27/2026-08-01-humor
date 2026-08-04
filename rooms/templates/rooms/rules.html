@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="ロシアンしりとりのルール説明ページ">
   <title>ロシアンしりとり｜ルール説明</title>
-  <link rel="stylesheet" href="style.css">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'rooms/css/rules.css' %}">
 </head>
+
 <body>
   <main class="page">
     <div class="stars" aria-hidden="true"></div>
@@ -24,7 +27,8 @@
           <p>最後の <em>1人</em> まで生き残ろう！</p>
         </div>
         <div class="flow-title">
-          <span></span><h2>ゲームの流れ</h2><span></span>
+          <span></span>
+          <h2>ゲームの流れ</h2><span></span>
         </div>
       </header>
 
@@ -49,7 +53,8 @@
           <p>その文字はみんなには見えません。</p>
         </div>
         <div class="ghost-area" aria-label="鬼が決めた文字の例はら">
-          <div class="ghost"><span class="eye eye-l"></span><span class="eye eye-r"></span><span class="smile"></span></div>
+          <div class="ghost"><span class="eye eye-l"></span><span class="eye eye-r"></span><span class="smile"></span>
+          </div>
           <div class="ghost-letter">ら</div>
         </div>
       </section>
@@ -88,11 +93,14 @@
           <div class="three-bottom">
             <div class="special-rules">
               <h4>濁点・半濁点は<br>必ず外した文字で続けます。</h4>
-              <div class="mini-example"><span class="word green-word">ぱんだ</span><b>→</b><span class="word purple-word">たぬき</span></div>
-              <div class="mini-example"><span class="word orange-word">らっぱ</span><b>→</b><span class="word cyan-word">はなび</span></div>
+              <div class="mini-example"><span class="word green-word">ぱんだ</span><b>→</b><span
+                  class="word purple-word">たぬき</span></div>
+              <div class="mini-example"><span class="word orange-word">らっぱ</span><b>→</b><span
+                  class="word cyan-word">はなび</span></div>
             </div>
             <div class="time-panel">
-              <div class="clock-icon" aria-hidden="true"><span class="clock-hand hour"></span><span class="clock-hand minute"></span></div>
+              <div class="clock-icon" aria-hidden="true"><span class="clock-hand hour"></span><span
+                  class="clock-hand minute"></span></div>
               <div>
                 <h4>持ち時間について</h4>
                 <p>自分のターンがきたら、スタートした次の人の<br>ターンにいくまで、時間は減り続けます。</p>
@@ -110,7 +118,8 @@
           <h3>鬼の文字で終わったら<span>OUT！</span></h3>
           <p>しりとりの最後の文字が、<br>鬼が決めた文字と同じだった人はOUT！</p>
           <div class="example-label">例）鬼が「ら」に決定した場合</div>
-          <div class="out-flow"><span class="word blue-word">りんご</span><b>→</b><span class="word red-word">ごりら</span><b>→</b><strong class="burst">OUT!</strong></div>
+          <div class="out-flow"><span class="word blue-word">りんご</span><b>→</b><span
+              class="word red-word">ごりら</span><b>→</b><strong class="burst">OUT!</strong></div>
           <p class="out-note">最後の文字が「ら」なのでOUT！</p>
         </div>
 
@@ -123,7 +132,10 @@
         <aside class="duplicate-rule">
           <h4>同じ単語は使えない！</h4>
           <p>2文字以上、同じ単語は<br>使うことができません。</p>
-          <div class="book-ban" aria-hidden="true"><div class="book"></div><div class="slash"></div></div>
+          <div class="book-ban" aria-hidden="true">
+            <div class="book"></div>
+            <div class="slash"></div>
+          </div>
         </aside>
       </section>
 
@@ -160,4 +172,5 @@
     </div>
   </main>
 </body>
+
 </html>
