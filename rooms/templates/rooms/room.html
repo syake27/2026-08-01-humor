@@ -1,0 +1,251 @@
+{% load static %}
+
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>しりとりルーム</title>
+
+  <!-- Google Fonts -->
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- CSSファイル -->
+  <link
+    rel="stylesheet"
+    href="{% static 'css/room.css' %}"
+  >
+</head>
+
+<body>
+  <main class="screen">
+
+    <!-- ヘッダー -->
+    <header class="topbar">
+
+      <button
+        class="circle-button"
+        type="button"
+        aria-label="戻る"
+      >
+        ‹
+      </button>
+
+      <div class="title">
+        <span class="title-ja">
+          しりとりルーム
+        </span>
+
+        <span class="title-en">
+          SHIRITORI ROOM
+        </span>
+      </div>
+
+      <button
+        class="circle-button help"
+        type="button"
+        aria-label="ヘルプ"
+      >
+        ?
+      </button>
+
+    </header>
+
+    <!-- 説明部分 -->
+    <section
+      class="hero"
+      aria-labelledby="intro-title"
+    >
+      <div class="hero-text">
+        <h1 id="intro-title">
+          みんなで、ことば遊び。
+        </h1>
+
+        <p>
+          好きなルームを選んで<br>
+          しりとりをはじめよう！
+        </p>
+      </div>
+
+      <span
+        class="crown"
+        aria-hidden="true"
+      >
+        👑
+      </span>
+    </section>
+
+    <!-- ルーム検索 -->
+    <form
+      class="room-search"
+      action="#rooms"
+      method="get"
+      role="search"
+    >
+      <input
+        type="search"
+        name="room-id"
+        aria-label="ルームID"
+        placeholder="ルームIDを入力して検索"
+      >
+
+      <button type="submit">
+        検索
+      </button>
+    </form>
+
+    <!-- 絞り込みタブ -->
+    <nav
+      class="tabs"
+      aria-label="ルームの絞り込み"
+    >
+      <button
+        class="tab active"
+        type="button"
+        aria-current="page"
+      >
+        すべて
+      </button>
+
+      <button
+        class="tab"
+        type="button"
+      >
+        参加できる
+      </button>
+
+      <button
+        class="tab"
+        type="button"
+      >
+        対戦中
+      </button>
+    </nav>
+
+    <!-- ルーム一覧 -->
+    <section
+      id="rooms"
+      class="rooms"
+      aria-label="ルーム一覧"
+    >
+
+      <!-- ルーム1 -->
+      <article class="room">
+        <div class="icon strawberry">
+          🍓
+        </div>
+
+        <div class="room-info">
+          <h2 class="room-name">
+            ゆるっとしりとり
+          </h2>
+
+          <p class="room-detail">
+            あと１人でスタート ・ 2 / 3 人
+          </p>
+        </div>
+
+        <button
+          class="status join"
+          type="button"
+        >
+          参加する
+        </button>
+      </article>
+
+      <!-- ルーム2 -->
+      <article class="room">
+        <div class="icon sprout">
+          🌱
+        </div>
+
+        <div class="room-info">
+          <h2 class="room-name">
+            ことばの森
+          </h2>
+
+          <p class="room-detail">
+            「り」からはじまる言葉 ・ 3 / 4 人
+          </p>
+        </div>
+
+        <span class="status playing">
+          対戦中
+        </span>
+      </article>
+
+      <!-- ルーム3 -->
+      <article class="room">
+        <div class="icon coffee">
+          ☕
+        </div>
+
+        <div class="room-info">
+          <h2 class="room-name">
+            おひるのしりとり部
+          </h2>
+
+          <p class="room-detail">
+            のんびりモード ・ 1 / 4 人
+          </p>
+        </div>
+
+        <button
+          class="status join"
+          type="button"
+        >
+          参加する
+        </button>
+      </article>
+
+      <!-- ルーム4 -->
+      <article class="room">
+        <div class="icon bubble">
+          🫧
+        </div>
+
+        <div class="room-info">
+          <h2 class="room-name">
+            夜ふかしワード
+          </h2>
+
+          <p class="room-detail">
+            定員に達しました ・ 4 / 4 人
+          </p>
+        </div>
+
+        <span class="status full">
+          満室
+        </span>
+      </article>
+
+    </section>
+
+    <!-- ルーム作成ボタン -->
+    <button
+      class="create-room"
+      type="button"
+    >
+      ＋ 新しいルームをつくる
+    </button>
+
+  </main>
+</body>
+</html>

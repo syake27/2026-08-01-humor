@@ -1,0 +1,494 @@
+/* =========================
+   基本設定
+========================= */
+
+:root {
+  --ink: #3e455f;
+  --muted: #858da6;
+  --coral: #ff7474;
+  --page-background: #f9f9fc;
+  --card-background: #ffffff;
+  --input-background: #fafbfe;
+  --border-color: #eef0f6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+
+  color: var(--ink);
+  background: var(--page-background);
+
+  font-family:
+    "Noto Sans JP",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Hiragino Sans",
+    sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+
+/* =========================
+   画面全体
+========================= */
+
+.screen {
+  width: min(100%, 828px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 72px 21px 52px;
+
+  background: var(--card-background);
+}
+
+
+/* =========================
+   ヘッダー
+========================= */
+
+.topbar {
+  display: grid;
+  grid-template-columns: 76px 1fr 76px;
+  align-items: center;
+}
+
+.back-button {
+  display: grid;
+  place-items: center;
+
+  width: 76px;
+  height: 76px;
+
+  color: var(--ink);
+  background: #ffffff;
+  border-radius: 50%;
+
+  font-size: 46px;
+  line-height: 1;
+
+  box-shadow:
+    0 10px 26px rgba(59, 57, 80, 0.09);
+}
+
+.page-title {
+  margin: 0;
+
+  text-align: center;
+
+  font-size: 31px;
+  font-weight: 800;
+  letter-spacing: 0.035em;
+}
+
+.sparkle {
+  justify-self: end;
+
+  color: #d7a12e;
+
+  font-size: 32px;
+}
+
+
+/* =========================
+   説明エリア
+========================= */
+
+.intro {
+  margin: 53px 0 34px;
+  padding: 31px 37px;
+
+  background:
+    linear-gradient(
+      110deg,
+      #fff0db,
+      #ffe4e5
+    );
+
+  border-radius: 38px;
+}
+
+.intro h2 {
+  margin: 0 0 8px;
+
+  font-size: 27px;
+  font-weight: 800;
+}
+
+.intro p {
+  margin: 0;
+
+  color: #747b90;
+
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+
+/* =========================
+   フォーム全体
+========================= */
+
+.create-room-form {
+  display: grid;
+  gap: 21px;
+}
+
+.field {
+  padding: 25px 28px;
+
+  background: #ffffff;
+  border-radius: 31px;
+
+  box-shadow:
+    0 11px 29px rgba(57, 59, 77, 0.075);
+}
+
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-bottom: 15px;
+
+  font-size: 21px;
+  font-weight: 800;
+}
+
+
+/* =========================
+   必須・任意バッジ
+========================= */
+
+.required-badge,
+.optional-badge {
+  padding: 3px 8px;
+
+  border-radius: 99px;
+
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.required-badge {
+  color: #ed7777;
+  background: #ffe6e6;
+}
+
+.optional-badge {
+  color: #858da6;
+  background: #eef0f6;
+}
+
+
+/* =========================
+   補足説明
+========================= */
+
+.hint {
+  margin: -4px 0 15px;
+
+  color: #9298ad;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+/* =========================
+   入力欄
+========================= */
+
+input,
+textarea {
+  width: 100%;
+
+  color: var(--ink);
+  background: var(--input-background);
+
+  border: 1.5px solid var(--border-color);
+  border-radius: 16px;
+  outline: none;
+
+  font-size: 18px;
+  font-weight: 600;
+}
+
+input {
+  height: 58px;
+  padding: 0 18px;
+}
+
+textarea {
+  min-height: 84px;
+  padding: 14px 18px;
+
+  resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #b4b9c8;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #ffb5ae;
+
+  box-shadow:
+    0 0 0 4px rgba(255, 116, 116, 0.1);
+}
+
+
+/* =========================
+   持ち時間の選択
+========================= */
+
+.choice-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.choice {
+  position: relative;
+}
+
+.choice input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choice label {
+  display: grid;
+  place-items: center;
+
+  height: 52px;
+
+  color: #858da6;
+  background: var(--input-background);
+
+  border: 1.5px solid var(--border-color);
+  border-radius: 16px;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.choice input:checked + label {
+  color: #e96f6f;
+  background: #fff0ed;
+  border-color: #ffb5ae;
+}
+
+.choice input:focus-visible + label {
+  outline: 3px solid rgba(255, 116, 116, 0.25);
+  outline-offset: 2px;
+}
+
+
+/* =========================
+   人数設定
+========================= */
+
+.member-control {
+  display: grid;
+  grid-template-columns: 54px 1fr 54px;
+  align-items: center;
+
+  max-width: 272px;
+
+  overflow: hidden;
+
+  background: var(--input-background);
+
+  border: 1.5px solid var(--border-color);
+  border-radius: 17px;
+}
+
+.member-button {
+  height: 55px;
+
+  color: #ed7777;
+  background: transparent;
+
+  font-size: 27px;
+  font-weight: 600;
+}
+
+.member-button:hover {
+  background: #fff0ed;
+}
+
+.member-control input {
+  height: 55px;
+  padding: 0;
+
+  text-align: center;
+
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+
+  font-size: 19px;
+}
+
+/* 数値入力欄の上下ボタンを非表示 */
+.member-control input::-webkit-inner-spin-button,
+.member-control input::-webkit-outer-spin-button {
+  margin: 0;
+
+  appearance: none;
+}
+
+.member-control input[type="number"] {
+  appearance: textfield;
+}
+
+.member-note {
+  margin: 11px 0 0;
+
+  color: #9298ad;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+/* =========================
+   送信ボタン
+========================= */
+
+.submit-button {
+  width: 100%;
+  min-height: 105px;
+  margin-top: 25px;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      100deg,
+      #ff887d,
+      #ff686d
+    );
+
+  border-radius: 35px;
+
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+
+  box-shadow:
+    0 16px 28px rgba(246, 109, 109, 0.25);
+}
+
+.submit-button:hover {
+  opacity: 0.92;
+}
+
+.submit-button:active {
+  transform: translateY(1px);
+}
+
+
+/* =========================
+   スマートフォン対応
+========================= */
+
+@media (max-width: 600px) {
+
+  .screen {
+    padding: 42px 18px 28px;
+  }
+
+  .topbar {
+    grid-template-columns: 56px 1fr 56px;
+  }
+
+  .back-button {
+    width: 56px;
+    height: 56px;
+
+    font-size: 37px;
+  }
+
+  .page-title {
+    font-size: clamp(21px, 6vw, 30px);
+  }
+
+  .sparkle {
+    font-size: 25px;
+  }
+
+  .intro {
+    margin: 39px 0 27px;
+    padding: 25px;
+
+    border-radius: 29px;
+  }
+
+  .intro h2 {
+    font-size: 22px;
+  }
+
+  .intro p {
+    font-size: 15px;
+  }
+
+  .create-room-form {
+    gap: 16px;
+  }
+
+  .field {
+    padding: 21px 20px;
+
+    border-radius: 26px;
+  }
+
+  .field-label {
+    margin-bottom: 12px;
+
+    font-size: 18px;
+  }
+
+  input,
+  textarea {
+    font-size: 16px;
+  }
+
+  .choice label {
+    font-size: 14px;
+  }
+
+  .submit-button {
+    min-height: 78px;
+    margin-top: 17px;
+
+    border-radius: 27px;
+
+    font-size: 21px;
+  }
+}
