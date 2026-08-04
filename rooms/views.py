@@ -29,3 +29,10 @@ def profile(request):
 
 def shop(request):
     return render(request, "rooms/shop.html")
+
+def ai(request):
+    return render(request, "rooms/taisengamenn.html")
+
+def rule(request):
+    return render(request, "rooms/rule.html")
+
