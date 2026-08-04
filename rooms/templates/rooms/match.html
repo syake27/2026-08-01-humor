@@ -1,20 +1,13 @@
-<!DOCTYPE html>
-<html lang="ja">
+{% extends "rooms/base.html" %}
+{% load static %}
 
-<head>
-  <meta charset="UTF-8">
+{% block title %}しりとり｜マッチ{% endblock %}
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>しりとり｜マッチ</title>
-  {% load static %}
+{% block extra_css %}
   <link rel="stylesheet" href="{% static 'rooms/css/match.css' %}">
-</head>
+{% endblock %}
 
-<body>
-
-  <main class="app">
-
+{% block content %}
     <!-- 背景の飾り -->
     <div class="decoration decoration-top-left"></div>
     <div class="decoration-red"></div>
@@ -147,8 +140,4 @@
 
     
 
-  </main>
-
-</body>
-
-</html>
+{% endblock %}

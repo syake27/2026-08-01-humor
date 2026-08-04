@@ -2,23 +2,11 @@
    基本設定
 ========================= */
 
-* {
-  box-sizing: border-box;
-}
-
 html {
   font-size: 16px;
 }
 
 body {
-  margin: 0;
-  min-height: 100vh;
-
-  display: flex;
-  justify-content: center;
-
-  background-color: #eeeeee;
-
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -35,20 +23,15 @@ body {
 ========================= */
 
 .app {
-  position: relative;
-
-  width: 100%;
-  max-width: 390px;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
   padding:
-    120px
+    32px
     46px
-    70px;
+    32px;
 
-  overflow: hidden;
-
-  background-color: #ffffff;
 }
 
 /* =========================
@@ -122,7 +105,7 @@ body {
   display: flex;
   flex-direction: column;
 
-  gap: 13px;
+  gap: 10px;
 }
 
 .menu-item {
@@ -321,5 +304,42 @@ body {
 
   .menu-text {
     font-size: 1.2rem;
+  }
+}
+
+/* ブラウザUIを含めた表示領域が低いスマホでも、1画面内に収める */
+@media (max-height: 780px) {
+
+  .app {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  .hero {
+    margin-bottom: 18px;
+  }
+
+  .logo {
+    font-size: 3.6rem;
+  }
+
+  .catch-copy {
+    margin-top: 14px;
+  }
+
+  .menu {
+    gap: 8px;
+  }
+
+  .menu-item {
+    min-height: 62px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  .menu-icon {
+    width: 46px;
+    height: 46px;
+    font-size: 1.35rem;
   }
 }

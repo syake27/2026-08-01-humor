@@ -2,18 +2,11 @@
    基本設定
 ========================= */
 
-* {
-  box-sizing: border-box;
-}
-
 html {
   font-size: 16px;
 }
 
 body {
-  margin: 0;
-  min-height: 100vh;
-  background: #eeeeee;
   color: #263746;
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
     "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
@@ -29,14 +22,7 @@ a {
 ========================= */
 
 .app {
-  position: relative;
-  width: 100%;
-  max-width: 390px;
-  min-height: 844px;
-  margin: 0 auto;
   padding: 32px 18px 125px;
-  overflow: hidden;
-  background: #ffffff;
 }
 
 /* =========================
@@ -791,19 +777,10 @@ a {
    パソコンでの表示
 ========================= */
 
-@media (min-width: 391px) {
-  body {
-    padding: 24px 0;
-  }
-
-  .app {
-    min-height: calc(100vh - 48px);
-    border-radius: 30px;
-    box-shadow: 0 12px 35px rgba(37, 51, 66, 0.13);
-  }
-
+@media (min-width: 601px) {
   .bottom-nav {
     bottom: 24px;
-    border-radius: 27px;
+    width: 374px;
+    border-radius: 0 0 34px 34px;
   }
 }
