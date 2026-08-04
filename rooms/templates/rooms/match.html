@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>しりとり｜マッチ</title>
-
-  <link rel="stylesheet" href="style.css">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'rooms/css/match.css' %}">
 </head>
 
 <body>
@@ -28,11 +26,7 @@
     <!-- ヘッダー -->
     <header class="header">
 
-      <a
-        href="../index.html"
-        class="back-button"
-        aria-label="ホーム画面へ戻る"
-      >
+      <a href="../index.html" class="back-button" aria-label="ホーム画面へ戻る">
         ‹
       </a>
 
@@ -57,10 +51,7 @@
     <section class="match-list">
 
       <!-- 通常マッチ -->
-      <a
-        href="normal-match.html"
-        class="match-card normal-card"
-      >
+      <a href="normal-match.html" class="match-card normal-card">
 
         <div class="match-icon normal-icon">
 
@@ -88,10 +79,7 @@
       </a>
 
       <!-- ランクマッチ -->
-      <a
-        href="rank-match.html"
-        class="match-card rank-card"
-      >
+      <a href="rank-match.html" class="match-card rank-card">
 
         <div class="match-icon rank-icon">
 
@@ -124,10 +112,7 @@
       </a>
 
       <!-- ルーム -->
-      <a
-        href="room.html"
-        class="match-card room-card"
-      >
+      <a href="ruumu.html" class="match-card room-card">
 
         <div class="match-icon room-icon">
 
@@ -159,46 +144,10 @@
 
     </section>
 
-    <!-- 下部ナビゲーション -->
-    <nav class="bottom-nav">
-
-      <a href="../index.html" class="nav-item nav-home">
-        <span class="nav-icon home-icon"></span>
-        <span class="nav-label">ホーム</span>
-      </a>
-
-      <a href="../rule/index.html" class="nav-item nav-rule">
-        <span class="nav-icon rule-icon"></span>
-        <span class="nav-label">ルール</span>
-      </a>
-
-      <a href="../ai/index.html" class="nav-item nav-ai">
-        <span class="nav-icon robot-icon">
-          <span class="robot-head">
-            <span class="robot-eye robot-eye-left"></span>
-            <span class="robot-eye robot-eye-right"></span>
-            <span class="robot-mouth"></span>
-          </span>
-        </span>
-        <span class="nav-label">AI</span>
-      </a>
-
-      <a href="../gacha/index.html" class="nav-item nav-gacha">
-        <span class="nav-icon gacha-icon">∞</span>
-        <span class="nav-label">ガチャ</span>
-      </a>
-
-      <a href="#" class="nav-item nav-match active">
-        <span class="nav-icon vs-icon">
-          <span class="vs-text">VS</span>
-          <span class="vs-people">♟♟</span>
-        </span>
-        <span class="nav-label">マッチ</span>
-      </a>
-
-    </nav>
+    
 
   </main>
 
 </body>
+
 </html>

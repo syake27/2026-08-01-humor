@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>しりとり｜対戦中</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- 背景の飾り -->
+    <span class="decoration decoration-red"></span>
+    <span class="decoration decoration-purple"></span>
+    <span class="decoration decoration-green"></span>
+
+    <!-- ヘッダー -->
+    <header class="header">
+
+      <a
+        href="../match/index.html"
+        class="back-button"
+        aria-label="マッチ選択画面に戻る"
+      >
+        ‹
+      </a>
+
+      <h1>対戦中</h1>
+
+      <button
+        class="setting-button"
+        type="button"
+        aria-label="設定を開く"
+      >
+        ⚙
+      </button>
+
+    </header>
+
+    <!-- サブタイトル -->
+    <p class="subtitle">
+      しりとりをつなげていこう！
+    </p>
+
+    <!-- 残り時間 -->
+    <div class="time-pill">
+      ⏱ のこり時間 20秒
+    </div>
+
+    <!-- プレイヤー一覧 -->
+    <section class="players">
+
+      <!-- 1P -->
+      <article class="player-card player-blue">
+
+        <span class="player-number">
+          1P
+        </span>
+
+        <span class="you-label">
+          あなた
+        </span>
+
+        <div class="avatar">
+          👦🏻
+        </div>
+
+        <h2>あいて</h2>
+
+        <p class="rate">
+          1520
+        </p>
+
+      </article>
+
+      <!-- 2P -->
+      <article class="player-card player-red">
+
+        <span class="player-number">
+          2P
+        </span>
+
+        <div class="avatar">
+          👦🏻
+        </div>
+
+        <h2>あいて</h2>
+
+        <p class="rate">
+          1480
+        </p>
+
+      </article>
+
+      <!-- 3P -->
+      <article class="player-card player-orange">
+
+        <span class="player-number">
+          3P
+        </span>
+
+        <div class="avatar">
+          👦🏻
+        </div>
+
+        <h2>あいて</h2>
+
+        <p class="rate">
+          1450
+        </p>
+
+      </article>
+
+      <!-- 4P -->
+      <article class="player-card player-green">
+
+        <span class="player-number">
+          4P
+        </span>
+
+        <div class="avatar">
+          👧🏻
+        </div>
+
+        <h2>あいて</h2>
+
+        <p class="rate">
+          1420
+        </p>
+
+      </article>
+
+    </section>
+
+    <!-- 現在の文字 -->
+    <section class="current-card">
+
+      <div class="current-text">
+        <p>現在の文字</p>
+      </div>
+
+      <div class="current-letter">
+        り
+      </div>
+
+      <div class="current-arrow">
+        →
+      </div>
+
+      <div class="countdown">
+
+        <span>
+          のこり時間
+        </span>
+
+        <strong>
+          20秒
+        </strong>
+
+      </div>
+
+    </section>
+
+    <!-- しりとり履歴 -->
+    <section class="game-card">
+
+      <h2>
+        これまでのしりとり
+      </h2>
+
+      <div class="word-history">
+
+        <span class="word">
+          りんご
+        </span>
+
+        <span class="history-arrow">
+          →
+        </span>
+
+        <span class="word">
+          ごりら
+        </span>
+
+        <span class="history-arrow">
+          →
+        </span>
+
+        <span class="word">
+          らっぱ
+        </span>
+
+        <span class="history-arrow">
+          →
+        </span>
+
+        <span class="word">
+          ぱん
+        </span>
+
+        <span class="history-arrow">
+          →
+        </span>
+
+        <span class="word next-word">
+          ん？
+        </span>
+
+      </div>
+
+      <!-- 入力欄 -->
+      <div class="input-area">
+
+        <input
+          type="text"
+          placeholder="ことばを入力"
+          aria-label="しりとりの単語を入力"
+        >
+
+        <a
+          href="../result/index.html"
+          class="decision-button"
+        >
+          決定
+        </a>
+
+      </div>
+
+      <!-- 操作ボタン -->
+      <div class="action-buttons">
+
+        <button
+          class="sub-button"
+          type="button"
+        >
+          <span class="button-icon">↻</span>
+
+          <span>
+            パス
+            <small>残り3回</small>
+          </span>
+        </button>
+
+        <a
+          href="../result/index.html"
+          class="sub-button"
+        >
+          <span class="button-icon">⚑</span>
+
+          <span>
+            あきらめる
+            <small>試合を終了</small>
+          </span>
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</body>
+</html>

@@ -10,5 +10,6 @@ urlpatterns = [
     path("join/", views.join, name="join"),
     path("rank/", views.rank, name="rank"),
     path("wait/", views.wait, name="wait"),
-    path("rule/", views.rule, name="rule"),
+    path("profile/", views.profile, name="profile"),
+    path("shop/", views.shop, name="shop"),
 ]
