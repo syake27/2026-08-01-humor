@@ -6,19 +6,15 @@
   box-sizing: border-box;
 }
 
-html {
-  font-size: 16px;
-}
-
 body {
   margin: 0;
   min-height: 100vh;
   background: #eeeeee;
-  color: #263746;
+  color: #263747;
+
   font-family:
     -apple-system,
     BlinkMacSystemFont,
-    "Hiragino Kaku Gothic ProN",
     "Hiragino Sans",
     "Yu Gothic",
     "Meiryo",
@@ -37,79 +33,94 @@ a {
 
 .app {
   position: relative;
+
   width: 100%;
   max-width: 390px;
-  min-height: 844px;
+  min-height: 100vh;
+
   margin: 0 auto;
-  padding: 32px 18px 125px;
+  padding: 30px 18px 45px;
+
   overflow: hidden;
+
   background: #ffffff;
 }
 
 
 /* =========================
-   背景の飾り
+   背景の大きな丸
 ========================= */
 
-.decoration-top-left {
+.app::before {
   position: absolute;
-  top: -70px;
-  left: -80px;
-  width: 190px;
-  height: 190px;
+  top: -80px;
+  left: -85px;
+
+  width: 205px;
+  height: 205px;
+
   border-radius: 50%;
-  background: #e2f1ff;
+  background: #e5f2ff;
+
+  content: "";
 }
 
-.decoration-red,
-.decoration-blue,
-.decoration-purple,
-.decoration-green-small {
+.app::after {
   position: absolute;
+  right: -95px;
+  bottom: -90px;
+
+  width: 220px;
+  height: 220px;
+
   border-radius: 50%;
-  pointer-events: none;
+  background: #e3f8e7;
+
+  content: "";
+}
+
+
+/* =========================
+   背景の小さな丸
+========================= */
+
+.decoration {
+  position: absolute;
+  z-index: 0;
+
+  display: block;
+
+  border-radius: 50%;
 }
 
 .decoration-red {
-  top: 112px;
-  left: 62px;
-  width: 15px;
-  height: 15px;
-  background: #ff9da5;
+  top: 190px;
+  left: 30px;
+
+  width: 16px;
+  height: 16px;
+
+  background: #ff9ba2;
 }
 
 .decoration-blue {
-  top: 90px;
-  right: 28px;
+  top: 140px;
+  right: 30px;
+
   width: 17px;
   height: 17px;
-  background: #9fd0ff;
+
+  background: #91c7ff;
 }
 
 .decoration-purple {
-  right: 142px;
-  bottom: 144px;
+  right: 105px;
+  bottom: 130px;
+
   width: 17px;
   height: 17px;
-  background: #b38af6;
-}
 
-.decoration-green-small {
-  right: 18px;
-  bottom: 160px;
-  width: 23px;
-  height: 23px;
-  background: #c2f2ca;
-}
-
-.decoration-bottom-green {
-  position: absolute;
-  right: -90px;
-  bottom: 40px;
-  width: 240px;
-  height: 175px;
-  border-radius: 50% 0 0 0;
-  background: #ddf8df;
+  background: #b18afa;
 }
 
 
@@ -119,130 +130,110 @@ a {
 
 .header {
   position: relative;
-  z-index: 5;
+  z-index: 2;
+
   display: grid;
   grid-template-columns: 48px 1fr 48px;
   align-items: center;
+
   margin-bottom: 55px;
 }
 
 .header h1 {
   margin: 0;
+
   text-align: center;
+
   font-size: 30px;
   font-weight: 900;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
+}
+
+.header-space {
+  width: 48px;
+  height: 48px;
 }
 
 .back-button {
   display: flex;
   align-items: center;
   justify-content: center;
+
   width: 48px;
   height: 48px;
+
   border-radius: 50%;
-  background: #eee2ff;
-  color: #7949e8;
-  font-size: 45px;
-  font-weight: 300;
+
+  background: #eee7ff;
+  color: #7c4ce8;
+
+  font-size: 39px;
+  font-weight: 700;
   line-height: 1;
+
   transition:
     transform 0.2s ease,
     background 0.2s ease;
 }
 
 .back-button:hover {
-  background: #e4d4ff;
+  background: #e5dbff;
   transform: translateX(-2px);
 }
 
 
 /* =========================
-   説明文
+   説明
 ========================= */
 
-.intro {
+.lead {
   position: relative;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  margin-bottom: 29px;
-}
+  z-index: 2;
 
-.intro h2 {
-  margin: 0;
-  font-size: 20px;
+  margin: 0 0 38px;
+
+  text-align: center;
+
+  font-size: 21px;
   font-weight: 900;
-  letter-spacing: 0.04em;
-}
-
-.intro-line {
-  position: relative;
-  display: block;
-  width: 16px;
-  height: 4px;
-  border-radius: 10px;
-  background: #ffc04c;
-}
-
-.intro-line-left {
-  transform: rotate(48deg);
-}
-
-.intro-line-left::after {
-  position: absolute;
-  top: -9px;
-  left: 9px;
-  width: 13px;
-  height: 4px;
-  border-radius: 10px;
-  background: #ffc04c;
-  content: "";
-  transform: rotate(38deg);
-}
-
-.intro-line-right {
-  transform: rotate(-48deg);
-}
-
-.intro-line-right::after {
-  position: absolute;
-  top: -9px;
-  right: 9px;
-  width: 13px;
-  height: 4px;
-  border-radius: 10px;
-  background: #ffc04c;
-  content: "";
-  transform: rotate(-38deg);
 }
 
 
 /* =========================
-   マッチカード一覧
+   マッチ一覧
 ========================= */
 
 .match-list {
   position: relative;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+  z-index: 2;
+
+  display: grid;
+  gap: 24px;
 }
 
+
+/* =========================
+   マッチカード共通
+========================= */
+
 .match-card {
-  position: relative;
   display: grid;
-  grid-template-columns: 105px 1fr 25px;
+  grid-template-columns: 84px 1fr 25px;
   align-items: center;
-  min-height: 142px;
-  padding: 22px 20px;
+  gap: 15px;
+
+  min-height: 165px;
+
+  padding: 22px 17px;
+
   border: 3px solid;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 6px 13px rgba(44, 61, 78, 0.08);
+  border-radius: 25px;
+
+  background: rgba(255, 255, 255, 0.97);
+
+  box-shadow:
+    0 8px 20px rgba(49, 65, 83, 0.06);
+
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -250,529 +241,106 @@ a {
 
 .match-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 19px rgba(44, 61, 78, 0.14);
+
+  box-shadow:
+    0 12px 25px rgba(49, 65, 83, 0.11);
 }
 
-.normal-card {
-  border-color: #258cf5;
+
+/* =========================
+   色分け
+========================= */
+
+.normal-match {
+  border-color: #2488f5;
 }
 
-.rank-card {
-  border-color: #874ce8;
+.rank-match {
+  border-color: #8250e8;
 }
 
-.room-card {
+.room-match {
   border-color: #ffa500;
 }
 
+
+/* =========================
+   アイコン
+========================= */
+
 .match-icon {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 91px;
-  height: 91px;
+
+  width: 78px;
+  height: 78px;
+
   border-radius: 50%;
+
+  font-size: 38px;
 }
 
-.normal-icon {
-  background: #e2f2ff;
+.normal-match .match-icon {
+  background: #e7f3ff;
 }
 
-.rank-icon {
-  background: #eee7ff;
+.rank-match .match-icon {
+  background: #f0e9ff;
 }
 
-.room-icon {
-  background: #fff0d6;
+.room-match .match-icon {
+  background: #fff2d9;
 }
 
-.match-text {
-  padding-left: 10px;
-}
+
+/* =========================
+   文章
+========================= */
 
 .match-text h2 {
-  margin: 0 0 11px;
+  margin: 0 0 12px;
+
   font-size: 24px;
   font-weight: 900;
-  line-height: 1.1;
 }
 
 .match-text p {
   margin: 0;
-  color: #40505f;
-  font-size: 14px;
+
+  color: #344453;
+
+  font-size: 13px;
   font-weight: 600;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
-.match-arrow {
-  justify-self: end;
-  font-size: 58px;
-  font-weight: 300;
+
+/* =========================
+   矢印
+========================= */
+
+.arrow {
+  font-size: 43px;
+  font-weight: 500;
   line-height: 1;
 }
 
-.normal-card .match-arrow {
-  color: #258cf5;
+.normal-match .arrow {
+  color: #2488f5;
 }
 
-.rank-card .match-arrow {
-  color: #874ce8;
+.rank-match .arrow {
+  color: #8250e8;
 }
 
-.room-card .match-arrow {
+.room-match .arrow {
   color: #ffa500;
 }
 
 
 /* =========================
-   通常マッチの人物アイコン
-========================= */
-
-.people-icon {
-  position: relative;
-  width: 70px;
-  height: 60px;
-}
-
-.person {
-  position: absolute;
-  bottom: 0;
-  display: block;
-  background: #258cf5;
-}
-
-.person::before {
-  position: absolute;
-  border-radius: 50%;
-  background: #258cf5;
-  content: "";
-}
-
-.person-large {
-  left: 3px;
-  width: 42px;
-  height: 28px;
-  border-radius: 22px 22px 7px 7px;
-}
-
-.person-large::before {
-  top: -30px;
-  left: 8px;
-  width: 28px;
-  height: 28px;
-}
-
-.person-small {
-  right: 2px;
-  width: 31px;
-  height: 22px;
-  border-radius: 18px 18px 6px 6px;
-}
-
-.person-small::before {
-  top: -23px;
-  left: 6px;
-  width: 22px;
-  height: 22px;
-}
-
-.effect {
-  position: absolute;
-  display: block;
-  width: 17px;
-  height: 4px;
-  border-radius: 10px;
-}
-
-.effect-blue {
-  top: 13px;
-  right: 6px;
-  background: #258cf5;
-}
-
-.effect-blue-1 {
-  transform: rotate(-70deg);
-}
-
-.effect-blue-2 {
-  top: 25px;
-  right: 0;
-  transform: rotate(-35deg);
-}
-
-
-/* =========================
-   王冠アイコン
-========================= */
-
-.crown {
-  position: relative;
-  width: 64px;
-  height: 60px;
-}
-
-.crown-point {
-  position: absolute;
-  top: 7px;
-  width: 21px;
-  height: 42px;
-  background: #ffb200;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-}
-
-.point-left {
-  left: 0;
-  transform: rotate(-16deg);
-}
-
-.point-center {
-  left: 21px;
-}
-
-.point-right {
-  right: 0;
-  transform: rotate(16deg);
-}
-
-.crown-body {
-  position: absolute;
-  bottom: 8px;
-  left: 3px;
-  width: 58px;
-  height: 30px;
-  border-radius: 5px 5px 12px 12px;
-  background: #ffb200;
-  clip-path: polygon(0 0, 25% 45%, 50% 0, 75% 45%, 100% 0, 91% 100%, 9% 100%);
-}
-
-.crown-band {
-  position: absolute;
-  bottom: 1px;
-  left: 6px;
-  width: 53px;
-  height: 9px;
-  border-radius: 4px;
-  background: #f29b00;
-}
-
-.sparkle {
-  position: absolute;
-  color: #834be3;
-  font-size: 13px;
-}
-
-.sparkle-1 {
-  top: 8px;
-  right: 7px;
-}
-
-.sparkle-2 {
-  top: 28px;
-  right: -4px;
-  font-size: 9px;
-}
-
-.sparkle-3 {
-  bottom: 9px;
-  left: -2px;
-  font-size: 9px;
-}
-
-
-/* =========================
-   ドアアイコン
-========================= */
-
-.door {
-  position: relative;
-  width: 64px;
-  height: 67px;
-}
-
-.door-panel {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  z-index: 2;
-  width: 40px;
-  height: 61px;
-  border-radius: 4px;
-  background: #ffa500;
-  transform: perspective(90px) rotateY(-9deg);
-}
-
-.door-knob {
-  position: absolute;
-  top: 31px;
-  right: 7px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #ffffff;
-}
-
-.door-frame {
-  position: absolute;
-  top: 0;
-  right: 1px;
-  width: 39px;
-  height: 67px;
-  border: 7px solid #d98c00;
-  border-left: 0;
-  border-radius: 3px;
-}
-
-.effect-orange {
-  right: -7px;
-  background: #ffa500;
-}
-
-.effect-orange-1 {
-  top: 23px;
-  transform: rotate(-48deg);
-}
-
-.effect-orange-2 {
-  top: 36px;
-  transform: rotate(-11deg);
-}
-
-
-/* =========================
-   下部ナビゲーション
-========================= */
-
-.bottom-nav {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 20;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  width: 100%;
-  max-width: 390px;
-  min-height: 92px;
-  margin: 0 auto;
-  padding: 12px 5px 8px;
-  border-radius: 27px 27px 0 0;
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 -5px 16px rgba(42, 56, 70, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.nav-item {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  font-weight: 900;
-}
-
-.nav-icon {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 39px;
-  margin-bottom: 3px;
-}
-
-.nav-label {
-  font-size: 12px;
-}
-
-.nav-home {
-  color: #ff4e55;
-}
-
-.nav-rule {
-  color: #ffb000;
-}
-
-.nav-ai {
-  color: #824adf;
-}
-
-.nav-gacha {
-  color: #318ef5;
-}
-
-.nav-match {
-  color: #ff4653;
-}
-
-.nav-match.active::after {
-  position: absolute;
-  right: 12px;
-  bottom: -5px;
-  left: 12px;
-  height: 3px;
-  border-radius: 3px;
-  background: #ff4653;
-  content: "";
-}
-
-
-/* =========================
-   ホームアイコン
-========================= */
-
-.home-icon::before {
-  position: absolute;
-  top: 5px;
-  width: 29px;
-  height: 29px;
-  background: currentColor;
-  content: "";
-  clip-path: polygon(
-    50% 0,
-    100% 42%,
-    88% 42%,
-    88% 100%,
-    61% 100%,
-    61% 66%,
-    39% 66%,
-    39% 100%,
-    12% 100%,
-    12% 42%,
-    0 42%
-  );
-}
-
-
-/* =========================
-   ルールアイコン
-========================= */
-
-.rule-icon::before {
-  position: absolute;
-  width: 28px;
-  height: 33px;
-  border-radius: 4px;
-  background: currentColor;
-  content: "";
-}
-
-.rule-icon::after {
-  position: absolute;
-  width: 15px;
-  height: 3px;
-  border-radius: 5px;
-  background: #ffffff;
-  content: "";
-  box-shadow:
-    0 7px 0 #ffffff,
-    0 14px 0 #ffffff;
-}
-
-
-/* =========================
-   AIアイコン
-========================= */
-
-.robot-head {
-  position: relative;
-  display: block;
-  width: 34px;
-  height: 29px;
-  border-radius: 7px;
-  background: currentColor;
-}
-
-.robot-head::before {
-  position: absolute;
-  top: -7px;
-  left: 16px;
-  width: 3px;
-  height: 8px;
-  background: currentColor;
-  content: "";
-}
-
-.robot-head::after {
-  position: absolute;
-  top: -10px;
-  left: 13px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: currentColor;
-  content: "";
-}
-
-.robot-eye {
-  position: absolute;
-  top: 9px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #ffffff;
-}
-
-.robot-eye-left {
-  left: 8px;
-}
-
-.robot-eye-right {
-  right: 8px;
-}
-
-.robot-mouth {
-  position: absolute;
-  bottom: 6px;
-  left: 10px;
-  width: 14px;
-  height: 3px;
-  border-radius: 5px;
-  background: #ffffff;
-}
-
-
-/* =========================
-   ガチャ・マッチアイコン
-========================= */
-
-.gacha-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: currentColor;
-  color: #ffffff;
-  font-size: 27px;
-  font-weight: 900;
-}
-
-.vs-icon {
-  flex-direction: column;
-  line-height: 1;
-}
-
-.vs-text {
-  position: absolute;
-  top: 0;
-  color: currentColor;
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.vs-people {
-  position: absolute;
-  bottom: -2px;
-  color: currentColor;
-  font-size: 27px;
-  letter-spacing: -10px;
-  transform: translateX(-4px);
-}
-
-
-/* =========================
-   小さいスマホへの対応
+   小さいスマホ対応
 ========================= */
 
 @media (max-width: 360px) {
@@ -782,23 +350,21 @@ a {
     padding-left: 13px;
   }
 
-  .header {
-    margin-bottom: 42px;
-  }
-
   .match-card {
-    grid-template-columns: 88px 1fr 20px;
-    min-height: 132px;
-    padding: 18px 14px;
+    grid-template-columns: 70px 1fr 21px;
+    gap: 11px;
+
+    min-height: 150px;
+
+    padding-right: 13px;
+    padding-left: 13px;
   }
 
   .match-icon {
-    width: 79px;
-    height: 79px;
-  }
+    width: 66px;
+    height: 66px;
 
-  .match-text {
-    padding-left: 6px;
+    font-size: 31px;
   }
 
   .match-text h2 {
@@ -809,32 +375,31 @@ a {
     font-size: 12px;
   }
 
-  .match-arrow {
-    font-size: 50px;
-  }
-
 }
 
 
 /* =========================
-   パソコンでの表示
+   パソコン表示
 ========================= */
 
 @media (min-width: 391px) {
 
   body {
-    padding: 24px 0;
+    padding: 25px 0;
   }
 
   .app {
-    min-height: calc(100vh - 48px);
+    min-height: calc(100vh - 50px);
+
     border-radius: 30px;
-    box-shadow: 0 12px 35px rgba(37, 51, 66, 0.13);
+
+    box-shadow:
+      0 15px 40px rgba(42, 58, 76, 0.14);
   }
 
-  .bottom-nav {
-    bottom: 24px;
-    border-radius: 27px;
-  }
-
+  .menu-item{
+    text-decoration:none;
+    color:inherit;
+    display:flex;
+}
 }

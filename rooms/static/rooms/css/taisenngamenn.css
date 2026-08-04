@@ -1,0 +1,719 @@
+/* =========================
+   基本設定
+========================= */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  background: #eeeeee;
+  color: #263747;
+
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Hiragino Sans",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+
+/* =========================
+   アプリ全体
+========================= */
+
+.app {
+  position: relative;
+
+  width: 100%;
+  max-width: 390px;
+  min-height: 100vh;
+
+  margin: 0 auto;
+  padding: 25px 16px 38px;
+
+  overflow: hidden;
+
+  background: #ffffff;
+}
+
+
+/* =========================
+   背景の大きな丸
+========================= */
+
+.app::before {
+  position: absolute;
+  top: 140px;
+  right: -70px;
+
+  width: 145px;
+  height: 145px;
+
+  border-radius: 50%;
+
+  background: #e6f2ff;
+
+  content: "";
+}
+
+.app::after {
+  position: absolute;
+  right: -75px;
+  bottom: -70px;
+
+  width: 190px;
+  height: 190px;
+
+  border-radius: 50%;
+
+  background: #e3f8e7;
+
+  content: "";
+}
+
+
+/* =========================
+   背景の小さな飾り
+========================= */
+
+.decoration {
+  position: absolute;
+  z-index: 0;
+
+  display: block;
+
+  border-radius: 50%;
+}
+
+.decoration-red {
+  top: 155px;
+  left: 25px;
+
+  width: 14px;
+  height: 14px;
+
+  background: #ff9da3;
+}
+
+.decoration-purple {
+  top: 175px;
+  right: 60px;
+
+  width: 18px;
+  height: 18px;
+
+  background: #b68cf7;
+}
+
+.decoration-green {
+  bottom: 250px;
+  right: 20px;
+
+  width: 18px;
+  height: 18px;
+
+  background: #b8edc2;
+}
+
+
+/* =========================
+   ヘッダー
+========================= */
+
+.header {
+  position: relative;
+  z-index: 2;
+
+  display: grid;
+  grid-template-columns: 46px 1fr 46px;
+  align-items: center;
+
+  margin-bottom: 8px;
+}
+
+.header h1 {
+  margin: 0;
+
+  text-align: center;
+
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.back-button,
+.setting-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 46px;
+  height: 46px;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: #eee7ff;
+  color: #7b4de7;
+}
+
+.back-button {
+  font-size: 37px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.setting-button {
+  font-size: 21px;
+  cursor: pointer;
+}
+
+
+/* =========================
+   サブタイトル
+========================= */
+
+.subtitle {
+  position: relative;
+  z-index: 2;
+
+  margin: 0 0 14px;
+
+  text-align: center;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+
+/* =========================
+   時間表示
+========================= */
+
+.time-pill {
+  position: relative;
+  z-index: 2;
+
+  width: fit-content;
+
+  margin: 0 auto 23px;
+  padding: 8px 16px;
+
+  border-radius: 999px;
+
+  background: #f0e8ff;
+  color: #7d4de6;
+
+  font-size: 13px;
+  font-weight: 900;
+}
+
+
+/* =========================
+   プレイヤー一覧
+========================= */
+
+.players {
+  position: relative;
+  z-index: 2;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+
+/* =========================
+   プレイヤーカード
+========================= */
+
+.player-card {
+  position: relative;
+
+  min-height: 170px;
+
+  padding: 28px 8px 15px;
+
+  border: 2px solid;
+  border-radius: 20px;
+
+  text-align: center;
+
+  background: #ffffff;
+}
+
+.player-blue {
+  border-color: #2d86f6;
+  background: #f8fbff;
+}
+
+.player-red {
+  border-color: #ff4d56;
+  background: #fff9f9;
+}
+
+.player-orange {
+  border-color: #ffa500;
+  background: #fffdf7;
+}
+
+.player-green {
+  border-color: #36bd64;
+  background: #f8fff9;
+}
+
+
+/* =========================
+   プレイヤー番号
+========================= */
+
+.player-number {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+
+  padding: 4px 13px;
+
+  border-radius: 999px;
+
+  color: #ffffff;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  transform: translateX(-50%);
+}
+
+.player-blue .player-number {
+  background: #2d86f6;
+}
+
+.player-red .player-number {
+  background: #ff4d56;
+}
+
+.player-orange .player-number {
+  background: #ffa500;
+}
+
+.player-green .player-number {
+  background: #36bd64;
+}
+
+
+/* =========================
+   あなた表示
+========================= */
+
+.you-label {
+  position: absolute;
+  top: 9px;
+  right: 8px;
+
+  padding: 2px 7px;
+
+  border-radius: 999px;
+
+  background: #e8f2ff;
+  color: #2d86f6;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+/* =========================
+   アバター
+========================= */
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 62px;
+  height: 62px;
+
+  margin: 0 auto 8px;
+
+  border-radius: 50%;
+
+  background: #edf1f5;
+
+  font-size: 36px;
+}
+
+
+/* =========================
+   プレイヤー情報
+========================= */
+
+.player-card h2 {
+  margin: 0 0 5px;
+
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.rate {
+  margin: 0;
+
+  font-size: 27px;
+  font-weight: 900;
+}
+
+.player-blue .rate {
+  color: #2d86f6;
+}
+
+.player-red .rate {
+  color: #ff4d56;
+}
+
+.player-orange .rate {
+  color: #ffa500;
+}
+
+.player-green .rate {
+  color: #36bd64;
+}
+
+
+/* =========================
+   現在の文字カード
+========================= */
+
+.current-card {
+  position: relative;
+  z-index: 2;
+
+  display: grid;
+  grid-template-columns: 1fr 70px 25px 1fr;
+  align-items: center;
+  gap: 8px;
+
+  margin-bottom: 18px;
+  padding: 17px 15px;
+
+  border: 1px solid #e7ebef;
+  border-radius: 21px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 7px 18px rgba(43, 58, 75, 0.08);
+}
+
+.current-text p {
+  margin: 0;
+
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.current-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 65px;
+  height: 65px;
+
+  border-radius: 50%;
+
+  background: #f0e8ff;
+  color: #7c4de7;
+
+  font-size: 44px;
+  font-weight: 900;
+}
+
+.current-arrow {
+  text-align: center;
+
+  font-size: 27px;
+  font-weight: 900;
+}
+
+.countdown {
+  text-align: center;
+}
+
+.countdown span {
+  display: block;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.countdown strong {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 28px;
+  font-weight: 900;
+}
+
+
+/* =========================
+   ゲームカード
+========================= */
+
+.game-card {
+  position: relative;
+  z-index: 2;
+
+  padding: 18px 14px;
+
+  border: 1px solid #e7ebef;
+  border-radius: 22px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 8px 20px rgba(43, 58, 75, 0.08);
+}
+
+.game-card h2 {
+  margin: 0 0 14px;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+
+/* =========================
+   しりとり履歴
+========================= */
+
+.word-history {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  overflow-x: auto;
+
+  padding-bottom: 5px;
+
+  scrollbar-width: none;
+}
+
+.word-history::-webkit-scrollbar {
+  display: none;
+}
+
+.word {
+  flex: 0 0 auto;
+
+  padding: 9px 12px;
+
+  border: 1px solid #cdd6df;
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.next-word {
+  border-style: dashed;
+
+  color: #7c4de7;
+}
+
+.history-arrow {
+  flex: 0 0 auto;
+
+  color: #86929d;
+
+  font-size: 17px;
+  font-weight: 900;
+}
+
+
+/* =========================
+   入力エリア
+========================= */
+
+.input-area {
+  display: grid;
+  grid-template-columns: 1fr 88px;
+  gap: 9px;
+
+  margin-top: 17px;
+}
+
+.input-area input {
+  width: 100%;
+  min-width: 0;
+
+  padding: 14px 13px;
+
+  border: 2px solid #d7dfe7;
+  border-radius: 14px;
+
+  outline: none;
+
+  color: #263747;
+  background: #ffffff;
+}
+
+.input-area input:focus {
+  border-color: #7a50e8;
+}
+
+.decision-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #3f8cf5,
+      #7548eb
+    );
+
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 900;
+}
+
+
+/* =========================
+   操作ボタン
+========================= */
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 9px;
+
+  margin-top: 11px;
+}
+
+.sub-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-height: 65px;
+
+  padding: 8px;
+
+  border: 1px solid #d9e0e7;
+  border-radius: 14px;
+
+  background: #ffffff;
+  color: #263747;
+
+  text-align: center;
+
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.button-icon {
+  color: #477fe2;
+
+  font-size: 25px;
+}
+
+.sub-button span:last-child {
+  display: flex;
+  flex-direction: column;
+
+  font-size: 13px;
+}
+
+.sub-button small {
+  margin-top: 2px;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* =========================
+   小さいスマホ対応
+========================= */
+
+@media (max-width: 360px) {
+
+  .app {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .players {
+    gap: 10px;
+  }
+
+  .player-card {
+    min-height: 160px;
+  }
+
+  .current-card {
+    grid-template-columns: 1fr 60px 20px 1fr;
+
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .current-letter {
+    width: 58px;
+    height: 58px;
+
+    font-size: 39px;
+  }
+
+  .countdown strong {
+    font-size: 24px;
+  }
+
+}
+
+
+/* =========================
+   パソコン表示
+========================= */
+
+@media (min-width: 391px) {
+
+  body {
+    padding: 25px 0;
+  }
+
+  .app {
+    min-height: calc(100vh - 50px);
+
+    border-radius: 30px;
+
+    box-shadow:
+      0 15px 40px rgba(42, 58, 76, 0.14);
+  }
+
+}
