@@ -26,3 +26,6 @@ def wait(request):
 
 def profile(request):
     return render(request, "rooms/profile.html")
+
+def shop(request):
+    return render(request, "rooms/shop.html")

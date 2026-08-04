@@ -11,4 +11,5 @@ urlpatterns = [
     path("rank/", views.rank, name="rank"),
     path("wait/", views.wait, name="wait"),
     path("profile/", views.profile, name="profile"),
+    path("shop/", views.shop, name="shop"),
 ]
