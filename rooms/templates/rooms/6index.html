@@ -1,0 +1,123 @@
+<!-- 通常マッチ時の勝ちのresult画面 -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>しりとり - けっか画面(通常マッチ かち)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/rooms/static/rooms/6style.css">
+</head>
+<body>
+
+  <div class="phone">
+    <div class="blob-tl"></div>
+    <div class="blob-br"></div>
+    <div class="dotgrid">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="float-dot fd1"></div>
+    <div class="float-dot fd2"></div>
+    <div class="float-dot fd3"></div>
+
+    <div class="confetti" id="confetti"></div>
+
+    <div class="statusbar"> 📶 📡 🔋</div>
+
+    <div class="content">
+      <div class="eyebrow"><span class="dot"></span> けっかはっぴょう</div>
+
+      <div class="title-wrap">
+        <span class="accent left">ヽ</span>
+        <div class="title">
+          <span>か</span><span>ち</span><span>！</span>
+        </div>
+        <span class="accent right">ノ</span>
+      </div>
+
+      <div class="subtitle">さいごまでよくがんばったね!</div>
+
+      <div class="badge-icon">🏆</div>
+
+      <!-- じゅんい表示(◯位 / ◯人中) -->
+      <div class="rank-card">
+        <div class="rank-badge">👥</div>
+        <div class="rank-info">
+          <div class="rank-label">じゅんい</div>
+          <div class="rank-value">
+            <span id="rankPos">-</span><span class="rank-unit">位</span>
+            <span class="rank-total">/ <span id="rankTotal">-</span>人中</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 参加人数分の順位表 -->
+      <div class="leaderboard" id="leaderboard"></div>
+
+      <div class="actions">
+        <button class="action-btn filled" style="--btn-color:var(--blue);">
+          <div class="action-icon">🔁</div>
+          <div class="action-label">もういちど遊ぶ</div>
+          <div class="action-chevron">›</div>
+        </button>
+        <button class="action-btn" style="--btn-color:var(--sub);">
+          <div class="action-icon" style="background:#F1F2F5;color:var(--sub);">🏠</div>
+          <div class="action-label" style="color:var(--ink);">ホームにもどる</div>
+          <div class="action-chevron" style="color:var(--sub);">›</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// 紙吹雪の生成
+const confetti = document.getElementById('confetti');
+const confettiColors = ['#F2545B','#4A90E2','#FFB627','#4CAF50','#8B5CF6'];
+for(let i=0;i<26;i++){
+  const el = document.createElement('i');
+  el.style.left = Math.random()*100+'%';
+  el.style.background = confettiColors[i % confettiColors.length];
+  el.style.animationDuration = (2.4 + Math.random()*1.6)+'s';
+  el.style.animationDelay = (Math.random()*2)+'s';
+  confetti.appendChild(el);
+}
+
+// ---- じゅんい・順位表(参加人数はこの配列の要素数で自動的に決まる) ----
+const players = [
+  { name: 'あなた',  isMe: true },
+  { name: 'ゆうた',  },
+  { name: 'さくら',  },
+  { name: 'けんと',  }
+];
+
+function renderRanking(players){
+  const sorted = [...players].sort((a, b) => b.score - a.score);
+  const total = sorted.length;
+  const myRank = sorted.findIndex(p => p.isMe) + 1;
+
+  document.getElementById('rankPos').textContent = myRank;
+  document.getElementById('rankTotal').textContent = total;
+
+  const medal = { 1: '🥇', 2: '🥈', 3: '🥉' };
+  const board = document.getElementById('leaderboard');
+  board.innerHTML = '';
+
+  sorted.forEach((p, i) => {
+    const rank = i + 1;
+    const row = document.createElement('div');
+    row.className = 'rank-row' + (p.isMe ? ' me' : '') + (rank <= 3 ? ' top' + rank : '');
+    row.innerHTML = `
+      <div class="rank-num">${medal[rank] || rank}</div>
+      <div class="rank-name">${p.name}</div>
+      <div class="rank-score">${p.score}こ</div>
+    `;
+    board.appendChild(row);
+  });
+}
+
+renderRanking(players);
+</script>
+</body>
+</html>
