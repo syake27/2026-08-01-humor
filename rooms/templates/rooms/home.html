@@ -1,90 +1,100 @@
-<nav class="menu">
 
-  <!-- 1. マッチ -->
-  <a href="templates/rooms/match.html" class="menu-item menu-match">
-    <link rel="stylesheet" href="/rooms/static/rooms/home.css">
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>しりとり</title>
+<link rel="stylesheet" href="/rooms/static/rooms/home.css">
+</head>
+<body>
 
-    <span class="menu-icon match-icon">
-      <i class="fa-solid fa-user-group"></i>
-      <small>VS</small>
-    </span>
+<div class="phone">
 
-    <span class="menu-text">
-      マッチ
-    </span>
+  <!-- decorative elements -->
+  <div class="blob blob-topleft"></div>
+  <div class="blob dot-pink"></div>
+  <div class="blob dot-blue"></div>
+  <div class="blob dot-purple"></div>
+  <div class="blob dot-pink2"></div>
+  <div class="blob blob-bottomright"></div>
 
-    <span class="menu-arrow">
-      <i class="fa-solid fa-chevron-right"></i>
-    </span>
+  <div class="dots-grid top-right">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+  <div class="dots-grid bottom-left">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
 
-  </a>
+  <div class="sparkle left">✦</div>
+  <div class="sparkle right">✦</div>
 
-  <!-- 2. AI -->
-  <a href="templates/rooms/ai.html" class="menu-item menu-ai">
+  <header>
+    <h1 class="logo">
+      <span class="c1">し</span><span class="c2">り</span><span class="c3">と</span><span class="c4">り</span>
+    </h1>
+    <p class="subtitle">ことばでつなぐ、たのしいバトル！</p>
+  </header>
 
-    <span class="menu-icon">
-      <i class="fa-solid fa-robot"></i>
-    </span>
+  <nav class="menu">
 
-    <span class="menu-text">
-      AI
-    </span>
+    <a class="menu-item item-profile" href="#">
+      <div class="item-left">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"/></svg>
+        </div>
+        <span class="item-label">プロフィール</span>
+      </div>
+      <span class="chevron">›</span>
+    </a>
 
-    <span class="menu-arrow">
-      <i class="fa-solid fa-chevron-right"></i>
-    </span>
+    <a class="menu-item item-rule" href="#">
+      <div class="item-left">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24"><path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6H6zm7 1.5L18.5 9H13V3.5zM8 12h8v2H8v-2zm0 4h8v2H8v-2zm0-8h4v2H8V8z"/></svg>
+        </div>
+        <span class="item-label">ルール</span>
+      </div>
+      <span class="chevron">›</span>
+    </a>
 
-  </a>
+    <a class="menu-item item-ai" href="#">
+      <div class="item-left">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24"><path d="M12 2a1 1 0 0 1 1 1v1.06A6.99 6.99 0 0 1 19 11v1h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-1H4a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1v-1a6.99 6.99 0 0 1 6-6.94V3a1 1 0 0 1 1-1zM9 12a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm6 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+        </div>
+        <span class="item-label">AI</span>
+      </div>
+      <span class="chevron">›</span>
+    </a>
 
-  <!-- 3. ガチャ -->
-  <a href="templates/rooms/gacha.html" class="menu-item menu-gacha">
+    <a class="menu-item item-gacha" href="#">
+      <div class="item-left">
+        <div class="icon-circle">
+          <svg viewBox="0 0 24 24"><path d="M6 2h12v4c0 2.2-1.5 4-3.3 4.7L12 12l-2.7-1.3C7.5 10 6 8.2 6 6V2zm0 20v-4c0-2.2 1.5-4 3.3-4.7L12 12l2.7 1.3C16.5 14 18 15.8 18 18v4H6z"/></svg>
+        </div>
+        <span class="item-label">ガチャ。</span>
+      </div>
+      <span class="chevron">›</span>
+    </a>
 
-    <span class="menu-icon">
-      <i class="fa-solid fa-capsules"></i>
-    </span>
+    <a class="menu-item item-match" href="#">
+      <div class="item-left">
+        <div class="icon-circle">
+          <span class="vs-badge">VS</span>
+        </div>
+        <span class="item-label">マッチ。</span>
+      </div>
+      <span class="chevron">›</span>
+    </a>
 
-    <span class="menu-text">
-      ガチャ
-    </span>
+  </nav>
 
-    <span class="menu-arrow">
-      <i class="fa-solid fa-chevron-right"></i>
-    </span>
+</div>
 
-  </a>
-
-  <!-- 4. ルール -->
-  <a href="templates/rooms/rules.html" class="menu-item menu-rule">
-
-    <span class="menu-icon">
-      <i class="fa-solid fa-clipboard-list"></i>
-    </span>
-
-    <span class="menu-text">
-      ルール
-    </span>
-
-    <span class="menu-arrow">
-      <i class="fa-solid fa-chevron-right"></i>
-    </span>
-
-  </a>
-
-  <!-- 5. プロフィール -->
-  <a href="templates/rooms/profile.html" class="menu-item menu-profile">
-
-    <span class="menu-icon">
-      <i class="fa-solid fa-user"></i>
-    </span>
-
-    <span class="menu-text">
-      プロフィール
-    </span>
-
-    <span class="menu-arrow">
-      <i class="fa-solid fa-chevron-right"></i>
-    </span>
-
-  </a>
-
-</nav>
+</body>
+</html>
