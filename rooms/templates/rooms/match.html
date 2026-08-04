@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>しりとり｜マッチ</title>
 
-  <link rel="stylesheet" href="style.css">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'rooms/css/match.css' %}">
 </head>
 
 <body>
@@ -28,11 +27,7 @@
     <!-- ヘッダー -->
     <header class="header">
 
-      <a
-        href="../index.html"
-        class="back-button"
-        aria-label="ホーム画面へ戻る"
-      >
+      <a href="../index.html" class="back-button" aria-label="ホーム画面へ戻る">
         ‹
       </a>
 
@@ -57,10 +52,7 @@
     <section class="match-list">
 
       <!-- 通常マッチ -->
-      <a
-        href="normal-match.html"
-        class="match-card normal-card"
-      >
+      <a href="normal-match.html" class="match-card normal-card">
 
         <div class="match-icon normal-icon">
 
@@ -88,10 +80,7 @@
       </a>
 
       <!-- ランクマッチ -->
-      <a
-        href="rank-match.html"
-        class="match-card rank-card"
-      >
+      <a href="rank-match.html" class="match-card rank-card">
 
         <div class="match-icon rank-icon">
 
@@ -124,10 +113,7 @@
       </a>
 
       <!-- ルーム -->
-      <a
-        href="room.html"
-        class="match-card room-card"
-      >
+      <a href="room.html" class="match-card room-card">
 
         <div class="match-icon room-icon">
 
@@ -201,4 +187,5 @@
   </main>
 
 </body>
+
 </html>
