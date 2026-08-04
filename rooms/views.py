@@ -22,3 +22,6 @@ def rank(request):
 
 def wait(request):
     return render(request, "rooms/waiting_room.html")
+
+def rule(request):
+    return render(request, "rooms/rules.html")

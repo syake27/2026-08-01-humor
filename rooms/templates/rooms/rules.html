@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ロシアンしりとりのルール説明ページ">
+  <title>ロシアンしりとり｜ルール説明</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <div class="stars" aria-hidden="true"></div>
+    <div class="cloud cloud-a" aria-hidden="true"></div>
+    <div class="cloud cloud-b" aria-hidden="true"></div>
+    <div class="sunset-glow" aria-hidden="true"></div>
+
+    <div class="rule-wrapper">
+      <header class="hero">
+        <div class="hero-badge">ルール説明</div>
+        <h1>ルールをかんたん解説！</h1>
+        <div class="hero-summary">
+          <p>「鬼」が決めた文字を、</p>
+          <p>しりとりの中で言ってしまったら <strong>OUT！</strong></p>
+          <p>最後の <em>1人</em> まで生き残ろう！</p>
+        </div>
+        <div class="flow-title">
+          <span></span><h2>ゲームの流れ</h2><span></span>
+        </div>
+      </header>
+
+      <section class="rule-card basic-card">
+        <div class="step-badge">1</div>
+        <div class="rule-text">
+          <h3>ルームに参加</h3>
+          <p>みんなが集まったら<br>ゲームの準備スタート！</p>
+        </div>
+        <div class="players" aria-label="4人のプレイヤー">
+          <i class="person blue"></i><i class="person red"></i><i class="person yellow"></i><i class="person green"></i>
+        </div>
+      </section>
+
+      <div class="step-arrow">▼</div>
+
+      <section class="rule-card basic-card">
+        <div class="step-badge">2</div>
+        <div class="rule-text">
+          <h3>鬼が文字を決定</h3>
+          <p>システム（鬼）が<br>ランダムで1文字を決めます。</p>
+          <p>その文字はみんなには見えません。</p>
+        </div>
+        <div class="ghost-area" aria-label="鬼が決めた文字の例はら">
+          <div class="ghost"><span class="eye eye-l"></span><span class="eye eye-r"></span><span class="smile"></span></div>
+          <div class="ghost-letter">ら</div>
+        </div>
+      </section>
+
+      <div class="step-arrow">▼</div>
+
+      <section class="rule-card large-card">
+        <div class="step-badge">3</div>
+        <div class="rule-text full">
+          <div class="three-header">
+            <div class="three-intro">
+              <h3>しりとりスタート</h3>
+              <p>順番に、前の人が言った言葉の<br>最後の文字から始まる言葉を答えます。</p>
+            </div>
+            <div class="chain-panel">
+              <div class="panel-label">しりとりの進め方（例）</div>
+              <div class="chain-row">
+                <div class="chain-item">
+                  <span class="word blue-word">りんご</span>
+                  <p>最後の文字は「ご」<br>濁点を外して<br>「こ」からスタート</p>
+                </div>
+                <b class="chain-arrow">→</b>
+                <div class="chain-item">
+                  <span class="word green-word">このは</span>
+                  <p>最後の文字は「は」<br>そのまま「は」から<br>スタート</p>
+                </div>
+                <b class="chain-arrow">→</b>
+                <div class="chain-item">
+                  <span class="word orange-word">はなび</span>
+                  <p>最後の文字は「び」<br>濁点を外して<br>「ひ」からスタート</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="three-bottom">
+            <div class="special-rules">
+              <h4>濁点・半濁点は<br>必ず外した文字で続けます。</h4>
+              <div class="mini-example"><span class="word green-word">ぱんだ</span><b>→</b><span class="word purple-word">たぬき</span></div>
+              <div class="mini-example"><span class="word orange-word">らっぱ</span><b>→</b><span class="word cyan-word">はなび</span></div>
+            </div>
+            <div class="time-panel">
+              <div class="clock-icon" aria-hidden="true"><span class="clock-hand hour"></span><span class="clock-hand minute"></span></div>
+              <div>
+                <h4>持ち時間について</h4>
+                <p>自分のターンがきたら、スタートした次の人の<br>ターンにいくまで、時間は減り続けます。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="step-arrow">▼</div>
+
+      <section class="rule-card out-card">
+        <div class="step-badge">4</div>
+        <div class="rule-text out-main">
+          <h3>鬼の文字で終わったら<span>OUT！</span></h3>
+          <p>しりとりの最後の文字が、<br>鬼が決めた文字と同じだった人はOUT！</p>
+          <div class="example-label">例）鬼が「ら」に決定した場合</div>
+          <div class="out-flow"><span class="word blue-word">りんご</span><b>→</b><span class="word red-word">ごりら</span><b>→</b><strong class="burst">OUT!</strong></div>
+          <p class="out-note">最後の文字が「ら」なのでOUT！</p>
+        </div>
+
+        <div class="out-visual" aria-hidden="true">
+          <div class="speech"><span class="speech-letter">ら</span><span>で終わっちゃった…！</span></div>
+          <div class="big-cross">×</div>
+          <div class="lost-person"></div>
+        </div>
+
+        <aside class="duplicate-rule">
+          <h4>同じ単語は使えない！</h4>
+          <p>2文字以上、同じ単語は<br>使うことができません。</p>
+          <div class="book-ban" aria-hidden="true"><div class="book"></div><div class="slash"></div></div>
+        </aside>
+      </section>
+
+      <section class="rule-card compact-card">
+        <div class="step-badge">5</div>
+        <div class="rule-text">
+          <h3>新しい文字で続行</h3>
+          <p>OUTが出たら、残った人たちで<br>鬼が新しい文字を決め、再びしりとりを続けます！</p>
+        </div>
+        <div class="refresh-icon" aria-hidden="true">↻</div>
+      </section>
+
+      <section class="rule-card compact-card">
+        <div class="step-badge">6</div>
+        <div class="rule-text">
+          <h3>最後の1人が勝者！</h3>
+          <p>この流れをくり返して、最後まで<br>生き残った1人が勝者です！</p>
+        </div>
+        <div class="trophy" aria-hidden="true">🏆</div>
+      </section>
+
+      <aside class="tip-card">
+        <div class="bulb" aria-hidden="true">💡</div>
+        <div>
+          <h3>油断は禁物！</h3>
+          <p>鬼が何の文字を決めているかは、誰にもわかりません。<br>相手の言葉やOUTしたタイミングをヒントに、推理しながら戦いましょう！</p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="city" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </main>
+</body>
+</html>
