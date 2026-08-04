@@ -14,7 +14,7 @@ body {
   margin: 0;
   min-height: 100vh;
   background: #eeeeee;
-  color: #263747;
+  color: #263746;
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -30,10 +30,6 @@ a {
   text-decoration: none;
 }
 
-button {
-  font: inherit;
-}
-
 
 /* =========================
    アプリ全体
@@ -43,16 +39,16 @@ button {
   position: relative;
   width: 100%;
   max-width: 390px;
-  min-height: 100vh;
+  min-height: 844px;
   margin: 0 auto;
-  padding: 20px 22px 125px;
+  padding: 32px 20px 55px;
   overflow: hidden;
   background: #ffffff;
 }
 
 
 /* =========================
-   背景の小さな飾り
+   背景装飾
 ========================= */
 
 .decoration {
@@ -62,36 +58,52 @@ button {
   pointer-events: none;
 }
 
-.decoration-red {
-  top: 195px;
-  left: 27px;
-  width: 16px;
-  height: 16px;
-  background: #ff8e98;
+.decoration-top-left {
+  top: 90px;
+  left: -90px;
+  width: 175px;
+  height: 175px;
+  background: #e2f1ff;
 }
 
 .decoration-blue {
-  top: 125px;
-  right: 32px;
-  width: 15px;
-  height: 15px;
-  background: #8fc7ff;
+  top: 145px;
+  right: 40px;
+  width: 16px;
+  height: 16px;
+  background: #99cfff;
 }
 
-.decoration-purple {
-  bottom: 145px;
-  left: 250px;
+.decoration-red {
+  top: 215px;
+  left: 40px;
   width: 15px;
   height: 15px;
-  background: #a77bf5;
+  background: #ff9aa2;
 }
 
 .decoration-green {
-  bottom: 160px;
-  right: 22px;
-  width: 18px;
-  height: 18px;
-  background: #baf1c5;
+  top: 337px;
+  right: 34px;
+  width: 14px;
+  height: 14px;
+  background: #87dea0;
+}
+
+.decoration-purple {
+  bottom: 35px;
+  left: 195px;
+  width: 17px;
+  height: 17px;
+  background: #a979ee;
+}
+
+.decoration-bottom-right {
+  right: -100px;
+  bottom: -70px;
+  width: 240px;
+  height: 240px;
+  background: #ddf7df;
 }
 
 
@@ -103,627 +115,458 @@ button {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 46px 1fr 46px;
+  grid-template-columns: 48px 1fr 48px;
   align-items: center;
-  margin-bottom: 25px;
+  margin-bottom: 28px;
 }
 
 .header h1 {
   margin: 0;
   text-align: center;
-  font-size: 28px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  font-size: 29px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
 }
 
 .back-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: #eee7ff;
-  color: #7950e8;
-  font-size: 42px;
+  background: #eee4ff;
+  color: #7948e5;
+  font-size: 45px;
   font-weight: 300;
   line-height: 1;
   transition:
-    transform 0.2s ease,
-    background 0.2s ease;
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .back-button:hover {
-  background: #e4d9ff;
+  background: #e4d6ff;
   transform: translateX(-2px);
 }
 
 
 /* =========================
-   共通カード
+   メイン案内
 ========================= */
 
-.profile-card,
-.content-card {
+.account-guide {
   position: relative;
   z-index: 2;
-  border: 1px solid #eeeeee;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow:
-    0 6px 16px rgba(58, 72, 92, 0.09);
+  text-align: center;
 }
 
 
 /* =========================
-   プロフィールカード
+   プロフィールアイコン
 ========================= */
 
-.profile-card {
-  margin-bottom: 18px;
-  overflow: hidden;
-}
-
-.profile-main {
+.profile-icon-area {
   position: relative;
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  align-items: center;
-  min-height: 235px;
-  padding: 25px 20px;
-  overflow: hidden;
+  width: 185px;
+  height: 175px;
+  margin: 0 auto 15px;
 }
 
-.profile-main::before {
+.profile-icon {
   position: absolute;
-  top: -48px;
-  left: -28px;
-  width: 128px;
-  height: 128px;
-  border-radius: 50%;
-  background: #e4d7ff;
-  content: "";
-}
-
-.profile-main::after {
-  position: absolute;
-  right: -44px;
-  bottom: -54px;
-  width: 125px;
-  height: 125px;
-  border-radius: 50%;
-  background: #c8f4d0;
-  content: "";
-}
-
-
-/* =========================
-   アバター
-========================= */
-
-.avatar-area {
-  position: relative;
-  z-index: 2;
-  width: 112px;
-}
-
-.avatar-circle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 112px;
-  height: 112px;
-  border-radius: 50%;
-  background: #ded2ff;
-}
-
-.avatar-face {
-  position: relative;
-  width: 82px;
-  height: 93px;
-}
-
-.face {
-  position: absolute;
-  top: 20px;
-  left: 18px;
-  width: 49px;
-  height: 53px;
-  border: 3px solid #263747;
-  border-radius: 45% 45% 50% 50%;
-  background: #ffffff;
-}
-
-.hair {
-  position: absolute;
-  z-index: 2;
-  top: 9px;
-  left: 12px;
-  width: 61px;
-  height: 40px;
-  border-radius: 50% 50% 35% 35%;
-  background: #263747;
-  transform: rotate(-3deg);
-}
-
-.hair::before,
-.hair::after {
-  position: absolute;
-  background: #263747;
-  content: "";
-}
-
-.hair::before {
-  top: 27px;
-  left: 1px;
-  width: 15px;
-  height: 28px;
-  border-radius: 50%;
-  transform: rotate(12deg);
-}
-
-.hair::after {
-  top: 26px;
-  right: 0;
-  width: 14px;
-  height: 28px;
-  border-radius: 50%;
-  transform: rotate(-12deg);
-}
-
-.eye {
-  position: absolute;
-  top: 24px;
-  width: 4px;
-  height: 6px;
-  border-radius: 50%;
-  background: #263747;
-}
-
-.eye-left {
-  left: 13px;
-}
-
-.eye-right {
-  right: 13px;
-}
-
-.mouth {
-  position: absolute;
-  bottom: 9px;
+  top: 33px;
   left: 50%;
-  width: 13px;
-  height: 7px;
-  border-bottom: 2px solid #263747;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
+  background: #e3d2ff;
+  transform: translateX(-50%);
+  overflow: hidden;
+}
+
+.profile-head {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #7643dc;
   transform: translateX(-50%);
 }
 
-.body-shape {
+.profile-body {
   position: absolute;
-  bottom: 0;
-  left: 8px;
-  width: 69px;
-  height: 34px;
-  border-radius: 34px 34px 8px 8px;
-  background: #7c43df;
+  right: 21px;
+  bottom: -13px;
+  left: 21px;
+  height: 71px;
+  border-radius: 50% 50% 20% 20%;
+  background: #7643dc;
 }
 
-.edit-avatar-button {
+.effect-line {
   position: absolute;
-  right: -2px;
-  bottom: 1px;
-  z-index: 5;
-  width: 42px;
-  height: 42px;
-  border: 5px solid #ffffff;
-  border-radius: 50%;
-  background: #ffffff;
-  color: #7946e8;
-  box-shadow: 0 4px 10px rgba(43, 55, 75, 0.15);
-  font-size: 23px;
-  font-weight: 800;
-  cursor: pointer;
+  top: 8px;
+  width: 7px;
+  height: 22px;
+  border-radius: 10px;
+  background: #854ce4;
 }
 
-
-/* =========================
-   ユーザー情報
-========================= */
-
-.user-info {
-  position: relative;
-  z-index: 2;
-  padding-left: 16px;
+.effect-line-left {
+  left: 66px;
+  transform: rotate(-40deg);
 }
 
-.user-info h2 {
-  margin: 0 0 7px;
-  font-size: 27px;
-  font-weight: 800;
+.effect-line-center {
+  left: 89px;
 }
 
-.user-id {
-  margin: 0 0 17px;
-  color: #6e7985;
-  font-size: 15px;
-  font-weight: 600;
+.effect-line-right {
+  right: 66px;
+  transform: rotate(40deg);
 }
 
-.rate-label {
-  display: inline-block;
-  margin-bottom: 3px;
-  padding: 3px 10px;
-  border-radius: 5px;
-  background: #eee6ff;
-  color: #8556eb;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.rate-number {
-  margin: 0;
-  color: #7c46e8;
-  font-size: 40px;
-  font-weight: 900;
-  line-height: 1.1;
-}
-
-
-/* =========================
-   レートグラフ
-========================= */
-
-.rate-chart {
+.sparkle {
   position: absolute;
-  right: 33px;
-  bottom: 35px;
-  z-index: 2;
-  display: flex;
-  align-items: flex-end;
-  gap: 7px;
-  height: 58px;
-  opacity: 0.45;
+  color: #7d43dc;
+  font-size: 33px;
 }
 
-.rate-chart .bar {
-  display: block;
-  width: 10px;
-  border-radius: 4px 4px 0 0;
-  background: #d9c9ff;
+.sparkle-left {
+  top: 67px;
+  left: 4px;
 }
 
-.bar-1 {
-  height: 19px;
-}
-
-.bar-2 {
-  height: 31px;
-}
-
-.bar-3 {
-  height: 43px;
-}
-
-.bar-4 {
-  height: 58px;
+.sparkle-right {
+  top: 106px;
+  right: 3px;
+  color: #ffae00;
 }
 
 
 /* =========================
-   戦績エリア
+   メッセージ
 ========================= */
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid #eeeeee;
-}
-
-.stat-item {
-  position: relative;
-  padding: 18px 5px 20px;
-  text-align: center;
-}
-
-.stat-item:not(:last-child)::after {
-  position: absolute;
-  top: 20px;
-  right: 0;
-  width: 1px;
-  height: 78px;
-  background: #ececec;
-  content: "";
-}
-
-.stat-icon {
-  height: 28px;
-  margin-bottom: 5px;
-  font-size: 23px;
-  font-weight: 900;
-}
-
-.win-icon,
-.win-number {
-  color: #2fbd5c;
-}
-
-.lose-icon,
-.lose-number {
-  color: #ff5a43;
-}
-
-.rate-icon,
-.percentage-number {
-  color: #3d95f5;
-}
-
-.stat-label {
-  margin: 0 0 2px;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.stat-number {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.stat-number span {
-  margin-left: 2px;
-  font-size: 16px;
-}
-
-
-/* =========================
-   最近の対戦
-========================= */
-
-.recent-card {
-  margin-bottom: 18px;
-  padding: 20px 15px 18px;
-}
-
-.section-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 17px;
-}
-
-.section-heading h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.section-heading a {
-  color: #6f7983;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.section-heading a span {
-  margin-left: 3px;
-  font-size: 22px;
-  vertical-align: -2px;
-}
-
-.match-results {
-  display: flex;
-  justify-content: space-between;
-  gap: 5px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.match-results::-webkit-scrollbar {
-  display: none;
-}
-
-.match-result {
-  flex: 0 0 36px;
-  text-align: center;
-}
-
-.match-result span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin-bottom: 5px;
-  border-radius: 50%;
-  font-size: 24px;
-  font-weight: 900;
-}
-
-.match-result p {
-  margin: 0;
-  color: #586674;
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-.match-result.win span {
-  background: #e1f7df;
-  color: #32b857;
-}
-
-.match-result.lose span {
-  background: #ffe0e2;
-  color: #ff594e;
-}
-
-
-/* =========================
-   設定メニュー
-========================= */
-
-.menu-card {
-  padding: 5px 16px;
-}
-
-.menu-item {
-  display: grid;
-  grid-template-columns: 48px 1fr 22px;
-  align-items: center;
-  gap: 12px;
-  min-height: 88px;
-  padding: 12px 0;
-}
-
-.menu-item:not(:last-child) {
-  border-bottom: 1px solid #eeeeee;
-}
-
-.menu-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  color: #ffffff;
-  font-size: 22px;
-  font-weight: 900;
-}
-
-.icon-orange {
-  background: #ffb632;
-}
-
-.icon-blue {
-  background: #5ca8f8;
-}
-
-.icon-green {
-  background: #6dd58a;
-}
-
-.icon-red {
-  background: #ff8992;
-}
-
-.menu-text h3 {
+.message-area h2 {
   margin: 0 0 4px;
-  font-size: 17px;
-  font-weight: 800;
-}
-
-.menu-text p {
-  margin: 0;
-  color: #7a858f;
-  font-size: 12px;
+  font-size: 21px;
+  font-weight: 900;
   line-height: 1.5;
 }
 
-.menu-arrow {
-  color: #344451;
-  font-size: 34px;
-  font-weight: 300;
+.required-message {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.55;
+}
+
+.login-color {
+  color: #7945de;
+}
+
+.register-color {
+  color: #2fbb62;
+}
+
+.dot-line {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 13px 0 15px;
+}
+
+.dot-line span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #8f5ce8;
+}
+
+.description {
+  margin: 0 0 24px;
+  color: #344552;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.8;
 }
 
 
 /* =========================
-   下部の波
+   共通ボタン
 ========================= */
 
-.bottom-wave {
-  position: absolute;
-  bottom: 76px;
-  left: -10%;
-  z-index: 1;
-  width: 120%;
-  height: 90px;
-  border-radius: 50% 50% 0 0;
-  background: #dcf7df;
-  transform: rotate(-1deg);
-}
-
-.bottom-wave::after {
-  position: absolute;
-  top: 22px;
-  left: -4%;
-  width: 108%;
-  height: 85px;
-  border-radius: 50% 50% 0 0;
-  background: #ffffff;
-  content: "";
-}
-
-
-/* =========================
-   下部ナビゲーション
-========================= */
-
-.bottom-nav {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 20;
+.main-button {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: 56px 1fr 35px;
+  align-items: center;
   width: 100%;
-  max-width: 390px;
-  min-height: 82px;
-  margin: 0 auto;
-  padding: 10px 5px 8px;
-  border-radius: 25px 25px 0 0;
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 -4px 15px rgba(45, 62, 80, 0.1);
-  backdrop-filter: blur(10px);
+  min-height: 67px;
+  margin-bottom: 13px;
+  padding: 9px 18px 9px 12px;
+  border-radius: 17px;
+  font-weight: 900;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  font-weight: 800;
+.main-button:hover {
+  transform: translateY(-2px);
 }
 
-.nav-icon {
+.button-icon {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 35px;
-  font-size: 27px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.button-text {
+  font-size: 22px;
+  text-align: center;
+}
+
+.button-arrow {
+  justify-self: end;
+  font-size: 48px;
+  font-weight: 300;
   line-height: 1;
 }
 
-.nav-label {
-  margin-top: 3px;
-  font-size: 11px;
+
+/* =========================
+   ログインボタン
+========================= */
+
+.login-button {
+  background: #2fbd60;
+  color: #ffffff;
+  box-shadow: 0 7px 14px rgba(47, 189, 96, 0.22);
 }
 
-.nav-home {
-  color: #ff4d48;
+.login-button:hover {
+  box-shadow: 0 10px 20px rgba(47, 189, 96, 0.3);
 }
 
-.nav-rule {
-  color: #ffb000;
+.login-button .button-icon {
+  background: #ffffff;
 }
 
-.nav-ai {
-  color: #7c47df;
+.login-button .button-arrow {
+  color: #ffffff;
 }
 
-.nav-gacha {
-  color: #398ff0;
+.lock-icon {
+  position: relative;
 }
 
-.nav-match {
-  color: #ff4b52;
+.lock-top {
+  position: absolute;
+  top: 9px;
+  width: 18px;
+  height: 18px;
+  border: 4px solid #2fbd60;
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+}
+
+.lock-body {
+  position: absolute;
+  bottom: 9px;
+  width: 25px;
+  height: 23px;
+  border-radius: 4px;
+  background: #2fbd60;
 }
 
 
 /* =========================
-   スマホが小さい場合
+   新規登録ボタン
+========================= */
+
+.register-button {
+  border: 2px solid #2fbd60;
+  background: #ffffff;
+  color: #2fbd60;
+  box-shadow: 0 5px 12px rgba(44, 68, 82, 0.09);
+}
+
+.register-button:hover {
+  box-shadow: 0 8px 17px rgba(44, 68, 82, 0.14);
+}
+
+.register-button .button-icon {
+  background: #2fbd60;
+}
+
+.small-user-head {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.small-user-body {
+  position: absolute;
+  bottom: 9px;
+  left: 9px;
+  width: 24px;
+  height: 16px;
+  border-radius: 14px 14px 5px 5px;
+  background: #ffffff;
+}
+
+.plus-mark {
+  position: absolute;
+  right: 7px;
+  bottom: 6px;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+
+/* =========================
+   登録メリット
+========================= */
+
+.benefits-card {
+  position: relative;
+  z-index: 2;
+  margin-top: 27px;
+  padding: 35px 10px 18px;
+  border: 1.5px solid #ffd27a;
+  border-radius: 18px;
+  background: rgba(255, 253, 246, 0.96);
+}
+
+.benefits-title {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  min-width: 220px;
+  padding: 6px 16px;
+  border: 1.5px solid #ffd27a;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #ffae00;
+  font-size: 15px;
+  font-weight: 900;
+  transform: translateX(-50%);
+}
+
+.benefits-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.benefit-item {
+  padding: 0 6px;
+  text-align: center;
+}
+
+.benefit-item:not(:last-child) {
+  border-right: 1px dashed #ffd99a;
+}
+
+.benefit-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 9px;
+  border-radius: 50%;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.rate-save-icon {
+  position: relative;
+  background: #d9f5df;
+  color: #34bc64;
+}
+
+.result-save-icon {
+  background: #ffe0e3;
+  color: #ed4c59;
+}
+
+.title-icon {
+  background: #dcecff;
+  color: #368deb;
+}
+
+.ranking-icon {
+  background: #fff0ce;
+  color: #ffa600;
+}
+
+.benefit-item h3 {
+  margin: 0 0 7px;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.benefit-item p {
+  margin: 0;
+  color: #465562;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+
+/* =========================
+   レートグラフアイコン
+========================= */
+
+.chart-bar {
+  position: absolute;
+  bottom: 13px;
+  width: 7px;
+  border-radius: 2px 2px 0 0;
+  background: #34bc64;
+}
+
+.chart-bar-1 {
+  left: 13px;
+  height: 12px;
+}
+
+.chart-bar-2 {
+  left: 23px;
+  height: 19px;
+}
+
+.chart-bar-3 {
+  left: 33px;
+  height: 26px;
+}
+
+.chart-arrow {
+  position: absolute;
+  top: 6px;
+  right: 5px;
+  font-size: 18px;
+}
+
+
+/* =========================
+   小さいスマホ対応
 ========================= */
 
 @media (max-width: 360px) {
@@ -733,63 +576,73 @@ button {
     padding-left: 14px;
   }
 
-  .profile-main {
-    grid-template-columns: 105px 1fr;
-    padding-right: 12px;
-    padding-left: 12px;
+  .header h1 {
+    font-size: 26px;
   }
 
-  .avatar-circle {
-    width: 100px;
-    height: 100px;
+  .profile-icon-area {
+    transform: scale(0.92);
+    margin-bottom: 5px;
   }
 
-  .avatar-area {
-    width: 100px;
+  .message-area h2 {
+    font-size: 19px;
   }
 
-  .user-info {
-    padding-left: 10px;
+  .required-message {
+    font-size: 20px;
   }
 
-  .user-info h2 {
+  .button-text {
+    font-size: 20px;
+  }
+
+  .benefit-item {
+    padding-right: 3px;
+    padding-left: 3px;
+  }
+
+  .benefit-icon {
+    width: 47px;
+    height: 47px;
     font-size: 24px;
   }
 
-  .rate-number {
-    font-size: 35px;
+  .benefit-item h3 {
+    font-size: 11px;
   }
 
-  .rate-chart {
-    right: 20px;
-  }
-
-  .menu-text h3 {
-    font-size: 16px;
+  .benefit-item p {
+    font-size: 8px;
   }
 
 }
 
 
 /* =========================
-   パソコンで表示した場合
+   パソコン表示
 ========================= */
 
 @media (min-width: 391px) {
 
   body {
-    padding: 25px 0;
+    padding: 24px 0;
   }
 
   .app {
-    min-height: calc(100vh - 50px);
-    border-radius: 28px;
-    box-shadow: 0 12px 35px rgba(37, 52, 68, 0.13);
+    min-height: calc(100vh - 48px);
+    border-radius: 30px;
+    box-shadow: 0 12px 35px rgba(37, 51, 66, 0.14);
   }
+.menu-item{
 
-  .bottom-nav {
-    bottom: 25px;
-    border-radius: 25px;
-  }
+    text-decoration:none;
+
+    color:inherit;
+
+    display:flex;
+
+}
+
 
 }
