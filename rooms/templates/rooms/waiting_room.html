@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ロシアンしりとり</title>
+</head>
+<body>
+<body>
+  <main class="waiting-screen">
+    <div class="background-shape shape-blue"></div>
+    <div class="background-shape shape-green"></div>
+
+    <div class="dot dot-pink dot-top-left"></div>
+    <div class="dot dot-blue dot-right"></div>
+    <div class="dot dot-purple dot-left"></div>
+    <div class="dot dot-yellow dot-lower-right"></div>
+    <div class="dot dot-pink dot-bottom"></div>
+
+    <div class="dot-grid dot-grid-yellow" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="dot-grid dot-grid-green" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
+    </div>
+
+    <section class="waiting-content" aria-labelledby="waiting-title">
+      <div class="players-area" aria-label="4人のプレイヤーを待機中">
+        <div class="player player-red">
+          <span class="player-head"></span>
+          <span class="player-body"></span>
+        </div>
+
+        <div class="player player-blue">
+          <span class="player-head"></span>
+          <span class="player-body"></span>
+        </div>
+
+        <div class="player player-yellow">
+          <span class="player-head"></span>
+          <span class="player-body"></span>
+        </div>
+
+        <div class="player player-green">
+          <span class="player-head"></span>
+          <span class="player-body"></span>
+        </div>
+
+        <div class="speech-bubble" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <h1 id="waiting-title">プレイヤーを待っています…</h1>
+      <p class="waiting-description">他のプレイヤーが参加するのを待っています</p>
+
+      <div class="loading-dots" aria-label="読み込み中">
+        <span class="loading-red"></span>
+        <span class="loading-blue"></span>
+        <span class="loading-yellow"></span>
+        <span class="loading-green"></span>
+      </div>
+
+      <div class="tip-box">
+        <div class="tip-icon" aria-hidden="true">💡</div>
+        <p>
+          しりとりは思いついたらすぐに入力！<br>
+          焦らず、でも素早くがコツです
+        </p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
