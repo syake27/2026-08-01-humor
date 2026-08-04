@@ -32,8 +32,10 @@ body{
     background:#eef0ff;
     border-radius:50%;
     position:absolute;
+    z-index:0;
     left:-90px;
     top:-90px;
+    pointer-events:none;
 }
 
 .bg2{
@@ -42,8 +44,11 @@ body{
     height:170px;
     background:#e9f8ea;
     border-radius:50%;
+    position:absolute;
+    z-index:0;
     right:-90px;
     bottom:-90px;
+    pointer-events:none;
 }
 
 .dot{
@@ -52,23 +57,25 @@ body{
     height:18px;
     border-radius:50%;
     position:absolute;
+    z-index:0;
+    pointer-events:none;
 }
 
-.red{
+.dot.red{
 
     background:#ffc9ce;
     top:150px;
     left:135px;
 }
 
-.blue{
+.dot.blue{
 
     background:#b9d8ff;
     right:30px;
     top:360px;
 }
 
-.purple{
+.dot.purple{
 
     background:#d7b6ff;
     left:18px;
@@ -78,6 +85,7 @@ body{
 .dots-top{
 
     position:absolute;
+    z-index:0;
     width:70px;
     height:70px;
     top:145px;
@@ -85,11 +93,13 @@ body{
 
     background-image:radial-gradient(#f4d37c 2px,transparent 2px);
     background-size:18px 18px;
+    pointer-events:none;
 }
 
 .dots-bottom{
 
     position:absolute;
+    z-index:0;
     width:80px;
     height:80px;
     bottom:70px;
@@ -97,16 +107,25 @@ body{
 
     background-image:radial-gradient(#bfe6bf 2px,transparent 2px);
     background-size:18px 18px;
+    pointer-events:none;
 }
 
 /* ヘッダー */
 
 header{
 
+    position:relative;
+    z-index:1;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-top:25px;
+}
+
+.wallet,
+.recommend,
+.shop{
+    position:relative;
+    z-index:1;
 }
 
 header h1{
