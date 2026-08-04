@@ -48,7 +48,7 @@ button {
 ========================= */
 
 .screen {
-  width: min(100%, 828px);
+  width: min(100%, 390px);
   min-height: 100vh;
   margin: 0 auto;
   padding: 72px 21px 52px;
