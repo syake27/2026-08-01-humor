@@ -1,89 +1,142 @@
-<nav class="menu">
+<!DOCTYPE html>
+<html lang="ja">
 
-  <!-- 1. マッチ -->
-  <a href="templates/rooms/match.html" class="menu-item menu-match">
+<head>
+  <meta charset="UTF-8">
 
-    <span class="menu-icon match-icon">
-      <i class="fa-solid fa-user-group"></i>
-      <small>VS</small>
-    </span>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <span class="menu-text">
-      マッチ
-    </span>
+  <title>しりとりアプリ</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'rooms/css/home.css' %}">
 
-    <span class="menu-arrow">
-      <i class="fa-solid fa-chevron-right"></i>
-    </span>
+  <!-- アイコン用 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
 
-  </a>
 
-  <!-- 2. AI -->
-  <a href="templates/rooms/ai.html" class="menu-item menu-ai">
+<body>
 
-    <span class="menu-icon">
-      <i class="fa-solid fa-robot"></i>
-    </span>
+  <main class="app">
 
-    <span class="menu-text">
-      AI
-    </span>
+    <!-- 背景装飾 -->
+    <div class="decoration decoration-blue"></div>
+    <div class="decoration decoration-green"></div>
+    <div class="small-circle circle-pink"></div>
+    <div class="small-circle circle-blue"></div>
+    <div class="small-circle circle-purple"></div>
 
-    <span class="menu-arrow">
-      <i class="fa-solid fa-chevron-right"></i>
-    </span>
+    <!-- タイトル -->
+    <section class="hero">
 
-  </a>
+      <h1 class="logo" aria-label="しりとり">
+        <span class="logo-red">し</span>
+        <span class="logo-blue">り</span>
+        <span class="logo-orange">と</span>
+        <span class="logo-green">り</span>
+      </h1>
 
-  <!-- 3. ガチャ -->
-  <a href="templates/rooms/gacha.html" class="menu-item menu-gacha">
+      <p class="catch-copy">
+        ことばでつなぐ、たのしいバトル！
+      </p>
 
-    <span class="menu-icon">
-      <i class="fa-solid fa-capsules"></i>
-    </span>
+    </section>
 
-    <span class="menu-text">
-      ガチャ
-    </span>
+    <!-- メニュー -->
+    <nav class="menu">
 
-    <span class="menu-arrow">
-      <i class="fa-solid fa-chevron-right"></i>
-    </span>
+      <!-- 1. マッチ -->
+      <a href="{% url 'rooms:match' %}" class="menu-item menu-match">
 
-  </a>
+        <span class="menu-icon match-icon">
+          <i class="fa-solid fa-user-group"></i>
+          <small>VS</small>
+        </span>
 
-  <!-- 4. ルール -->
-  <a href="templates/rooms/rules.html" class="menu-item menu-rule">
+        <span class="menu-text">
+          マッチ
+        </span>
 
-    <span class="menu-icon">
-      <i class="fa-solid fa-clipboard-list"></i>
-    </span>
+        <span class="menu-arrow">
+          <i class="fa-solid fa-chevron-right"></i>
+        </span>
 
-    <span class="menu-text">
-      ルール
-    </span>
+      </a>
 
-    <span class="menu-arrow">
-      <i class="fa-solid fa-chevron-right"></i>
-    </span>
+      <!-- 2. AI -->
+      <a href="templates/rooms/ai.html" class="menu-item menu-ai">
 
-  </a>
+        <span class="menu-icon">
+          <i class="fa-solid fa-robot"></i>
+        </span>
 
-  <!-- 5. プロフィール -->
-  <a href="templates/rooms/profile.html" class="menu-item menu-profile">
+        <span class="menu-text">
+          AI
+        </span>
 
-    <span class="menu-icon">
-      <i class="fa-solid fa-user"></i>
-    </span>
+        <span class="menu-arrow">
+          <i class="fa-solid fa-chevron-right"></i>
+        </span>
 
-    <span class="menu-text">
-      プロフィール
-    </span>
+      </a>
 
-    <span class="menu-arrow">
-      <i class="fa-solid fa-chevron-right"></i>
-    </span>
+      <!-- 3. ガチャ -->
+      <a href="templates/rooms/gacha.html" class="menu-item menu-gacha">
 
-  </a>
+        <span class="menu-icon">
+          <i class="fa-solid fa-capsules"></i>
+        </span>
 
-</nav>
+        <span class="menu-text">
+          ガチャ
+        </span>
+
+        <span class="menu-arrow">
+          <i class="fa-solid fa-chevron-right"></i>
+        </span>
+
+      </a>
+
+      <!-- 4. ルール -->
+      <a href="templates/rooms/rules.html" class="menu-item menu-rule">
+
+        <span class="menu-icon">
+          <i class="fa-solid fa-clipboard-list"></i>
+        </span>
+
+        <span class="menu-text">
+          ルール
+        </span>
+
+        <span class="menu-arrow">
+          <i class="fa-solid fa-chevron-right"></i>
+        </span>
+
+      </a>
+
+      <!-- 5. プロフィール -->
+      <a href="templates/rooms/profile.html" class="menu-item menu-profile">
+
+        <span class="menu-icon">
+          <i class="fa-solid fa-user"></i>
+        </span>
+
+        <span class="menu-text">
+          プロフィール
+        </span>
+
+        <span class="menu-arrow">
+          <i class="fa-solid fa-chevron-right"></i>
+        </span>
+
+      </a>
+
+    </nav>
+
+    </nav>
+
+  </main>
+
+</body>
+
+</html>

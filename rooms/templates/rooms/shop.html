@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アイテムショップ</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'rooms/css/shop.css' %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+
+<body>
+
+<div class="phone">
+
+    <!-- 背景装飾 -->
+    <div class="bg1"></div>
+    <div class="bg2"></div>
+
+    <div class="dot red"></div>
+    <div class="dot blue"></div>
+    <div class="dot purple"></div>
+
+    <div class="dots-top"></div>
+    <div class="dots-bottom"></div>
+
+    <!-- ヘッダー -->
+
+    <header>
+
+        <button class="circle-btn">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <h1>アイテムショップ</h1>
+
+        <button class="circle-btn">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+    </header>
+
+    <!-- 所持コイン -->
+
+    <div class="wallet">
+
+        <div class="wallet-card coin">
+
+            <div class="icon yellow">
+                <i class="fa-solid fa-coins"></i>
+            </div>
+
+            <div>
+
+                <span>コイン</span>
+
+                <h2>3,250</h2>
+
+            </div>
+
+        </div>
+
+        <div class="wallet-card point">
+
+            <div class="icon star">
+                <i class="fa-solid fa-star"></i>
+            </div>
+
+            <div>
+
+                <span>ポイント</span>
+
+                <h2>180</h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- タイトル -->
+
+    <div class="recommend">
+
+        <i class="fa-solid fa-bag-shopping"></i>
+
+        <h3>おすすめアイテム</h3>
+
+    </div>
+
+    <!-- 商品 -->
+
+    <div class="shop">
+
+        <!-- 1 -->
+
+        <div class="item red">
+
+            <div class="left">
+
+                <div class="item-icon red-bg">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+
+                <div>
+
+                    <h4>レートブースト</h4>
+
+                    <p>勝利時のレートが1.5倍に！</p>
+
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <div class="price">200 <i class="fa-solid fa-coins"></i></div>
+
+                <button class="buy red-btn">購入</button>
+
+            </div>
+
+        </div>
+
+        <!-- 2 -->
+
+        <div class="item blue">
+
+            <div class="left">
+
+                <div class="item-icon blue-bg">
+                    <i class="fa-solid fa-paintbrush"></i>
+                </div>
+
+                <div>
+
+                    <h4>テーマ変更</h4>
+
+                    <p>アプリの背景を変更！</p>
+
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <div class="price">300 <i class="fa-solid fa-coins"></i></div>
+
+                <button class="buy blue-btn">購入</button>
+
+            </div>
+
+        </div>
+
+        <!-- 3 -->
+
+        <div class="item purple">
+
+            <div class="left">
+
+                <div class="item-icon purple-bg">
+                    <i class="fa-regular fa-face-smile"></i>
+                </div>
+
+                <div>
+
+                    <h4>スタンプセット</h4>
+
+                    <p>対戦中に使えるスタンプ！</p>
+
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <div class="price">400 <i class="fa-solid fa-coins"></i></div>
+
+                <button class="buy purple-btn">購入</button>
+
+            </div>
+
+        </div>
+
+        <!-- 4 -->
+
+        <div class="item orange">
+
+            <div class="left">
+
+                <div class="item-icon orange-bg">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+
+                <div>
+
+                    <h4>限定称号</h4>
+
+                    <p>ここでしか手に入らない称号！</p>
+
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <div class="price">1000 <i class="fa-solid fa-coins"></i></div>
+
+                <button class="buy orange-btn">購入</button>
+
+            </div>
+
+        </div>
+
+        <!-- 5 -->
+
+        <div class="item green">
+
+            <div class="left">
+
+                <div class="item-icon green-bg">
+                    <i class="fa-regular fa-id-badge"></i>
+                </div>
+
+                <div>
+
+                    <h4>アイコンフレーム</h4>
+
+                    <p>プロフィールを彩ろう！</p>
+
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <div class="price">500 <i class="fa-solid fa-coins"></i></div>
+
+                <button class="buy green-btn">購入</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
