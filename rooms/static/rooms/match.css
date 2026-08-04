@@ -397,4 +397,9 @@ a {
       0 15px 40px rgba(42, 58, 76, 0.14);
   }
 
+  .menu-item{
+    text-decoration:none;
+    color:inherit;
+    display:flex;
+}
 }
