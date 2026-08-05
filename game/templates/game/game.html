@@ -1,11 +1,108 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ロシアンしりとり</title>
-</head>
-<body>
-    <h1>ロシアンしりとり</h1>
-</body>
-</html>
+{% extends "rooms/base.html" %}
+{% load static %}
+
+{% block title %}しりとりバトル{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260805-7">
+{% endblock %}
+
+{% block content %}
+<div class="game-screen">
+  <div class="corner-shape corner-blue" aria-hidden="true"></div>
+  <div class="corner-shape corner-green" aria-hidden="true"></div>
+
+  <div class="game-top-row">
+    <section class="status-board" aria-label="ゲーム状況">
+      <div class="status-item alive-status">
+        <span class="status-label">生存プレイヤー</span>
+        <strong><span class="status-icon">♣</span> 4 <small>/ 4人</small></strong>
+      </div>
+      <div class="status-item turn-status">
+        <span class="status-label">進行ターン</span>
+        <strong>12 <small>ターン目</small></strong>
+      </div>
+      <div class="status-item time-status">
+        <span class="status-label">残り時間</span>
+        <strong><span class="clock-icon">◷</span> 15 <small>秒</small></strong>
+      </div>
+    </section>
+
+    <div class="game-menu-wrap">
+      <button id="game-menu-button" class="menu-button" type="button" aria-label="メニューを開く" aria-expanded="false"
+        aria-controls="game-menu">
+        <span class="menu-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <small>メニュー</small>
+      </button>
+      <nav id="game-menu" class="game-menu" aria-label="ゲームメニュー" hidden>
+        <a href="{% url 'rooms:home' %}"><span aria-hidden="true">⌂</span>ホーム</a>
+        <a href="{% url 'rooms:rule' %}"><span aria-hidden="true">✓</span>ルール</a>
+        <a class="leave-game" href="{% url 'rooms:match' %}"><span aria-hidden="true">↪</span>対戦を退出</a>
+      </nav>
+    </div>
+  </div>
+
+  <section class="players-strip" aria-label="参加プレイヤー">
+    <article class="battle-player is-active">
+      <span class="crown" aria-hidden="true">♛</span>
+      <span class="player-avatar avatar-purple">👾</span>
+      <span class="player-name"><strong>あなた</strong><small>ユーモア王</small><span class="player-time">残り 15秒</span></span>
+    </article>
+    <article class="battle-player">
+      <span class="player-avatar avatar-red">🍎</span>
+      <span class="player-name">りんご<small>果実マスター</small><span class="player-time">残り 42秒</span></span>
+    </article>
+    <article class="battle-player">
+      <span class="player-avatar avatar-blue">🐧</span>
+      <span class="player-name">ペンギン<small>氷上の言葉師</small><span class="player-time">残り 38秒</span></span>
+    </article>
+    <article class="battle-player">
+      <span class="player-avatar avatar-yellow">🌻</span>
+      <span class="player-name">ひまわり<small>太陽の挑戦者</small><span class="player-time">残り 51秒</span></span>
+    </article>
+  </section>
+  <section class="current-letter-card" aria-labelledby="current-letter-title">
+    <span class="sparkle sparkle-one" aria-hidden="true">✦</span>
+    <span class="sparkle sparkle-two" aria-hidden="true">●</span>
+    <span class="sparkle sparkle-three" aria-hidden="true">✦</span>
+    <span class="sparkle sparkle-four" aria-hidden="true">●</span>
+    <h2 id="current-letter-title">現在の文字</h2>
+    <strong class="current-letter">き</strong>
+    <p>「き」からはじまる言葉を入力！</p>
+  </section>
+
+  <section class="history-card">
+    <header>
+      <h2><span aria-hidden="true">◴</span> これまでのしりとり履歴</h2>
+      <span class="section-chevron" aria-hidden="true">⌄</span>
+    </header>
+    <div class="word-history" aria-label="しりとり履歴">
+      <span class="history-start">スタート</span><b>›</b>
+      <span>りんご</span><b>›</b>
+      <span>ごりら</span><b>›</b>
+      <span>らっぱ</span><b>›</b>
+      <span>ぱんだ</span><b>›</b>
+      <span>だいこん</span><b>›</b>
+      <span class="history-current">き</span>
+    </div>
+  </section>
+
+
+  <form class="answer-form" novalidate>
+    <div class="answer-input-wrap">
+      <input id="answer-input" type="text" placeholder="ここに入力（例：きりん）" autocomplete="off" aria-label="回答を入力">
+      <button id="clear-answer" class="clear-answer" type="button" aria-label="入力を消す">×</button>
+    </div>
+    <button class="send-answer" type="submit"><span aria-hidden="true">➤</span> 送信</button>
+  </form>
+
+  <div id="game-message" class="game-message" role="status" aria-live="polite">
+    <span class="message-icon" aria-hidden="true">!</span>
+    <p><strong>メッセージがここに表示されます</strong><small>例）その文字ではつながりません</small></p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'game/js/game.js' %}?v=20260805-2"></script>
+{% endblock %}

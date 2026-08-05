@@ -22,7 +22,23 @@ def rank(request):
 
 
 def wait(request):
-    return render(request, "rooms/waiting_room.html")
+    try:
+        max_players = int(request.GET.get("members", 4))
+    except (TypeError, ValueError):
+        max_players = 4
+
+    max_players = max(2, min(4, max_players))
+    room_id = request.GET.get("room_id", "A7K9").strip().upper()[:8] or "A7K9"
+
+    return render(
+        request,
+        "rooms/waiting_room.html",
+        {
+            "current_players": 1,
+            "max_players": max_players,
+            "room_id": room_id,
+        },
+    )
 
 def rule(request):
     return render(request, "rooms/rules.html")
@@ -34,7 +50,3 @@ def shop(request):
 
 def ai(request):
     return render(request, "rooms/taisengamenn.html")
-
-def rule(request):
-    return render(request, "rooms/rule.html")
-

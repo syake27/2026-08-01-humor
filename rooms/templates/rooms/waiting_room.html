@@ -1,64 +1,81 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ロシアンしりとり</title>
-</head>
-<body>
-<body>
-  <main class="waiting-screen">
-    <div class="background-shape shape-blue"></div>
-    <div class="background-shape shape-green"></div>
+{% extends "rooms/base.html" %}
+{% load static %}
 
-    <div class="dot dot-pink dot-top-left"></div>
-    <div class="dot dot-blue dot-right"></div>
-    <div class="dot dot-purple dot-left"></div>
-    <div class="dot dot-yellow dot-lower-right"></div>
-    <div class="dot dot-pink dot-bottom"></div>
+{% block title %}ロシアンしりとり{% endblock %}
 
-    <div class="dot-grid dot-grid-yellow" aria-hidden="true">
-      <span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rooms/css/waiting_room.css' %}?v=20260805-12">
+{% endblock %}
+
+{% block content %}
+<div class="waiting-screen">
+  <div class="background-shape shape-blue"></div>
+  <div class="background-shape shape-green"></div>
+
+  <div class="dot dot-pink dot-top-left"></div>
+  <div class="dot dot-blue dot-right"></div>
+  <div class="dot dot-purple dot-left"></div>
+  <div class="dot dot-yellow dot-lower-right"></div>
+  <div class="dot dot-pink dot-bottom"></div>
+
+  <div class="dot-grid dot-grid-yellow" aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="dot-grid dot-grid-green" aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <header class="waiting-topbar">
+    <a class="waiting-back-button" href="{% url 'rooms:create' %}" aria-label="ルーム作成画面へ戻る">‹</a>
+    <div class="room-id" aria-label="ルームID {{ room_id }}">
+      <span>ROOM ID</span>
+      <strong>{{ room_id }}</strong>
     </div>
+  </header>
 
-    <div class="dot-grid dot-grid-green" aria-hidden="true">
-      <span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span>
-    </div>
-
-    <section class="waiting-content" aria-labelledby="waiting-title">
-      <div class="players-area" aria-label="4人のプレイヤーを待機中">
-        <div class="player player-red">
-          <span class="player-head"></span>
-          <span class="player-body"></span>
-        </div>
-
-        <div class="player player-blue">
-          <span class="player-head"></span>
-          <span class="player-body"></span>
-        </div>
-
-        <div class="player player-yellow">
-          <span class="player-head"></span>
-          <span class="player-body"></span>
-        </div>
-
-        <div class="player player-green">
-          <span class="player-head"></span>
-          <span class="player-body"></span>
-        </div>
-
-        <div class="speech-bubble" aria-hidden="true">
-          <span></span><span></span><span></span>
-        </div>
+  <section class="waiting-content" aria-labelledby="waiting-title">
+    <div class="players-area" aria-label="4人のプレイヤーを待機中">
+      <div class="player player-red">
+        <span class="player-head"></span>
+        <span class="player-body"></span>
       </div>
 
+      <div class="player player-blue">
+        <span class="player-head"></span>
+        <span class="player-body"></span>
+      </div>
+
+      <div class="player player-yellow">
+        <span class="player-head"></span>
+        <span class="player-body"></span>
+      </div>
+
+      <div class="player player-green">
+        <span class="player-head"></span>
+        <span class="player-body"></span>
+      </div>
+
+      <div class="speech-bubble" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="waiting-status">
       <h1 id="waiting-title">プレイヤーを待っています…</h1>
       <p class="waiting-description">他のプレイヤーが参加するのを待っています</p>
+
+      <div class="player-count" aria-label="現在の参加人数 {{ current_players }}人、定員{{ max_players }}人">
+        <span class="current-player-count">{{ current_players }}</span>
+        <span class="count-separator">/</span>
+        <span class="max-player-count">{{ max_players }}</span>
+        <span class="count-label">人参加中</span>
+      </div>
 
       <div class="loading-dots" aria-label="読み込み中">
         <span class="loading-red"></span>
@@ -66,15 +83,21 @@
         <span class="loading-yellow"></span>
         <span class="loading-green"></span>
       </div>
+    </div>
 
-      <div class="tip-box">
-        <div class="tip-icon" aria-hidden="true">💡</div>
-        <p>
-          しりとりは思いついたらすぐに入力！<br>
-          焦らず、でも素早くがコツです
-        </p>
-      </div>
-    </section>
-  </main>
-</body>
-</html>
+    <div class="tip-box">
+      <div class="tip-icon" aria-hidden="true">💡</div>
+      <p>
+        しりとりは思いついたらすぐに入力！<br>
+        焦らず、でも素早くがコツです
+      </p>
+    </div>
+  </section>
+
+  <a class="start-button" href="{% url 'game:game' %}">
+    <span class="start-icon" aria-hidden="true">▶</span>
+    <span>ゲームスタート</span>
+    <span class="start-arrow" aria-hidden="true">›</span>
+  </a>
+</div>
+{% endblock %}

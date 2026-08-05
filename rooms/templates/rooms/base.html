@@ -1,17 +1,20 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}しりとり{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'rooms/css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'rooms/css/base.css' %}?v=20260804-2">
   {% block extra_css %}{% endblock %}
 </head>
+
 <body>
   <main class="app">
     {% block content %}{% endblock %}
   </main>
   {% block extra_js %}{% endblock %}
 </body>
+
 </html>

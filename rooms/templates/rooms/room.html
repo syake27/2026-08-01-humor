@@ -2,44 +2,26 @@
 
 <!doctype html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<button type="button"
-        class="back-button"
-        onclick="history.back()"
-        aria-label="前の画面へ戻る">
-  ‹
-</button>
+  <button type="button" class="back-button" onclick="history.back()" aria-label="前の画面へ戻る">
+    ‹
+  </button>
 
   <title>しりとりルーム</title>
 
   <!-- Google Fonts -->
-  <link
-    rel="preconnect"
-    href="https://fonts.googleapis.com"
-  >
-  <link
-    rel="preconnect"
-    href="https://fonts.gstatic.com"
-    crossorigin
-  >
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;600;700;800&display=swap"
-    rel="stylesheet"
-  >
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/rooms/static/rooms/css/room.css">
 
   <!-- CSSファイル -->
-  <link
-    rel="stylesheet"
-    href="{% static 'css/room.css' %}"
-  >
+  <link rel="stylesheet" href="{% static 'css/room.css' %}">
 </head>
 
 <body>
@@ -48,11 +30,7 @@
     <!-- ヘッダー -->
     <header class="topbar">
 
-      <button
-        class="circle-button"
-        type="button"
-        aria-label="戻る"
-      >
+      <button class="circle-button" type="button" aria-label="戻る">
         ‹
       </button>
 
@@ -66,21 +44,14 @@
         </span>
       </div>
 
-      <button
-        class="circle-button help"
-        type="button"
-        aria-label="ヘルプ"
-      >
+      <button class="circle-button help" type="button" aria-label="ヘルプ">
         ?
       </button>
 
     </header>
 
     <!-- 説明部分 -->
-    <section
-      class="hero"
-      aria-labelledby="intro-title"
-    >
+    <section class="hero" aria-labelledby="intro-title">
       <div class="hero-text">
         <h1 id="intro-title">
           みんなで、ことば遊び。
@@ -92,27 +63,14 @@
         </p>
       </div>
 
-      <span
-        class="crown"
-        aria-hidden="true"
-      >
+      <span class="crown" aria-hidden="true">
         👑
       </span>
     </section>
 
     <!-- ルーム検索 -->
-    <form
-      class="room-search"
-      action="#rooms"
-      method="get"
-      role="search"
-    >
-      <input
-        type="search"
-        name="room-id"
-        aria-label="ルームID"
-        placeholder="ルームIDを入力して検索"
-      >
+    <form class="room-search" action="#rooms" method="get" role="search">
+      <input type="search" name="room-id" aria-label="ルームID" placeholder="ルームIDを入力して検索">
 
       <button type="submit">
         検索
@@ -120,39 +78,22 @@
     </form>
 
     <!-- 絞り込みタブ -->
-    <nav
-      class="tabs"
-      aria-label="ルームの絞り込み"
-    >
-      <button
-        class="tab active"
-        type="button"
-        aria-current="page"
-      >
+    <nav class="tabs" aria-label="ルームの絞り込み">
+      <button class="tab active" type="button" aria-current="page">
         すべて
       </button>
 
-      <button
-        class="tab"
-        type="button"
-      >
+      <button class="tab" type="button">
         参加できる
       </button>
 
-      <button
-        class="tab"
-        type="button"
-      >
+      <button class="tab" type="button">
         対戦中
       </button>
     </nav>
 
     <!-- ルーム一覧 -->
-    <section
-      id="rooms"
-      class="rooms"
-      aria-label="ルーム一覧"
-    >
+    <section id="rooms" class="rooms" aria-label="ルーム一覧">
 
       <!-- ルーム1 -->
       <article class="room">
@@ -170,10 +111,7 @@
           </p>
         </div>
 
-        <button
-          class="status join"
-          type="button"
-        >
+        <button class="status join" type="button">
           参加する
         </button>
       </article>
@@ -215,10 +153,7 @@
           </p>
         </div>
 
-        <button
-          class="status join"
-          type="button"
-        >
+        <button class="status join" type="button">
           参加する
         </button>
       </article>
@@ -247,13 +182,11 @@
     </section>
 
     <!-- ルーム作成ボタン -->
-    <button
-      class="create-room"
-      type="button"
-    >
+    <button class="create-room" type="button">
       ＋ 新しいルームをつくる
     </button>
 
   </main>
 </body>
+
 </html>

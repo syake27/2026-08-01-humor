@@ -1,14 +1,18 @@
 <!-- 通常マッチ時の負けのresult画面 -->
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>しりとり - けっか画面(通常マッチ まけ)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/rooms/static/rooms/7style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>しりとり - けっか画面(通常マッチ まけ)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/rooms/static/rooms/7style.css">
 </head>
+
 <body>
 
   <div class="phone">
@@ -69,41 +73,42 @@
     </div>
   </div>
 
-<script>
-// ---- じゅんい・順位表(参加人数はこの配列の要素数で自動的に決まる) ----
-const players = [
-  { name: 'あなた',  isMe: true },
-  { name: 'ゆうた',  },
-  { name: 'さくら',  },
-  { name: 'けんと',  }
-];
+  <script>
+    // ---- じゅんい・順位表(参加人数はこの配列の要素数で自動的に決まる) ----
+    const players = [
+      { name: 'あなた', isMe: true },
+      { name: 'ゆうた', },
+      { name: 'さくら', },
+      { name: 'けんと', }
+    ];
 
-function renderRanking(players){
-  const sorted = [...players].sort((a, b) => b.score - a.score);
-  const total = sorted.length;
-  const myRank = sorted.findIndex(p => p.isMe) + 1;
+    function renderRanking(players) {
+      const sorted = [...players].sort((a, b) => b.score - a.score);
+      const total = sorted.length;
+      const myRank = sorted.findIndex(p => p.isMe) + 1;
 
-  document.getElementById('rankPos').textContent = myRank;
-  document.getElementById('rankTotal').textContent = total;
+      document.getElementById('rankPos').textContent = myRank;
+      document.getElementById('rankTotal').textContent = total;
 
-  const medal = { 1: '🥇', 2: '🥈', 3: '🥉' };
-  const board = document.getElementById('leaderboard');
-  board.innerHTML = '';
+      const medal = { 1: '🥇', 2: '🥈', 3: '🥉' };
+      const board = document.getElementById('leaderboard');
+      board.innerHTML = '';
 
-  sorted.forEach((p, i) => {
-    const rank = i + 1;
-    const row = document.createElement('div');
-    row.className = 'rank-row' + (p.isMe ? ' me' : '') + (rank <= 3 ? ' top' + rank : '');
-    row.innerHTML = `
+      sorted.forEach((p, i) => {
+        const rank = i + 1;
+        const row = document.createElement('div');
+        row.className = 'rank-row' + (p.isMe ? ' me' : '') + (rank <= 3 ? ' top' + rank : '');
+        row.innerHTML = `
       <div class="rank-num">${medal[rank] || rank}</div>
       <div class="rank-name">${p.name}</div>
       <div class="rank-score">${p.score}こ</div>
     `;
-    board.appendChild(row);
-  });
-}
+        board.appendChild(row);
+      });
+    }
 
-renderRanking(players);
-</script>
+    renderRanking(players);
+  </script>
 </body>
+
 </html>

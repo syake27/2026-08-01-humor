@@ -83,7 +83,7 @@ a {
 .decoration-bottom-green {
   position: absolute;
   right: -90px;
-  bottom: 40px;
+  bottom: 0px;
   width: 240px;
   height: 175px;
   border-radius: 50% 0 0 0;
@@ -777,7 +777,7 @@ a {
    パソコンでの表示
 ========================= */
 
-@media (min-width: 601px) {
+@media (min-width: 601px) and (hover: hover) and (pointer: fine) {
   .bottom-nav {
     bottom: 24px;
     width: 374px;

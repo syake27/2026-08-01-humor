@@ -1,32 +1,17 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>アイテムショップ</title>
+{% extends "rooms/base.html" %}
+{% load static %}
 
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'rooms/css/shop.css' %}">
+{% block title %}アイテムショップ{% endblock %}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'rooms/css/shop.css' %}?v=20260805-6">
+{% endblock %}
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-</head>
-
-<button type="button"
-        class="back-button"
-        onclick="history.back()"
-        aria-label="前の画面へ戻る">
-  ‹
-</button>
-
-
-<body>
-
+{% block content %}
 <div class="phone">
 
     <!-- 背景装飾 -->
@@ -44,15 +29,13 @@
 
     <header>
 
-        <button class="circle-btn">
+        <a class="circle-btn" href="{% url 'rooms:home' %}" aria-label="ホーム画面へ戻る">
             <i class="fa-solid fa-chevron-left"></i>
-        </button>
+        </a>
 
         <h1>ショップ</h1>
 
-        <button class="circle-btn">
-            <i class="fa-solid fa-bars"></i>
-        </button>
+        <span class="header-spacer" aria-hidden="true"></span>
 
     </header>
 
@@ -76,21 +59,10 @@
 
         </div>
 
-        <div class="wallet-card point">
-
-            <div class="icon star">
-                <i class="fa-solid fa-star"></i>
-            </div>
-
-            <div>
-
-                <span>ポイント</span>
-
-                <h2>180</h2>
-
-            </div>
-
-        </div>
+        <button class="history-button" type="button">
+            <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+            <span>購入履歴</span>
+        </button>
 
     </div>
 
@@ -261,6 +233,4 @@
     </div>
 
 </div>
-
-</body>
-</html>
+{% endblock %}
