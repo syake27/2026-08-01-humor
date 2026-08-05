@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="room-list-screen">
+<div class="room-list-screen" data-status-url="{% url 'rooms:normal_match_status' %}">
   <div class="list-decoration decoration-left" aria-hidden="true"></div>
   <div class="list-decoration decoration-right" aria-hidden="true"></div>
   <span class="list-dot dot-red" aria-hidden="true"></span>
@@ -42,7 +42,7 @@
     {% if rooms %}
     <div class="available-rooms">
       {% for room in rooms %}
-      <article class="available-room">
+      <article class="available-room" data-room-id="{{ room.room_id }}" data-max-players="{{ room.max_players }}">
         <div class="room-card-top">
           <div class="room-host-icon" aria-hidden="true">{{ room.host.username|default:"G"|first }}</div>
           <div class="room-summary">
@@ -53,10 +53,10 @@
         </div>
         <div class="room-details">
           <span><small>ルームID</small><strong>{{ room.room_id }}</strong></span>
-          <span><small>参加人数</small><strong>{{ room.current_players }}/{{ room.max_players }}人</strong></span>
+          <span><small>参加人数</small><strong class="live-participant-count">{{ room.participant_count }}/{{ room.max_players }}人</strong></span>
           <span><small>持ち時間</small><strong>{{ room.time_limit }}秒</strong></span>
         </div>
-        {% if room.current_players < room.max_players %}
+        {% if room.participant_count < room.max_players %}
         <a class="join-button" href="{% url 'rooms:join_normal_room' room.room_id %}">この部屋に参加</a>
         {% else %}
         <span class="join-button full-button">満員です</span>
@@ -81,4 +81,8 @@
 
   <a class="create-room-button" href="{% url 'rooms:create' %}"><span aria-hidden="true">＋</span>ルームを作る</a>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'rooms/js/normal_match.js' %}?v=20260806-1"></script>
 {% endblock %}

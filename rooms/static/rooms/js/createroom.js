@@ -6,6 +6,8 @@ const MAX_MEMBERS = 4;
 const membersInput = document.getElementById("members");
 const decreaseButton = document.getElementById("decrease-members");
 const increaseButton = document.getElementById("increase-members");
+const babaCharactersInput = document.getElementById("baba-characters");
+const babaCharacterCount = document.getElementById("baba-character-count");
 
 /**
  * 人数を2〜4人の範囲に調整する
@@ -65,3 +67,19 @@ membersInput.addEventListener("change", validateMemberValue);
 membersInput.addEventListener("input", updateMemberButtons);
 
 updateMemberButtons();
+
+function updateBabaCharacterCount() {
+  const allowedCharacters = new Set(
+    Array.from(babaCharactersInput.dataset.allowedCharacters)
+  );
+  const selectedCharacters = new Set(
+    Array.from(babaCharactersInput.value).filter((character) =>
+      allowedCharacters.has(character)
+    )
+  );
+
+  babaCharacterCount.textContent = selectedCharacters.size;
+}
+
+babaCharactersInput.addEventListener("input", updateBabaCharacterCount);
+updateBabaCharacterCount();

@@ -206,6 +206,11 @@ button {
   --field-soft: #fff8e7;
 }
 
+.field-baba {
+  --field-color: var(--red);
+  --field-soft: #fff1f3;
+}
+
 .field-members {
   --field-color: var(--purple);
   --field-soft: #f5f0ff;
@@ -268,6 +273,26 @@ button {
 
 .member-note {
   margin: 8px 0 0;
+}
+
+.field-baba textarea {
+  min-height: 104px;
+  line-height: 1.8;
+  letter-spacing: 0.16em;
+}
+
+.baba-note {
+  margin: 8px 2px 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.baba-note strong {
+  margin-right: 2px;
+  color: var(--red);
+  font-size: 15px;
 }
 
 input,
