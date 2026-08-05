@@ -1,0 +1,239 @@
+:root {
+  --ai-purple: #8055d9;
+  --ai-text: #344351;
+}
+
+body {
+  color: var(--ai-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+}
+
+.ai-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: max(28px, env(safe-area-inset-top)) 20px max(24px, env(safe-area-inset-bottom));
+  overflow: hidden;
+  background: #ffffff;
+  isolation: isolate;
+}
+
+.ai-decoration {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.decoration-left {
+  top: 105px;
+  left: -105px;
+  width: 195px;
+  height: 195px;
+  background: #e2f1ff;
+}
+
+.decoration-right {
+  right: -120px;
+  bottom: -70px;
+  width: 240px;
+  height: 240px;
+  background: #e6f7e9;
+}
+
+.ai-dot {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+}
+
+.dot-red { top: 190px; right: 35px; width: 14px; height: 14px; background: #ff9aa2; }
+.dot-blue { top: 350px; left: 34px; width: 12px; height: 12px; background: #83c7f8; }
+.dot-green { right: 42px; bottom: 190px; width: 15px; height: 15px; background: #7ed99b; }
+
+.ai-header {
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+}
+
+.ai-header h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 29px;
+  font-weight: 900;
+  letter-spacing: .05em;
+}
+
+.ai-back {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #7948e5;
+  background: #eee4ff;
+  font-size: 45px;
+  font-weight: 300;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.ai-coming-soon {
+  height: calc(100% - 48px);
+  padding-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.robot {
+  position: relative;
+  width: 142px;
+  height: 124px;
+  margin-bottom: 30px;
+}
+
+.robot-face {
+  position: absolute;
+  inset: 15px 8px 0;
+  border: 6px solid var(--ai-purple);
+  border-radius: 35px;
+  background: #eee7ff;
+  box-shadow: 0 10px 20px rgba(128, 85, 217, .16);
+}
+
+.robot-antenna {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 6px;
+  height: 30px;
+  border-radius: 5px;
+  background: var(--ai-purple);
+  transform: translateX(-50%);
+}
+
+.robot-antenna::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffb315;
+}
+
+.robot-eye {
+  position: absolute;
+  top: 38px;
+  width: 18px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ai-purple);
+}
+
+.eye-left { left: 28px; }
+.eye-right { right: 28px; }
+
+.robot-mouth {
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  width: 38px;
+  height: 14px;
+  border-bottom: 5px solid #38b861;
+  border-radius: 0 0 25px 25px;
+  transform: translateX(-50%);
+}
+
+.robot-ear {
+  position: absolute;
+  top: 52px;
+  width: 16px;
+  height: 43px;
+  border-radius: 8px;
+  background: var(--ai-purple);
+}
+
+.ear-left { left: 0; }
+.ear-right { right: 0; }
+
+.soon-label {
+  padding: 7px 18px;
+  border: 1.5px solid #bba5ed;
+  border-radius: 999px;
+  color: var(--ai-purple);
+  background: #f5f0ff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.ai-coming-soon h2 {
+  margin: 18px 0 12px;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.ai-coming-soon p {
+  margin: 0;
+  color: #687784;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.8;
+}
+
+.preparing-dots {
+  margin: 23px 0 30px;
+  display: flex;
+  gap: 9px;
+}
+
+.preparing-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ai-purple);
+  opacity: .35;
+}
+
+.preparing-dots span:nth-child(2) { opacity: .65; }
+.preparing-dots span:nth-child(3) { opacity: 1; }
+
+.home-button {
+  width: 100%;
+  min-height: 58px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ai-purple);
+  border-radius: 17px;
+  color: var(--ai-purple);
+  background: #ffffff;
+  font-size: 17px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.rank-page-icon {
+  width: 135px;
+  height: 135px;
+  margin-bottom: 28px;
+  display: grid;
+  place-items: center;
+  border: 7px solid #d9c8fa;
+  border-radius: 50%;
+  color: #ffb315;
+  background: #f3edff;
+  box-shadow: 0 10px 20px rgba(128, 85, 217, .14);
+  font-size: 73px;
+  line-height: 1;
+}
+
+@media (max-height: 700px) {
+  .robot { width: 120px; height: 105px; margin-bottom: 18px; transform: scale(.85); }
+  .ai-coming-soon h2 { margin-top: 12px; font-size: 24px; }
+  .preparing-dots { margin: 16px 0 20px; }
+  .home-button { min-height: 52px; }
+}

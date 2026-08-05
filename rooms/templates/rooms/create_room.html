@@ -35,7 +35,8 @@
     </div>
   </section>
 
-  <form class="create-room-form" action="{% url 'rooms:wait' %}" method="get">
+  <form class="create-room-form" action="{% url 'rooms:create' %}" method="post">
+    {% csrf_token %}
     <section class="field field-password">
       <label class="field-label" for="password">
         <span class="field-icon" aria-hidden="true"><i class="fa-solid fa-key"></i></span>
@@ -43,7 +44,7 @@
         <span class="optional-badge">任意</span>
       </label>
       <p class="hint">知っている人だけが参加できるようにします。</p>
-      <input id="password" type="password" placeholder="合言葉を入力">
+      <input id="password" name="password" type="password" placeholder="合言葉を入力">
     </section>
 
     <section class="field field-time">
@@ -54,15 +55,15 @@
       </span>
       <div class="choice-row" role="radiogroup" aria-label="持ち時間">
         <div class="choice">
-          <input id="time30" name="time" type="radio">
+          <input id="time30" name="time" type="radio" value="30">
           <label for="time30">30秒</label>
         </div>
         <div class="choice">
-          <input id="time60" name="time" type="radio" checked>
+          <input id="time60" name="time" type="radio" value="60" checked>
           <label for="time60">60秒</label>
         </div>
         <div class="choice">
-          <input id="time90" name="time" type="radio">
+          <input id="time90" name="time" type="radio" value="90">
           <label for="time90">90秒</label>
         </div>
       </div>
@@ -89,7 +90,7 @@
         <span class="optional-badge">任意</span>
       </label>
       <p class="hint">例：食べもの、動物、アニメ。空欄ならなんでもあり！</p>
-      <textarea id="theme" placeholder="お題を入力"></textarea>
+      <textarea id="theme" name="theme" maxlength="80" placeholder="お題を入力"></textarea>
     </section>
 
     <button class="submit-button" type="submit">

@@ -32,7 +32,11 @@
   </div>
 
   <header class="waiting-topbar">
+    {% if back_to_normal %}
+    <a class="waiting-back-button" href="{% url 'rooms:normal_match' %}" aria-label="通常マッチの部屋一覧へ戻る">‹</a>
+    {% else %}
     <a class="waiting-back-button" href="{% url 'rooms:create' %}" aria-label="ルーム作成画面へ戻る">‹</a>
+    {% endif %}
     <div class="room-id" aria-label="ルームID {{ room_id }}">
       <span>ROOM ID</span>
       <strong>{{ room_id }}</strong>

@@ -1,0 +1,32 @@
+{% extends "rooms/base.html" %}
+{% load static %}
+
+{% block title %}ランクマッチ｜しりとり{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rooms/css/ai.css' %}?v=20260805-2">
+{% endblock %}
+
+{% block content %}
+<div class="ai-screen rank-screen">
+  <div class="ai-decoration decoration-left" aria-hidden="true"></div>
+  <div class="ai-decoration decoration-right" aria-hidden="true"></div>
+  <span class="ai-dot dot-red" aria-hidden="true"></span>
+  <span class="ai-dot dot-blue" aria-hidden="true"></span>
+
+  <header class="ai-header">
+    <a href="{% url 'rooms:match' %}" class="ai-back" aria-label="マッチ画面へ戻る">‹</a>
+    <h1>ランクマッチ</h1>
+    <span aria-hidden="true"></span>
+  </header>
+
+  <section class="ai-coming-soon">
+    <div class="rank-page-icon" aria-hidden="true">♛</div>
+    <div class="soon-label">現在のレート 1000</div>
+    <h2>ランクマッチ</h2>
+    <p>実力の近いプレイヤーと対戦する機能を<br>現在準備しています。</p>
+    <div class="preparing-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+    <a href="{% url 'rooms:match' %}" class="home-button">マッチ選択へ戻る</a>
+  </section>
+</div>
+{% endblock %}
