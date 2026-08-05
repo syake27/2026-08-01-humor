@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="{% static 'rooms/css/createroom.css' %}?v=20260805-2">
+<link rel="stylesheet" href="{% static 'rooms/css/createroom.css' %}?v=20260806-3">
 {% endblock %}
 
 {% block content %}
@@ -69,6 +69,17 @@
       </div>
     </section>
 
+    <section class="field field-baba">
+      <label class="field-label" for="baba-characters">
+        <span class="field-icon" aria-hidden="true"><i class="fa-solid fa-burst"></i></span>
+        <span class="field-title">ババの範囲</span>
+        <span class="required-badge">必須</span>
+      </label>
+      <p class="hint">残した文字の中から、負けになる文字が1つ選ばれます。</p>
+      <textarea id="baba-characters" name="baba_characters" maxlength="64" data-allowed-characters="{{ default_baba_characters }}" spellcheck="false" required>{{ default_baba_characters }}</textarea>
+      <p class="baba-note"><strong id="baba-character-count">{{ default_baba_characters|length }}</strong>文字からランダムに選択</p>
+    </section>
+
     <section class="field field-members">
       <label class="field-label" for="members">
         <span class="field-icon" aria-hidden="true"><i class="fa-solid fa-user-group"></i></span>
@@ -103,5 +114,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'rooms/js/createroom.js' %}?v=20260805-2"></script>
+<script src="{% static 'rooms/js/createroom.js' %}?v=20260806-3"></script>
 {% endblock %}

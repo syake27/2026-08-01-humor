@@ -4,7 +4,7 @@
 {% block title %}しりとりバトル{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260805-7">
+<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260806-9">
 {% endblock %}
 
 {% block content %}
@@ -16,15 +16,15 @@
     <section class="status-board" aria-label="ゲーム状況">
       <div class="status-item alive-status">
         <span class="status-label">生存プレイヤー</span>
-        <strong><span class="status-icon">♣</span> 4 <small>/ 4人</small></strong>
+        <strong><span class="status-icon">♣</span> <span class="alive-count">{{ alive_count }}</span> <small>/ {{ player_count }}人</small></strong>
       </div>
       <div class="status-item turn-status">
         <span class="status-label">進行ターン</span>
-        <strong>12 <small>ターン目</small></strong>
+        <strong><span class="turn-number">{{ session.turn_number }}</span> <small>ターン目</small></strong>
       </div>
       <div class="status-item time-status">
         <span class="status-label">残り時間</span>
-        <strong><span class="clock-icon">◷</span> 15 <small>秒</small></strong>
+        <strong><span class="clock-icon">◷</span> <span class="turn-time">{% if current_player %}{{ current_player.remaining_seconds }}{% else %}0{% endif %}</span> <small>秒</small></strong>
       </div>
     </section>
 
@@ -36,64 +36,138 @@
       </button>
       <nav id="game-menu" class="game-menu" aria-label="ゲームメニュー" hidden>
         <a href="{% url 'rooms:home' %}"><span aria-hidden="true">⌂</span>ホーム</a>
-        <a href="{% url 'rooms:rule' %}"><span aria-hidden="true">✓</span>ルール</a>
+        <button id="room-rules-open" class="game-menu-item" type="button" aria-haspopup="dialog" aria-controls="room-rules-modal"><span aria-hidden="true">✓</span>ルール</button>
         <a class="leave-game" href="{% url 'rooms:match' %}"><span aria-hidden="true">↪</span>対戦を退出</a>
       </nav>
     </div>
   </div>
 
-  <section class="players-strip" aria-label="参加プレイヤー">
-    <article class="battle-player is-active">
-      <span class="crown" aria-hidden="true">♛</span>
-      <span class="player-avatar avatar-purple">👾</span>
-      <span class="player-name"><strong>あなた</strong><small>ユーモア王</small><span class="player-time">残り 15秒</span></span>
+  <section class="players-strip" aria-label="参加プレイヤー" data-status-url="{% url 'game:players_status' %}?room_id={{ room.room_id }}">
+    {% for player in players %}
+    <article class="battle-player{% if player.is_current %} is-active{% endif %}{% if not player.is_alive %} is-eliminated{% endif %}" data-player-id="{{ player.id }}" tabindex="{% if player.is_current %}0{% else %}-1{% endif %}"{% if player.is_current %} aria-current="true"{% endif %}>
+      <span class="player-avatar-frame">
+        <span class="player-avatar {{ player.avatar_class }}">{{ player.avatar }}</span>
+      </span>
+      <span class="player-name">
+        <span class="player-display-name{% if player.is_self %} is-self{% endif %}">{% if player.is_self %}あなた{% else %}{{ player.display_name }}{% endif %}</span>
+        <small>{{ player.title }}</small>
+        <span class="player-time">残り {{ player.remaining_seconds }}秒</span>
+      </span>
     </article>
-    <article class="battle-player">
-      <span class="player-avatar avatar-red">🍎</span>
-      <span class="player-name">りんご<small>果実マスター</small><span class="player-time">残り 42秒</span></span>
-    </article>
-    <article class="battle-player">
-      <span class="player-avatar avatar-blue">🐧</span>
-      <span class="player-name">ペンギン<small>氷上の言葉師</small><span class="player-time">残り 38秒</span></span>
-    </article>
-    <article class="battle-player">
-      <span class="player-avatar avatar-yellow">🌻</span>
-      <span class="player-name">ひまわり<small>太陽の挑戦者</small><span class="player-time">残り 51秒</span></span>
-    </article>
+    {% endfor %}
   </section>
-  <section class="current-letter-card" aria-labelledby="current-letter-title">
+  <section class="current-letter-card" aria-labelledby="current-letter-title" data-current-letter="{{ session.current_letter }}">
     <span class="sparkle sparkle-one" aria-hidden="true">✦</span>
     <span class="sparkle sparkle-two" aria-hidden="true">●</span>
     <span class="sparkle sparkle-three" aria-hidden="true">✦</span>
     <span class="sparkle sparkle-four" aria-hidden="true">●</span>
-    <h2 id="current-letter-title">現在の文字</h2>
-    <strong class="current-letter">き</strong>
-    <p>「き」からはじまる言葉を入力！</p>
+    <h2 id="current-letter-title">現在の言葉</h2>
+    <strong class="current-word">{{ current_word }}</strong>
+    <p class="current-letter-prompt">次は「{{ session.current_letter }}」からはじまる言葉を入力！</p>
   </section>
 
   <section class="history-card">
-    <header>
+    <button id="history-open" class="history-open" type="button" aria-haspopup="dialog" aria-controls="history-modal">
       <h2><span aria-hidden="true">◴</span> これまでのしりとり履歴</h2>
       <span class="section-chevron" aria-hidden="true">⌄</span>
-    </header>
-    <div class="word-history" aria-label="しりとり履歴">
+    </button>
+    <div class="word-history" aria-label="しりとり履歴" data-room-id="{{ room.room_id }}">
       <span class="history-start">スタート</span><b>›</b>
-      <span>りんご</span><b>›</b>
-      <span>ごりら</span><b>›</b>
-      <span>らっぱ</span><b>›</b>
-      <span>ぱんだ</span><b>›</b>
-      <span>だいこん</span><b>›</b>
-      <span class="history-current">き</span>
+      {% for game_word in words %}<span>{{ game_word.word }}</span><b>›</b>{% endfor %}
+      <span class="history-current">{{ session.current_letter }}</span>
     </div>
   </section>
 
+  <dialog id="history-modal" class="history-modal" aria-labelledby="history-modal-title">
+    <div class="history-modal-panel">
+      <header>
+        <div>
+          <span>しりとり履歴</span>
+          <h2 id="history-modal-title">これまでの言葉</h2>
+        </div>
+        <button id="history-close" class="history-close" type="button" aria-label="履歴を閉じる">×</button>
+      </header>
 
-  <form class="answer-form" novalidate>
+      <ol class="modal-history-list">
+        {% for game_word in words %}
+        <li>
+          <span>{{ game_word.turn_number }}</span>
+          <strong>{{ game_word.word }}</strong>
+          <small>{{ game_word.player.display_name }}</small>
+        </li>
+        {% empty %}
+        <li class="history-empty">まだ言葉は送信されていません</li>
+        {% endfor %}
+      </ol>
+
+      <footer>
+        <span>次の文字</span>
+        <strong class="modal-current-letter">{{ session.current_letter }}</strong>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog id="room-rules-modal" class="room-rules-modal" aria-labelledby="room-rules-title">
+    <div class="room-rules-panel">
+      <header>
+        <div>
+          <span>ROOM {{ room.room_id }}</span>
+          <h2 id="room-rules-title">この部屋のルール</h2>
+        </div>
+        <button id="room-rules-close" class="room-rules-close" type="button" aria-label="部屋のルールを閉じる">×</button>
+      </header>
+
+      <div class="room-rule-grid">
+        <article>
+          <span class="room-rule-icon time-rule-icon" aria-hidden="true">◷</span>
+          <small>持ち時間</small>
+          <strong>{{ room.time_limit }}秒</strong>
+        </article>
+        <article>
+          <span class="room-rule-icon players-rule-icon" aria-hidden="true">♣</span>
+          <small>最大人数</small>
+          <strong>{{ room.max_players }}人</strong>
+        </article>
+        <article>
+          <span class="room-rule-icon theme-rule-icon" aria-hidden="true">✦</span>
+          <small>お題</small>
+          <strong>{% if room.theme %}{{ room.theme }}{% else %}なんでもあり{% endif %}</strong>
+        </article>
+        <article>
+          <span class="room-rule-icon key-rule-icon" aria-hidden="true">◇</span>
+          <small>合言葉</small>
+          <strong>{% if room.has_password %}あり{% else %}なし{% endif %}</strong>
+        </article>
+      </div>
+
+      <section class="baba-rule-summary">
+        <div class="baba-rule-heading">
+          <span aria-hidden="true">!</span>
+          <div><small>ババの範囲</small><strong>{{ room.baba_characters|length }}文字から抽選</strong></div>
+        </div>
+        <p class="baba-character-list">{{ room.baba_characters }}</p>
+        <p class="baba-rule-note">この中から秘密の1文字を選択。その文字で終わる言葉を送ると負けになります。</p>
+      </section>
+
+      <aside class="baba-debug" aria-label="デバッグ用ババ文字">
+        <div>
+          <small>DEBUG</small>
+          <strong>今回のババの文字</strong>
+        </div>
+        <span>{{ session.baba_letter }}</span>
+      </aside>
+    </div>
+  </dialog>
+
+
+  <form class="answer-form" data-answer-url="{% url 'game:submit_word' %}" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="room_id" value="{{ room.room_id }}">
     <div class="answer-input-wrap">
-      <input id="answer-input" type="text" placeholder="ここに入力（例：きりん）" autocomplete="off" aria-label="回答を入力">
+      <input id="answer-input" name="answer" type="text" maxlength="30" pattern="[ぁ-ゖー]+" placeholder="「{{ session.current_letter }}」から始まる言葉" autocomplete="off" aria-label="ひらがなで回答を入力"{% if not is_my_turn %} disabled{% endif %}>
       <button id="clear-answer" class="clear-answer" type="button" aria-label="入力を消す">×</button>
     </div>
-    <button class="send-answer" type="submit"><span aria-hidden="true">➤</span> 送信</button>
+    <button class="send-answer" type="submit"{% if not is_my_turn %} disabled{% endif %}><span aria-hidden="true">➤</span> 送信</button>
   </form>
 
   <div id="game-message" class="game-message" role="status" aria-live="polite">
@@ -104,5 +178,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'game/js/game.js' %}?v=20260805-2"></script>
+<script src="{% static 'game/js/game.js' %}?v=20260806-12"></script>
 {% endblock %}

@@ -4,11 +4,11 @@
 {% block title %}ロシアンしりとり{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'rooms/css/waiting_room.css' %}?v=20260805-12">
+<link rel="stylesheet" href="{% static 'rooms/css/waiting_room.css' %}?v=20260806-2">
 {% endblock %}
 
 {% block content %}
-<div class="waiting-screen">
+<div class="waiting-screen" data-room-status-url="{% url 'rooms:room_status' room_id %}">
   <div class="background-shape shape-blue"></div>
   <div class="background-shape shape-green"></div>
 
@@ -33,7 +33,10 @@
 
   <header class="waiting-topbar">
     {% if back_to_normal %}
-    <a class="waiting-back-button" href="{% url 'rooms:normal_match' %}" aria-label="通常マッチの部屋一覧へ戻る">‹</a>
+    <form class="waiting-leave-form" method="post" action="{% url 'rooms:leave_normal_room' room_id %}">
+      {% csrf_token %}
+      <button class="waiting-back-button" type="submit" aria-label="通常マッチから退出して部屋一覧へ戻る">‹</button>
+    </form>
     {% else %}
     <a class="waiting-back-button" href="{% url 'rooms:create' %}" aria-label="ルーム作成画面へ戻る">‹</a>
     {% endif %}
@@ -98,10 +101,25 @@
     </div>
   </section>
 
-  <a class="start-button" href="{% url 'game:game' %}">
-    <span class="start-icon" aria-hidden="true">▶</span>
-    <span>ゲームスタート</span>
-    <span class="start-arrow" aria-hidden="true">›</span>
-  </a>
+  {% if is_host %}
+  <form class="start-game-form" method="post" action="{% url 'rooms:start_room' room_id %}">
+    {% csrf_token %}
+    <button class="start-button" type="submit">
+      <span class="start-icon" aria-hidden="true">▶</span>
+      <span>ゲームスタート</span>
+      <span class="start-arrow" aria-hidden="true">›</span>
+    </button>
+  </form>
+  {% else %}
+  <div class="start-button waiting-for-host" aria-live="polite">
+    <span class="start-icon" aria-hidden="true">●</span>
+    <span>ホストの開始を待っています</span>
+    <span class="start-arrow" aria-hidden="true"></span>
+  </div>
+  {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'rooms/js/waiting_room.js' %}?v=20260806-2"></script>
 {% endblock %}
