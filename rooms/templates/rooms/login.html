@@ -1,0 +1,50 @@
+{% extends "rooms/base.html" %}
+{% load static %}
+
+{% block title %}ログイン｜しりとり{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rooms/css/login.css' %}?v=20260805-4">
+{% endblock %}
+
+{% block content %}
+<div class="login-screen">
+  <div class="login-decoration decoration-left" aria-hidden="true"></div>
+  <div class="login-decoration decoration-right" aria-hidden="true"></div>
+
+  <header class="login-header">
+    <a class="login-back" href="{% url 'rooms:profile' %}" aria-label="プロフィールへ戻る">‹</a>
+    <h1>ログイン</h1>
+    <span aria-hidden="true"></span>
+  </header>
+
+  <section class="login-content">
+    <div class="login-brand" aria-label="しりとり">
+      <span class="brand-red">し</span><span class="brand-blue">り</span><span class="brand-yellow">と</span><span class="brand-green">り</span>
+    </div>
+    <p class="login-message">登録したアカウントネームと<br>パスワードを入力してください</p>
+
+    <form class="login-form" method="post">
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      {% if error %}
+      <p class="form-error" role="alert">{{ error }}</p>
+      {% endif %}
+      <label for="login-username">アカウントネーム</label>
+      <input id="login-username" name="username" type="text" autocomplete="username" placeholder="アカウントネームを入力" value="{{ username }}" required autofocus>
+
+      <label for="login-password">パスワード</label>
+      <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="パスワードを入力" required>
+
+      <a class="forgot-link" href="#">パスワードを忘れた方はこちら</a>
+
+      <button class="login-submit" type="submit">ログイン</button>
+    </form>
+
+    <div class="register-guide">
+      <span>アカウントをお持ちでない方</span>
+      <a href="{% url 'rooms:register' %}{% if next %}?next={{ next|urlencode }}{% endif %}">新規登録はこちら</a>
+    </div>
+  </section>
+</div>
+{% endblock %}

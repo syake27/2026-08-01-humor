@@ -4,195 +4,162 @@
 {% block title %}プロフィール｜しりとり{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'rooms/css/profile.css' %}?v=20260805-2">
+<link rel="stylesheet" href="{% static 'rooms/css/profile.css' %}?v=20260805-6">
 {% endblock %}
 
 {% block content %}
-<div class="profile-screen">
+<div class="profile-screen{% if user.is_authenticated %} member-view{% endif %}">
+  <div class="decoration decoration-top-left" aria-hidden="true"></div>
+  <div class="decoration decoration-blue" aria-hidden="true"></div>
+  <div class="decoration decoration-red" aria-hidden="true"></div>
+  <div class="decoration decoration-green" aria-hidden="true"></div>
+  <div class="decoration decoration-purple" aria-hidden="true"></div>
+  <div class="decoration decoration-bottom-right" aria-hidden="true"></div>
 
-  <!-- 背景の飾り -->
-  <div class="decoration decoration-top-left"></div>
-  <div class="decoration decoration-blue"></div>
-  <div class="decoration decoration-red"></div>
-  <div class="decoration decoration-green"></div>
-  <div class="decoration decoration-purple"></div>
-  <div class="decoration decoration-bottom-right"></div>
-
-  <!-- ヘッダー -->
   <header class="header">
-
-    <button type="button" class="back-button" onclick="history.back()" aria-label="前の画面へ戻る">
-      ‹
-    </button>
-
+    <a class="back-button" href="{% url 'rooms:home' %}" aria-label="ホームへ戻る">‹</a>
     <h1>プロフィール</h1>
-
-    <div class="header-space"></div>
-
+    <span class="header-dot" aria-hidden="true"></span>
   </header>
 
-  <!-- メイン案内 -->
+  {% if user.is_authenticated %}
+  <section class="member-profile">
+    <div class="member-hero">
+      <div class="member-avatar" aria-label="ペンギンのアバター">
+        <span class="avatar-penguin" aria-hidden="true">🐧</span>
+      </div>
+      <div class="member-identity">
+        <h2>{{ user.username }}<span class="online-dot" aria-label="オンライン"></span></h2>
+        <p>@{{ user.username }}</p>
+        <div class="rank-badge"><span aria-hidden="true">◆</span> ビギナー I</div>
+      </div>
+    </div>
+
+    <div class="profile-highlights">
+      <article class="highlight-card coin-card">
+        <span class="highlight-icon" aria-hidden="true">C</span>
+        <div><small>コイン</small><strong>0</strong></div>
+        <a href="{% url 'rooms:shop' %}" aria-label="ショップへ">＋</a>
+      </article>
+      <article class="highlight-card favorite-card">
+        <span class="highlight-icon" aria-hidden="true">★</span>
+        <div><small>お気に入り称号</small><strong>はじめての一歩</strong></div>
+      </article>
+    </div>
+
+    <div class="battle-stats" aria-label="戦績">
+      <article><span class="stat-symbol stat-blue">⚔</span><small>対戦数</small><strong>0</strong></article>
+      <article><span class="stat-symbol stat-green">♛</span><small>勝利数</small><strong>0</strong></article>
+      <article><span class="stat-symbol stat-yellow">★</span><small>勝率</small><strong>0<em>%</em></strong></article>
+      <article><span class="stat-symbol stat-purple">↗</span><small>レート</small><strong>1000</strong></article>
+    </div>
+
+    <section class="streak-card">
+      <div class="streak-record">
+        <span class="flame-icon" aria-hidden="true">♨</span>
+        <div><small>連勝記録</small><strong>0<em> 連勝</em></strong>
+          <p>ベスト：0連勝</p>
+        </div>
+      </div>
+      <div class="rank-progress">
+        <small>次のランクまで</small>
+        <p>あと <strong>200</strong> レート</p>
+        <div class="progress-track"><span></span></div>
+      </div>
+    </section>
+
+    <section class="customize-section">
+      <div class="section-heading">
+        <h3><span aria-hidden="true">◆</span> カスタマイズ</h3>
+        <button type="button">すべて見る ›</button>
+      </div>
+      <div class="customize-grid">
+        <article class="custom-card custom-avatar">
+          <strong>アバター</strong><span aria-hidden="true">🐧</span><i>✓</i>
+        </article>
+        <article class="custom-card custom-frame">
+          <strong>フレーム</strong><span class="sample-frame" aria-hidden="true"></span><i>✓</i>
+        </article>
+        <article class="custom-card custom-stamp">
+          <strong>スタンプ</strong><span aria-hidden="true">●</span><i>✓</i>
+        </article>
+      </div>
+    </section>
+
+    <nav class="profile-menu" aria-label="プロフィールメニュー">
+      <button type="button"><span class="menu-round purple-round" aria-hidden="true">●</span>プロフィール編集<b>›</b></button>
+      <button type="button"><span class="menu-round blue-round" aria-hidden="true">▥</span>戦績<b>›</b></button>
+      <a href="{% url 'rooms:shop' %}"><span class="menu-round green-round"
+          aria-hidden="true">◇</span>所持アイテム<b>›</b></a>
+      <form method="post" action="{% url 'rooms:logout' %}">
+        {% csrf_token %}
+        <button type="submit"><span class="menu-round orange-round" aria-hidden="true">↪</span>ログアウト<b>›</b></button>
+      </form>
+    </nav>
+  </section>
+
+  {% else %}
   <section class="account-guide">
-
-    <!-- プロフィールアイコン -->
     <div class="profile-icon-area">
-
       <span class="effect-line effect-line-left"></span>
       <span class="effect-line effect-line-center"></span>
       <span class="effect-line effect-line-right"></span>
-
       <span class="sparkle sparkle-left">✦</span>
       <span class="sparkle sparkle-right">✦</span>
-
       <div class="profile-icon">
         <span class="profile-head"></span>
         <span class="profile-body"></span>
       </div>
-
     </div>
 
-    <!-- 説明 -->
     <div class="message-area">
-
-      <h2>
-        プロフィールを利用するには
-      </h2>
-
-      <p class="required-message">
-        <span class="login-color">ログイン</span>
-        または<br>
-        <span class="register-color">アカウント登録</span>
-        が必要です
-      </p>
-
+      <h2>プロフィールを利用するには</h2>
+      <p class="required-message"><span class="login-color">ログイン</span> または<br><span
+          class="register-color">アカウント登録</span> が必要です</p>
       <div class="dot-line">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
       </div>
-
-      <p class="description">
-        アカウントを作成すると、あなたの戦績や<br>
-        レートを保存できるようになります。
-      </p>
-
+      <p class="description">アカウントを作成すると、あなたの戦績や<br>レートを保存できるようになります。</p>
     </div>
 
-    <!-- ログインボタン -->
-    <a href="login.html" class="main-button login-button">
-
-      <span class="button-icon lock-icon">
-        <span class="lock-top"></span>
-        <span class="lock-body"></span>
-      </span>
-
-      <span class="button-text">ログイン</span>
-
-      <span class="button-arrow">›</span>
-
+    <a href="{% url 'rooms:login' %}" class="main-button login-button">
+      <span class="button-icon lock-icon"><span class="lock-top"></span><span class="lock-body"></span></span>
+      <span class="button-text">ログイン</span><span class="button-arrow">›</span>
     </a>
-
-    <!-- 新規登録ボタン -->
-    <a href="register.html" class="main-button register-button">
-
-      <span class="button-icon user-add-icon">
-        <span class="small-user-head"></span>
-        <span class="small-user-body"></span>
-        <span class="plus-mark">＋</span>
-      </span>
-
-      <span class="button-text">新規登録</span>
-
-      <span class="button-arrow">›</span>
-
+    <a href="{% url 'rooms:register' %}" class="main-button register-button">
+      <span class="button-icon user-add-icon"><span class="small-user-head"></span><span
+          class="small-user-body"></span><span class="plus-mark">＋</span></span>
+      <span class="button-text">新規登録</span><span class="button-arrow">›</span>
     </a>
-
   </section>
 
-  <!-- 登録メリット -->
   <section class="benefits-card">
-
-    <div class="benefits-title">
-      登録するとこんなに便利！
-    </div>
-
+    <div class="benefits-title">登録するとこんなに便利！</div>
     <div class="benefits-list">
-
-      <!-- レート保存 -->
       <article class="benefit-item">
-
-        <div class="benefit-icon rate-save-icon">
-          <span class="chart-bar chart-bar-1"></span>
-          <span class="chart-bar chart-bar-2"></span>
-          <span class="chart-bar chart-bar-3"></span>
-          <span class="chart-arrow">↗</span>
-        </div>
-
+        <div class="benefit-icon rate-save-icon"><span class="chart-bar chart-bar-1"></span><span
+            class="chart-bar chart-bar-2"></span><span class="chart-bar chart-bar-3"></span><span
+            class="chart-arrow">↗</span></div>
         <h3>レート保存</h3>
-
-        <p>
-          レートの変動を<br>
-          記録できます
-        </p>
-
+        <p>レートの変動を<br>記録できます</p>
       </article>
-
-      <!-- 戦績保存 -->
       <article class="benefit-item">
-
-        <div class="benefit-icon result-save-icon">
-          🏆
-        </div>
-
+        <div class="benefit-icon result-save-icon">🏆</div>
         <h3>戦績保存</h3>
-
-        <p>
-          勝利数や勝率を<br>
-          保存できます
-        </p>
-
+        <p>勝利数や勝率を<br>保存できます</p>
       </article>
-
-      <!-- 称号獲得 -->
       <article class="benefit-item">
-
-        <div class="benefit-icon title-icon">
-          ★
-        </div>
-
+        <div class="benefit-icon title-icon">★</div>
         <h3>称号獲得</h3>
-
-        <p>
-          条件を達成して<br>
-          称号を獲得できます
-        </p>
-
+        <p>条件を達成して<br>称号を獲得できます</p>
       </article>
-
-      <!-- ランキング -->
       <article class="benefit-item">
-
-        <div class="benefit-icon ranking-icon">
-          ♛
-        </div>
-
+        <div class="benefit-icon ranking-icon">♛</div>
         <h3>ランキング参加</h3>
-
-        <p>
-          ランキングに参加して<br>
-          上位を目指そう！
-        </p>
-
+        <p>ランキングに参加して<br>上位を目指そう！</p>
       </article>
-
     </div>
-
   </section>
-
+  {% endif %}
 </div>
 {% endblock %}

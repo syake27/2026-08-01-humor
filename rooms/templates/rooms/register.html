@@ -1,0 +1,51 @@
+{% extends "rooms/base.html" %}
+{% load static %}
+
+{% block title %}新規登録｜しりとり{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rooms/css/login.css' %}?v=20260805-4">
+{% endblock %}
+
+{% block content %}
+<div class="login-screen register-screen">
+  <div class="login-decoration decoration-left" aria-hidden="true"></div>
+  <div class="login-decoration decoration-right" aria-hidden="true"></div>
+
+  <header class="login-header">
+    <a class="login-back" href="{% url 'rooms:profile' %}" aria-label="プロフィールへ戻る">‹</a>
+    <h1>新規登録</h1>
+    <span aria-hidden="true"></span>
+  </header>
+
+  <section class="login-content register-content">
+    <div class="login-brand" aria-label="しりとり">
+      <span class="brand-red">し</span><span class="brand-blue">り</span><span class="brand-yellow">と</span><span class="brand-green">り</span>
+    </div>
+    <p class="login-message">アカウントネームと<br>パスワードを決めてください</p>
+
+    <form class="login-form register-form" method="post">
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      {% if error %}
+      <p class="form-error" role="alert">{{ error }}</p>
+      {% endif %}
+      <label for="register-username">アカウントネーム</label>
+      <input id="register-username" name="username" type="text" autocomplete="username" placeholder="アカウントネームを入力" value="{{ username }}" required autofocus>
+
+      <label for="register-password">パスワード</label>
+      <input id="register-password" name="password1" type="password" autocomplete="new-password" placeholder="パスワードを入力" required>
+
+      <label for="register-password-confirm">パスワード（確認）</label>
+      <input id="register-password-confirm" name="password2" type="password" autocomplete="new-password" placeholder="もう一度入力" required>
+
+      <button class="login-submit" type="submit">アカウントを作成</button>
+    </form>
+
+    <div class="register-guide">
+      <span>すでにアカウントをお持ちの方</span>
+      <a href="{% url 'rooms:login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">ログインはこちら</a>
+    </div>
+  </section>
+</div>
+{% endblock %}

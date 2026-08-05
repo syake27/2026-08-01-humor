@@ -1,0 +1,84 @@
+{% extends "rooms/base.html" %}
+{% load static %}
+
+{% block title %}通常マッチ｜しりとり{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rooms/css/normal_match.css' %}?v=20260806-1">
+{% endblock %}
+
+{% block content %}
+<div class="room-list-screen">
+  <div class="list-decoration decoration-left" aria-hidden="true"></div>
+  <div class="list-decoration decoration-right" aria-hidden="true"></div>
+  <span class="list-dot dot-red" aria-hidden="true"></span>
+  <span class="list-dot dot-purple" aria-hidden="true"></span>
+
+  <header class="list-header">
+    <a class="list-back" href="{% url 'rooms:match' %}" aria-label="マッチ画面へ戻る">‹</a>
+    <h1>通常マッチ</h1>
+    <a class="refresh-button" href="{% url 'rooms:normal_match' %}" aria-label="部屋一覧を更新">↻</a>
+  </header>
+
+  <form class="room-search-form" method="get" action="{% url 'rooms:normal_match' %}" role="search">
+    <label for="room-id-search">ルームIDで検索</label>
+    <div class="room-search-control">
+      <span class="search-symbol" aria-hidden="true"></span>
+      <input id="room-id-search" name="q" type="search" value="{{ search_query }}" maxlength="8" placeholder="例：A7K9" autocomplete="off">
+      {% if search_query %}<a href="{% url 'rooms:normal_match' %}" class="clear-search" aria-label="検索を解除">×</a>{% endif %}
+      <button type="submit">検索</button>
+    </div>
+  </form>
+
+  <section class="list-intro">
+    <div>
+      <h2>参加する部屋を選ぼう！</h2>
+      <p>現在参加できるルーム</p>
+    </div>
+    <span>{{ rooms|length }} 部屋</span>
+  </section>
+
+  <div class="room-scroll-area">
+    {% if rooms %}
+    <div class="available-rooms">
+      {% for room in rooms %}
+      <article class="available-room">
+        <div class="room-card-top">
+          <div class="room-host-icon" aria-hidden="true">{{ room.host.username|default:"G"|first }}</div>
+          <div class="room-summary">
+            <h2>{% if room.theme %}{{ room.theme }}{% else %}なんでもしりとり{% endif %}</h2>
+            <p>{% if room.host %}{{ room.host.username }}{% else %}ゲスト{% endif %}のルーム</p>
+          </div>
+          {% if room.has_password %}<span class="lock-badge" title="合言葉あり">鍵</span>{% endif %}
+        </div>
+        <div class="room-details">
+          <span><small>ルームID</small><strong>{{ room.room_id }}</strong></span>
+          <span><small>参加人数</small><strong>{{ room.current_players }}/{{ room.max_players }}人</strong></span>
+          <span><small>持ち時間</small><strong>{{ room.time_limit }}秒</strong></span>
+        </div>
+        {% if room.current_players < room.max_players %}
+        <a class="join-button" href="{% url 'rooms:join_normal_room' room.room_id %}">この部屋に参加</a>
+        {% else %}
+        <span class="join-button full-button">満員です</span>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-rooms">
+      <div class="empty-people" aria-hidden="true"><span></span><span></span></div>
+      {% if search_query %}
+      <h2>ルームが見つかりません</h2>
+      <p>「{{ search_query }}」に一致する<br>ルームIDはありませんでした。</p>
+      <a class="reset-search" href="{% url 'rooms:normal_match' %}">すべての部屋を見る</a>
+      {% else %}
+      <h2>参加できる部屋はありません</h2>
+      <p>新しいルームを作って<br>みんなが来るのを待ちましょう！</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <a class="create-room-button" href="{% url 'rooms:create' %}"><span aria-hidden="true">＋</span>ルームを作る</a>
+</div>
+{% endblock %}

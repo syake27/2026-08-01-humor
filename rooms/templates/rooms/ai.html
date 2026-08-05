@@ -1,0 +1,47 @@
+{% extends "rooms/base.html" %}
+{% load static %}
+
+{% block title %}AI対戦｜しりとり{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rooms/css/ai.css' %}?v=20260805-1">
+{% endblock %}
+
+{% block content %}
+<div class="ai-screen">
+  <div class="ai-decoration decoration-left" aria-hidden="true"></div>
+  <div class="ai-decoration decoration-right" aria-hidden="true"></div>
+  <span class="ai-dot dot-red" aria-hidden="true"></span>
+  <span class="ai-dot dot-blue" aria-hidden="true"></span>
+  <span class="ai-dot dot-green" aria-hidden="true"></span>
+
+  <header class="ai-header">
+    <a href="{% url 'rooms:home' %}" class="ai-back" aria-label="ホームへ戻る">‹</a>
+    <h1>AI対戦</h1>
+    <span aria-hidden="true"></span>
+  </header>
+
+  <section class="ai-coming-soon">
+    <div class="robot" aria-hidden="true">
+      <span class="robot-antenna"></span>
+      <div class="robot-face">
+        <span class="robot-eye eye-left"></span>
+        <span class="robot-eye eye-right"></span>
+        <span class="robot-mouth"></span>
+      </div>
+      <span class="robot-ear ear-left"></span>
+      <span class="robot-ear ear-right"></span>
+    </div>
+
+    <div class="soon-label">AIとしりとり</div>
+    <h2>ただいま準備中です</h2>
+    <p>AIといつでも対戦できるモードを<br>現在開発しています。</p>
+
+    <div class="preparing-dots" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+
+    <a href="{% url 'rooms:home' %}" class="home-button">ホームへ戻る</a>
+  </section>
+</div>
+{% endblock %}
