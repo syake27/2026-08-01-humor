@@ -1,34 +1,17 @@
-/* =========================
-   基本設定
-========================= */
-
 :root {
-  --ink: #3e455f;
+  --ink: #344351;
   --muted: #858da6;
-  --coral: #ff7474;
-  --page-background: #f9f9fc;
-  --card-background: #ffffff;
-  --input-background: #fafbfe;
-  --border-color: #eef0f6;
-}
-
-* {
-  box-sizing: border-box;
+  --red: #ff4350;
+  --blue: #3892f3;
+  --orange: #ffb315;
+  --purple: #8055d9;
+  --green: #37b85f;
 }
 
 body {
-  min-height: 100vh;
-  margin: 0;
-
   color: var(--ink);
-  background: var(--page-background);
-
-  font-family:
-    "Noto Sans JP",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Hiragino Sans",
-    sans-serif;
+  font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont,
+    "Hiragino Sans", sans-serif;
 }
 
 button,
@@ -42,227 +25,291 @@ button {
   cursor: pointer;
 }
 
-
-/* =========================
-   画面全体
-========================= */
-
+/* 画面全体 */
 .screen {
-  width: min(100%, 390px);
-  min-height: 100vh;
-  margin: 0 auto;
-  padding: 72px 21px 52px;
-
-  background: var(--card-background);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 32px 22px 38px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  background: #ffffff;
 }
 
+.screen::-webkit-scrollbar {
+  display: none;
+}
 
-/* =========================
-   ヘッダー
-========================= */
+.topbar,
+.intro,
+.create-room-form {
+  position: relative;
+  z-index: 2;
+}
 
+/* homeと共通した雰囲気の背景装飾 */
+.create-decoration,
+.create-dot {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.decoration-top-left {
+  top: -90px;
+  left: -95px;
+  width: 215px;
+  height: 215px;
+  background: #eaf4fd;
+}
+
+.decoration-bottom-right {
+  right: -115px;
+  bottom: -85px;
+  width: 250px;
+  height: 250px;
+  background: #e7f7e8;
+}
+
+.create-dot {
+  width: 16px;
+  height: 16px;
+}
+
+.dot-pink {
+  top: 102px;
+  left: 72px;
+  background: #ffc9ce;
+}
+
+.dot-blue {
+  top: 280px;
+  right: 17px;
+  background: #c7e2ff;
+}
+
+.dot-purple {
+  bottom: 185px;
+  left: 10px;
+  background: #dbc6ff;
+}
+
+/* ヘッダー */
 .topbar {
   display: grid;
-  grid-template-columns: 76px 1fr 76px;
+  grid-template-columns: 54px 1fr 54px;
   align-items: center;
 }
 
 .back-button {
   display: grid;
   place-items: center;
-
-  width: 76px;
-  height: 76px;
-
+  width: 54px;
+  height: 54px;
+  padding: 0 0 5px;
+  border-radius: 50%;
   color: var(--ink);
   background: #ffffff;
-  border-radius: 50%;
-
-  font-size: 46px;
+  box-shadow: 0 7px 18px rgba(52, 67, 81, 0.1);
+  font-size: 36px;
+  font-weight: 700;
   line-height: 1;
+  text-decoration: none;
+}
 
-  box-shadow:
-    0 10px 26px rgba(59, 57, 80, 0.09);
+.back-button:active {
+  transform: scale(0.96);
 }
 
 .page-title {
   margin: 0;
-
   text-align: center;
-
-  font-size: 31px;
+  font-size: 23px;
   font-weight: 800;
-  letter-spacing: 0.035em;
+  letter-spacing: 0.02em;
 }
 
 .sparkle {
   justify-self: end;
-
-  color: #d7a12e;
-
-  font-size: 32px;
+  color: var(--orange);
+  font-size: 28px;
 }
 
-
-/* =========================
-   説明エリア
-========================= */
-
+/* 説明 */
 .intro {
-  margin: 53px 0 34px;
-  padding: 31px 37px;
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  align-items: center;
+  gap: 15px;
+  margin: 30px 0 22px;
+  padding: 17px 18px;
+  border: 1.5px solid #ffccd0;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+}
 
-  background:
-    linear-gradient(
-      110deg,
-      #fff0db,
-      #ffe4e5
-    );
+.intro-icon,
+.field-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: #ffffff;
+}
 
-  border-radius: 38px;
+.intro-icon {
+  width: 54px;
+  height: 54px;
+  background: var(--red);
+  font-size: 22px;
 }
 
 .intro h2 {
-  margin: 0 0 8px;
-
-  font-size: 27px;
+  margin: 0 0 4px;
+  font-size: 19px;
   font-weight: 800;
 }
 
 .intro p {
   margin: 0;
-
-  color: #747b90;
-
-  font-size: 18px;
+  color: var(--muted);
+  font-size: 12px;
   font-weight: 600;
-  line-height: 1.7;
+  line-height: 1.55;
 }
 
-
-/* =========================
-   フォーム全体
-========================= */
-
+/* フォームカード */
 .create-room-form {
   display: grid;
-  gap: 21px;
+  gap: 13px;
 }
 
 .field {
-  padding: 25px 28px;
+  --field-color: #777777;
+  --field-soft: #f5f5f5;
+  padding: 15px 16px 17px;
+  border: 1.5px solid var(--field-color);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.96);
+}
 
-  background: #ffffff;
-  border-radius: 31px;
+.field-password {
+  --field-color: var(--blue);
+  --field-soft: #eef7ff;
+}
 
-  box-shadow:
-    0 11px 29px rgba(57, 59, 77, 0.075);
+.field-time {
+  --field-color: var(--orange);
+  --field-soft: #fff8e7;
+}
+
+.field-members {
+  --field-color: var(--purple);
+  --field-soft: #f5f0ff;
+}
+
+.field-theme {
+  --field-color: var(--green);
+  --field-soft: #edf9f0;
 }
 
 .field-label {
   display: flex;
   align-items: center;
   gap: 9px;
-
-  margin-bottom: 15px;
-
-  font-size: 21px;
+  margin-bottom: 11px;
   font-weight: 800;
 }
 
+.field-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--field-color);
+  font-size: 17px;
+}
 
-/* =========================
-   必須・任意バッジ
-========================= */
+.field-title {
+  font-size: 18px;
+}
 
 .required-badge,
 .optional-badge {
+  margin-left: auto;
   padding: 3px 8px;
-
   border-radius: 99px;
-
-  font-size: 12px;
-  letter-spacing: 0.06em;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .required-badge {
-  color: #ed7777;
-  background: #ffe6e6;
+  color: var(--red);
+  background: #ffecee;
 }
 
 .optional-badge {
-  color: #858da6;
-  background: #eef0f6;
+  color: #778194;
+  background: #f0f2f6;
 }
 
-
-/* =========================
-   補足説明
-========================= */
-
-.hint {
-  margin: -4px 0 15px;
-
-  color: #9298ad;
-
-  font-size: 14px;
+.hint,
+.member-note {
+  color: var(--muted);
+  font-size: 12px;
   font-weight: 600;
 }
 
+.hint {
+  margin: -2px 0 10px;
+}
 
-/* =========================
-   入力欄
-========================= */
+.member-note {
+  margin: 8px 0 0;
+}
 
 input,
 textarea {
   width: 100%;
-
-  color: var(--ink);
-  background: var(--input-background);
-
-  border: 1.5px solid var(--border-color);
-  border-radius: 16px;
+  border: 1.5px solid #e7ebf1;
+  border-radius: 14px;
   outline: none;
-
-  font-size: 18px;
+  color: var(--ink);
+  background: var(--field-soft);
+  font-size: 15px;
   font-weight: 600;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 input {
-  height: 58px;
-  padding: 0 18px;
+  height: 48px;
+  padding: 0 14px;
 }
 
 textarea {
-  min-height: 84px;
-  padding: 14px 18px;
-
+  min-height: 72px;
+  padding: 12px 14px;
   resize: vertical;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #b4b9c8;
+  color: #aab2c0;
 }
 
-input:focus,
-textarea:focus {
-  border-color: #ffb5ae;
-
-  box-shadow:
-    0 0 0 4px rgba(255, 116, 116, 0.1);
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--field-color);
+  box-shadow: 0 0 0 3px var(--field-soft);
 }
 
-
-/* =========================
-   持ち時間の選択
-========================= */
-
+/* 持ち時間 */
 .choice-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 8px;
 }
 
 .choice {
@@ -271,10 +318,8 @@ textarea:focus {
 
 .choice input {
   position: absolute;
-
   width: 1px;
   height: 1px;
-
   opacity: 0;
   pointer-events: none;
 }
@@ -282,84 +327,69 @@ textarea:focus {
 .choice label {
   display: grid;
   place-items: center;
-
-  height: 52px;
-
+  height: 44px;
+  border: 1.5px solid #eadfbf;
+  border-radius: 13px;
   color: #858da6;
-  background: var(--input-background);
-
-  border: 1.5px solid var(--border-color);
-  border-radius: 16px;
-
-  font-size: 16px;
+  background: var(--field-soft);
+  font-size: 14px;
   font-weight: 800;
-
   cursor: pointer;
 }
 
 .choice input:checked + label {
-  color: #e96f6f;
-  background: #fff0ed;
-  border-color: #ffb5ae;
+  border-color: var(--orange);
+  color: #a96d00;
+  background: #ffefc2;
 }
 
 .choice input:focus-visible + label {
-  outline: 3px solid rgba(255, 116, 116, 0.25);
+  outline: 3px solid rgba(255, 179, 21, 0.22);
   outline-offset: 2px;
 }
 
-
-/* =========================
-   人数設定
-========================= */
-
+/* 人数設定 */
 .member-control {
   display: grid;
-  grid-template-columns: 54px 1fr 54px;
+  grid-template-columns: 48px 1fr 48px;
   align-items: center;
-
-  max-width: 272px;
-
+  width: 100%;
   overflow: hidden;
-
-  background: var(--input-background);
-
-  border: 1.5px solid var(--border-color);
-  border-radius: 17px;
+  border: 1.5px solid #ded4f3;
+  border-radius: 14px;
+  background: var(--field-soft);
 }
 
 .member-button {
-  height: 55px;
-
-  color: #ed7777;
+  height: 48px;
+  color: var(--purple);
   background: transparent;
-
-  font-size: 27px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 800;
 }
 
 .member-button:hover {
-  background: #fff0ed;
+  background: #ece3ff;
+}
+
+.member-button:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 .member-control input {
-  height: 55px;
+  height: 48px;
   padding: 0;
-
-  text-align: center;
-
-  background: transparent;
   border: 0;
   border-radius: 0;
-
-  font-size: 19px;
+  text-align: center;
+  background: transparent;
+  font-size: 17px;
 }
 
-/* 数値入力欄の上下ボタンを非表示 */
 .member-control input::-webkit-inner-spin-button,
 .member-control input::-webkit-outer-spin-button {
   margin: 0;
-
   appearance: none;
 }
 
@@ -367,128 +397,62 @@ textarea:focus {
   appearance: textfield;
 }
 
-.member-note {
-  margin: 11px 0 0;
-
-  color: #9298ad;
-
-  font-size: 14px;
-  font-weight: 600;
+/* 作成ボタン */
+.submit-button {
+  display: grid;
+  grid-template-columns: 42px 1fr 20px;
+  align-items: center;
+  width: 100%;
+  min-height: 70px;
+  margin-top: 5px;
+  padding: 9px 18px 9px 12px;
+  border-radius: 20px;
+  color: #ffffff;
+  background: var(--red);
+  box-shadow: 0 10px 22px rgba(255, 67, 80, 0.22);
+  font-size: 19px;
+  font-weight: 800;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-
-/* =========================
-   送信ボタン
-========================= */
-
-.submit-button {
-  width: 100%;
-  min-height: 105px;
-  margin-top: 25px;
-
-  color: #ffffff;
-
-  background:
-    linear-gradient(
-      100deg,
-      #ff887d,
-      #ff686d
-    );
-
-  border-radius: 35px;
-
-  font-size: 27px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-
-  box-shadow:
-    0 16px 28px rgba(246, 109, 109, 0.25);
+.submit-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: var(--red);
+  background: #ffffff;
+  font-size: 16px;
 }
 
 .submit-button:hover {
-  opacity: 0.92;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(255, 67, 80, 0.28);
 }
 
 .submit-button:active {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 
-
-/* =========================
-   スマートフォン対応
-========================= */
-
-@media (max-width: 600px) {
-
+@media (max-width: 360px) {
   .screen {
-    padding: 42px 18px 28px;
-  }
-
-  .topbar {
-    grid-template-columns: 56px 1fr 56px;
-  }
-
-  .back-button {
-    width: 56px;
-    height: 56px;
-
-    font-size: 37px;
+    padding-right: 14px;
+    padding-left: 14px;
   }
 
   .page-title {
-    font-size: clamp(21px, 6vw, 30px);
-  }
-
-  .sparkle {
-    font-size: 25px;
-  }
-
-  .intro {
-    margin: 39px 0 27px;
-    padding: 25px;
-
-    border-radius: 29px;
-  }
-
-  .intro h2 {
-    font-size: 22px;
-  }
-
-  .intro p {
-    font-size: 15px;
-  }
-
-  .create-room-form {
-    gap: 16px;
+    font-size: 20px;
   }
 
   .field {
-    padding: 21px 20px;
-
-    border-radius: 26px;
+    padding-right: 13px;
+    padding-left: 13px;
   }
+}
 
-  .field-label {
-    margin-bottom: 12px;
-
-    font-size: 18px;
-  }
-
-  input,
-  textarea {
-    font-size: 16px;
-  }
-
-  .choice label {
-    font-size: 14px;
-  }
-
-  .submit-button {
-    min-height: 78px;
-    margin-top: 17px;
-
-    border-radius: 27px;
-
-    font-size: 21px;
+@media (min-width: 601px) and (hover: hover) and (pointer: fine) {
+  .screen {
+    padding-top: 38px;
   }
 }

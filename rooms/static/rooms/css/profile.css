@@ -2,27 +2,14 @@
    基本設定
 ========================= */
 
-* {
-  box-sizing: border-box;
-}
-
 html {
   font-size: 16px;
 }
 
 body {
-  margin: 0;
-  min-height: 100vh;
-  background: #eeeeee;
   color: #263746;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Hiragino Kaku Gothic ProN",
-    "Hiragino Sans",
-    "Yu Gothic",
-    "Meiryo",
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
 }
 
 a {
@@ -30,22 +17,25 @@ a {
   text-decoration: none;
 }
 
-
 /* =========================
    アプリ全体
 ========================= */
 
-.app {
+.profile-screen {
   position: relative;
   width: 100%;
-  max-width: 390px;
-  min-height: 844px;
-  margin: 0 auto;
+  height: 100%;
   padding: 32px 20px 55px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
   background: #ffffff;
 }
 
+.profile-screen::-webkit-scrollbar {
+  display: none;
+}
 
 /* =========================
    背景装飾
@@ -106,7 +96,6 @@ a {
   background: #ddf7df;
 }
 
-
 /* =========================
    ヘッダー
 ========================= */
@@ -140,16 +129,13 @@ a {
   font-size: 45px;
   font-weight: 300;
   line-height: 1;
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .back-button:hover {
   background: #e4d6ff;
   transform: translateX(-2px);
 }
-
 
 /* =========================
    メイン案内
@@ -160,7 +146,6 @@ a {
   z-index: 2;
   text-align: center;
 }
-
 
 /* =========================
    プロフィールアイコン
@@ -246,7 +231,6 @@ a {
   color: #ffae00;
 }
 
-
 /* =========================
    メッセージ
 ========================= */
@@ -295,7 +279,6 @@ a {
   line-height: 1.8;
 }
 
-
 /* =========================
    共通ボタン
 ========================= */
@@ -311,9 +294,7 @@ a {
   padding: 9px 18px 9px 12px;
   border-radius: 17px;
   font-weight: 900;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .main-button:hover {
@@ -341,7 +322,6 @@ a {
   font-weight: 300;
   line-height: 1;
 }
-
 
 /* =========================
    ログインボタン
@@ -387,7 +367,6 @@ a {
   border-radius: 4px;
   background: #2fbd60;
 }
-
 
 /* =========================
    新規登録ボタン
@@ -436,7 +415,6 @@ a {
   font-size: 20px;
   font-weight: 900;
 }
-
 
 /* =========================
    登録メリット
@@ -529,7 +507,6 @@ a {
   line-height: 1.6;
 }
 
-
 /* =========================
    レートグラフアイコン
 ========================= */
@@ -564,14 +541,12 @@ a {
   font-size: 18px;
 }
 
-
 /* =========================
    小さいスマホ対応
 ========================= */
 
 @media (max-width: 360px) {
-
-  .app {
+  .profile-screen {
     padding-right: 14px;
     padding-left: 14px;
   }
@@ -615,34 +590,18 @@ a {
   .benefit-item p {
     font-size: 8px;
   }
-
 }
-
 
 /* =========================
    パソコン表示
 ========================= */
 
-@media (min-width: 391px) {
+@media (min-width: 601px) and (hover: hover) and (pointer: fine) {
+  .menu-item {
+    text-decoration: none;
 
-  body {
-    padding: 24px 0;
+    color: inherit;
+
+    display: flex;
   }
-
-  .app {
-    min-height: calc(100vh - 48px);
-    border-radius: 30px;
-    box-shadow: 0 12px 35px rgba(37, 51, 66, 0.14);
-  }
-.menu-item{
-
-    text-decoration:none;
-
-    color:inherit;
-
-    display:flex;
-
-}
-
-
 }

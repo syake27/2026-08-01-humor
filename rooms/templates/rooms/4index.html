@@ -1,15 +1,19 @@
 <!-- ランク戦時の勝ちのresult画面 -->
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>しりとり - けっか画面(ランク戦かち)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/rooms/static/rooms/4style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>しりとり - けっか画面(ランク戦かち)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/rooms/static/rooms/4style.css">
 
 </head>
+
 <body>
 
   <div class="phone">
@@ -85,65 +89,66 @@
     </div>
   </div>
 
-<script>
-// 紙吹雪の生成
-const confetti = document.getElementById('confetti');
-const confettiColors = ['#F2545B','#4A90E2','#FFB627','#4CAF50','#8B5CF6'];
-for(let i=0;i<26;i++){
-  const el = document.createElement('i');
-  el.style.left = Math.random()*100+'%';
-  el.style.background = confettiColors[i % confettiColors.length];
-  el.style.animationDuration = (2.4 + Math.random()*1.6)+'s';
-  el.style.animationDelay = (Math.random()*2)+'s';
-  confetti.appendChild(el);
-}
+  <script>
+    // 紙吹雪の生成
+    const confetti = document.getElementById('confetti');
+    const confettiColors = ['#F2545B', '#4A90E2', '#FFB627', '#4CAF50', '#8B5CF6'];
+    for (let i = 0; i < 26; i++) {
+      const el = document.createElement('i');
+      el.style.left = Math.random() * 100 + '%';
+      el.style.background = confettiColors[i % confettiColors.length];
+      el.style.animationDuration = (2.4 + Math.random() * 1.6) + 's';
+      el.style.animationDelay = (Math.random() * 2) + 's';
+      confetti.appendChild(el);
+    }
 
-// レートのカウントアップ演出(1200 → 1230)
-const rateNewEl = document.getElementById('rateNew');
-const from = 1200, to = 1230, duration = 900;
-const start = performance.now();
-function step(now){
-  const p = Math.min((now - start) / duration, 1);
-  const eased = 1 - Math.pow(1 - p, 3);
-  rateNewEl.textContent = Math.round(from + (to - from) * eased);
-  if(p < 1) requestAnimationFrame(step);
-}
-requestAnimationFrame(step);
+    // レートのカウントアップ演出(1200 → 1230)
+    const rateNewEl = document.getElementById('rateNew');
+    const from = 1200, to = 1230, duration = 900;
+    const start = performance.now();
+    function step(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      rateNewEl.textContent = Math.round(from + (to - from) * eased);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
 
-// ---- じゅんい・順位表(参加人数はこの配列の要素数で自動的に決まる) ----
-const players = [
-  { name: 'あなた',  isMe: true },
-  { name: 'ゆうた',  },
-  { name: 'さくら',  },
-  { name: 'けんと',  },
-];
+    // ---- じゅんい・順位表(参加人数はこの配列の要素数で自動的に決まる) ----
+    const players = [
+      { name: 'あなた', isMe: true },
+      { name: 'ゆうた', },
+      { name: 'さくら', },
+      { name: 'けんと', },
+    ];
 
-function renderRanking(players){
-  const sorted = [...players].sort((a, b) => b.score - a.score);
-  const total = sorted.length;
-  const myRank = sorted.findIndex(p => p.isMe) + 1;
+    function renderRanking(players) {
+      const sorted = [...players].sort((a, b) => b.score - a.score);
+      const total = sorted.length;
+      const myRank = sorted.findIndex(p => p.isMe) + 1;
 
-  document.getElementById('rankPos').textContent = myRank;
-  document.getElementById('rankTotal').textContent = total;
+      document.getElementById('rankPos').textContent = myRank;
+      document.getElementById('rankTotal').textContent = total;
 
-  const medal = { 1: '🥇', 2: '🥈', 3: '🥉' };
-  const board = document.getElementById('leaderboard');
-  board.innerHTML = '';
+      const medal = { 1: '🥇', 2: '🥈', 3: '🥉' };
+      const board = document.getElementById('leaderboard');
+      board.innerHTML = '';
 
-  sorted.forEach((p, i) => {
-    const rank = i + 1;
-    const row = document.createElement('div');
-    row.className = 'rank-row' + (p.isMe ? ' me' : '') + (rank <= 3 ? ' top' + rank : '');
-    row.innerHTML = `
+      sorted.forEach((p, i) => {
+        const rank = i + 1;
+        const row = document.createElement('div');
+        row.className = 'rank-row' + (p.isMe ? ' me' : '') + (rank <= 3 ? ' top' + rank : '');
+        row.innerHTML = `
       <div class="rank-num">${medal[rank] || rank}</div>
       <div class="rank-name">${p.name}${p.isMe ? '(あなた)' : ''}</div>
       <div class="rank-score">${p.score}</div>
     `;
-    board.appendChild(row);
-  });
-}
+        board.appendChild(row);
+      });
+    }
 
-renderRanking(players);
-</script>
+    renderRanking(players);
+  </script>
 </body>
+
 </html>

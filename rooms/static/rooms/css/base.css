@@ -13,12 +13,13 @@ body {
 }
 
 body {
-  background-color: #eeeeee;
+  background-color: #ffffff;
 }
 
 .app {
-  position: relative;
-  width: 100vw;
+  position: fixed;
+  inset: 0;
+  width: 100%;
   max-width: none;
   height: 100vh;
   height: 100dvh;
@@ -28,7 +29,7 @@ body {
 }
 
 /* PCではアプリをスマホ端末風の枠に収める */
-@media (min-width: 601px) {
+@media (min-width: 601px) and (hover: hover) and (pointer: fine) {
   body {
     display: flex;
     align-items: center;
@@ -38,6 +39,8 @@ body {
   }
 
   .app {
+    position: relative;
+    inset: auto;
     width: 390px;
     max-width: 390px;
     height: min(844px, calc(100dvh - 48px));

@@ -1,209 +1,198 @@
-<!DOCTYPE html>
-<html lang="ja">
+{% extends "rooms/base.html" %}
+{% load static %}
 
-<head>
-  <meta charset="UTF-8">
+{% block title %}プロフィール｜しりとり{% endblock %}
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rooms/css/profile.css' %}?v=20260805-2">
+{% endblock %}
 
-  <title>プロフィール｜しりとり</title>
+{% block content %}
+<div class="profile-screen">
 
-  <link rel="stylesheet" href="profile.css">
-</head>
+  <!-- 背景の飾り -->
+  <div class="decoration decoration-top-left"></div>
+  <div class="decoration decoration-blue"></div>
+  <div class="decoration decoration-red"></div>
+  <div class="decoration decoration-green"></div>
+  <div class="decoration decoration-purple"></div>
+  <div class="decoration decoration-bottom-right"></div>
 
-<body>
+  <!-- ヘッダー -->
+  <header class="header">
 
-  <main class="app">
+    <button type="button" class="back-button" onclick="history.back()" aria-label="前の画面へ戻る">
+      ‹
+    </button>
 
-    <!-- 背景の飾り -->
-    <div class="decoration decoration-top-left"></div>
-    <div class="decoration decoration-blue"></div>
-    <div class="decoration decoration-red"></div>
-    <div class="decoration decoration-green"></div>
-    <div class="decoration decoration-purple"></div>
-    <div class="decoration decoration-bottom-right"></div>
+    <h1>プロフィール</h1>
 
-    <!-- ヘッダー -->
-    <header class="header">
+    <div class="header-space"></div>
 
-     <button type="button"
-        class="back-button"
-        onclick="history.back()"
-        aria-label="前の画面へ戻る">
-  ‹
-</button>
+  </header>
 
-      <h1>プロフィール</h1>
+  <!-- メイン案内 -->
+  <section class="account-guide">
 
-      <div class="header-space"></div>
+    <!-- プロフィールアイコン -->
+    <div class="profile-icon-area">
 
-    </header>
+      <span class="effect-line effect-line-left"></span>
+      <span class="effect-line effect-line-center"></span>
+      <span class="effect-line effect-line-right"></span>
 
-    <!-- メイン案内 -->
-    <section class="account-guide">
+      <span class="sparkle sparkle-left">✦</span>
+      <span class="sparkle sparkle-right">✦</span>
 
-      <!-- プロフィールアイコン -->
-      <div class="profile-icon-area">
+      <div class="profile-icon">
+        <span class="profile-head"></span>
+        <span class="profile-body"></span>
+      </div>
 
-        <span class="effect-line effect-line-left"></span>
-        <span class="effect-line effect-line-center"></span>
-        <span class="effect-line effect-line-right"></span>
+    </div>
 
-        <span class="sparkle sparkle-left">✦</span>
-        <span class="sparkle sparkle-right">✦</span>
+    <!-- 説明 -->
+    <div class="message-area">
 
-        <div class="profile-icon">
-          <span class="profile-head"></span>
-          <span class="profile-body"></span>
+      <h2>
+        プロフィールを利用するには
+      </h2>
+
+      <p class="required-message">
+        <span class="login-color">ログイン</span>
+        または<br>
+        <span class="register-color">アカウント登録</span>
+        が必要です
+      </p>
+
+      <div class="dot-line">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <p class="description">
+        アカウントを作成すると、あなたの戦績や<br>
+        レートを保存できるようになります。
+      </p>
+
+    </div>
+
+    <!-- ログインボタン -->
+    <a href="login.html" class="main-button login-button">
+
+      <span class="button-icon lock-icon">
+        <span class="lock-top"></span>
+        <span class="lock-body"></span>
+      </span>
+
+      <span class="button-text">ログイン</span>
+
+      <span class="button-arrow">›</span>
+
+    </a>
+
+    <!-- 新規登録ボタン -->
+    <a href="register.html" class="main-button register-button">
+
+      <span class="button-icon user-add-icon">
+        <span class="small-user-head"></span>
+        <span class="small-user-body"></span>
+        <span class="plus-mark">＋</span>
+      </span>
+
+      <span class="button-text">新規登録</span>
+
+      <span class="button-arrow">›</span>
+
+    </a>
+
+  </section>
+
+  <!-- 登録メリット -->
+  <section class="benefits-card">
+
+    <div class="benefits-title">
+      登録するとこんなに便利！
+    </div>
+
+    <div class="benefits-list">
+
+      <!-- レート保存 -->
+      <article class="benefit-item">
+
+        <div class="benefit-icon rate-save-icon">
+          <span class="chart-bar chart-bar-1"></span>
+          <span class="chart-bar chart-bar-2"></span>
+          <span class="chart-bar chart-bar-3"></span>
+          <span class="chart-arrow">↗</span>
         </div>
 
-      </div>
+        <h3>レート保存</h3>
 
-      <!-- 説明 -->
-      <div class="message-area">
-
-        <h2>
-          プロフィールを利用するには
-        </h2>
-
-        <p class="required-message">
-          <span class="login-color">ログイン</span>
-          または<br>
-          <span class="register-color">アカウント登録</span>
-          が必要です
+        <p>
+          レートの変動を<br>
+          記録できます
         </p>
 
-        <div class="dot-line">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
+      </article>
+
+      <!-- 戦績保存 -->
+      <article class="benefit-item">
+
+        <div class="benefit-icon result-save-icon">
+          🏆
         </div>
 
-        <p class="description">
-          アカウントを作成すると、あなたの戦績や<br>
-          レートを保存できるようになります。
+        <h3>戦績保存</h3>
+
+        <p>
+          勝利数や勝率を<br>
+          保存できます
         </p>
 
-      </div>
+      </article>
 
-      <!-- ログインボタン -->
-      <a href="login.html" class="main-button login-button">
+      <!-- 称号獲得 -->
+      <article class="benefit-item">
 
-        <span class="button-icon lock-icon">
-          <span class="lock-top"></span>
-          <span class="lock-body"></span>
-        </span>
+        <div class="benefit-icon title-icon">
+          ★
+        </div>
 
-        <span class="button-text">ログイン</span>
+        <h3>称号獲得</h3>
 
-        <span class="button-arrow">›</span>
+        <p>
+          条件を達成して<br>
+          称号を獲得できます
+        </p>
 
-      </a>
+      </article>
 
-      <!-- 新規登録ボタン -->
-      <a href="register.html" class="main-button register-button">
+      <!-- ランキング -->
+      <article class="benefit-item">
 
-        <span class="button-icon user-add-icon">
-          <span class="small-user-head"></span>
-          <span class="small-user-body"></span>
-          <span class="plus-mark">＋</span>
-        </span>
+        <div class="benefit-icon ranking-icon">
+          ♛
+        </div>
 
-        <span class="button-text">新規登録</span>
+        <h3>ランキング参加</h3>
 
-        <span class="button-arrow">›</span>
+        <p>
+          ランキングに参加して<br>
+          上位を目指そう！
+        </p>
 
-      </a>
+      </article>
 
-    </section>
+    </div>
 
-    <!-- 登録メリット -->
-    <section class="benefits-card">
+  </section>
 
-      <div class="benefits-title">
-        登録するとこんなに便利！
-      </div>
-
-      <div class="benefits-list">
-
-        <!-- レート保存 -->
-        <article class="benefit-item">
-
-          <div class="benefit-icon rate-save-icon">
-            <span class="chart-bar chart-bar-1"></span>
-            <span class="chart-bar chart-bar-2"></span>
-            <span class="chart-bar chart-bar-3"></span>
-            <span class="chart-arrow">↗</span>
-          </div>
-
-          <h3>レート保存</h3>
-
-          <p>
-            レートの変動を<br>
-            記録できます
-          </p>
-
-        </article>
-
-        <!-- 戦績保存 -->
-        <article class="benefit-item">
-
-          <div class="benefit-icon result-save-icon">
-            🏆
-          </div>
-
-          <h3>戦績保存</h3>
-
-          <p>
-            勝利数や勝率を<br>
-            保存できます
-          </p>
-
-        </article>
-
-        <!-- 称号獲得 -->
-        <article class="benefit-item">
-
-          <div class="benefit-icon title-icon">
-            ★
-          </div>
-
-          <h3>称号獲得</h3>
-
-          <p>
-            条件を達成して<br>
-            称号を獲得できます
-          </p>
-
-        </article>
-
-        <!-- ランキング -->
-        <article class="benefit-item">
-
-          <div class="benefit-icon ranking-icon">
-            ♛
-          </div>
-
-          <h3>ランキング参加</h3>
-
-          <p>
-            ランキングに参加して<br>
-            上位を目指そう！
-          </p>
-
-        </article>
-
-      </div>
-
-    </section>
-
-  </main>
-
-</body>
-
-</html>
+</div>
+{% endblock %}

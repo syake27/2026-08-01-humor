@@ -1,118 +1,106 @@
-<!doctype html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>新しいルームをつくる</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;600;700;800&display=swap');
+{% extends "rooms/base.html" %}
+{% load static %}
 
-    :root { --ink: #3e455f; --muted: #858da6; --coral: #ff7474; }
-    * { box-sizing: border-box; }
-    body { min-height: 100vh; margin: 0; background: #f9f9fc; color: var(--ink); font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif; }
-    button, input, select, textarea { font: inherit; }
-    button { border: 0; cursor: pointer; }
-    .screen { width: min(100%, 390px); min-height: 100vh; margin: auto; padding: 72px 21px 52px; background: #fff; }
+{% block title %}新しいルームをつくる{% endblock %}
 
-    .topbar { display: grid; grid-template-columns: 76px 1fr 76px; align-items: center; }
-    .back { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%; background: #fff; color: var(--ink); font-size: 46px; line-height: 1; box-shadow: 0 10px 26px rgba(59,57,80,.09); }
-    .topbar h1 { margin: 0; text-align: center; font-size: 31px; font-weight: 800; letter-spacing: .035em; }
-    .sparkle { justify-self: end; color: #d7a12e; font-size: 32px; }
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="{% static 'rooms/css/createroom.css' %}?v=20260805-2">
+{% endblock %}
 
-    .intro { margin: 53px 0 34px; padding: 31px 37px; border-radius: 38px; background: linear-gradient(110deg, #fff0db, #ffe4e5); }
-    .intro h2 { margin: 0 0 8px; font-size: 27px; font-weight: 800; }
-    .intro p { margin: 0; color: #747b90; font-size: 18px; font-weight: 600; line-height: 1.7; }
+{% block content %}
+<div class="screen">
+  <div class="create-decoration decoration-top-left" aria-hidden="true"></div>
+  <div class="create-decoration decoration-bottom-right" aria-hidden="true"></div>
+  <div class="create-dot dot-pink" aria-hidden="true"></div>
+  <div class="create-dot dot-blue" aria-hidden="true"></div>
+  <div class="create-dot dot-purple" aria-hidden="true"></div>
 
-    form { display: grid; gap: 21px; }
-    .field { padding: 25px 28px; border-radius: 31px; background: #fff; box-shadow: 0 11px 29px rgba(57,59,77,.075); }
-    .field-label { display: flex; align-items: center; gap: 9px; margin-bottom: 15px; font-size: 21px; font-weight: 800; }
-    .required { padding: 3px 8px; border-radius: 99px; background: #ffe6e6; color: #ed7777; font-size: 12px; letter-spacing: .06em; }
-    .hint { margin: -4px 0 15px; color: #9298ad; font-size: 14px; font-weight: 600; }
-    input, textarea, select { width: 100%; outline: none; border: 1.5px solid #eef0f6; border-radius: 16px; color: var(--ink); background: #fafbfe; font-size: 18px; font-weight: 600; }
-    input, select { height: 58px; padding: 0 18px; }
-    textarea { min-height: 84px; padding: 14px 18px; resize: vertical; }
-    input::placeholder, textarea::placeholder { color: #b4b9c8; }
+  <header class="topbar">
+    <a class="back-button" href="{% url 'rooms:match' %}" aria-label="マッチ画面へ戻る">‹</a>
+    <h1 class="page-title">ルーム作成</h1>
+    <span class="sparkle" aria-hidden="true">✦</span>
+  </header>
 
-    .choice-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .choice { position: relative; }
-    .choice input { position: absolute; opacity: 0; pointer-events: none; }
-    .choice label { display: grid; place-items: center; height: 52px; border: 1.5px solid #eef0f6; border-radius: 16px; color: #858da6; background: #fafbfe; font-size: 16px; font-weight: 800; cursor: pointer; }
-    .choice input:checked + label { border-color: #ffb5ae; color: #e96f6f; background: #fff0ed; }
-    .member-control { display: grid; grid-template-columns: 54px 1fr 54px; align-items: center; max-width: 272px; overflow: hidden; border: 1.5px solid #eef0f6; border-radius: 17px; background: #fafbfe; }
-    .member-control button { height: 55px; color: #ed7777; background: transparent; font-size: 27px; font-weight: 600; }
-    .member-control input { height: 55px; padding: 0; border: 0; border-radius: 0; text-align: center; background: transparent; font-size: 19px; }
-    .member-note { margin: 11px 0 0; color: #9298ad; font-size: 14px; font-weight: 600; }
-
-    .submit { width: 100%; min-height: 105px; margin-top: 25px; border-radius: 35px; color: #fff; background: linear-gradient(100deg, #ff887d, #ff686d); box-shadow: 0 16px 28px rgba(246,109,109,.25); font-size: 27px; font-weight: 800; letter-spacing: .02em; }
-
-    @media (max-width: 600px) {
-      .screen { padding: 42px 18px 28px; }
-      .topbar { grid-template-columns: 56px 1fr 56px; }
-      .back { width: 56px; height: 56px; font-size: 37px; }
-      .topbar h1 { font-size: clamp(23px, 6.5vw, 30px); }
-      .sparkle { font-size: 25px; }
-      .intro { margin: 39px 0 27px; padding: 25px; border-radius: 29px; }
-      .intro h2 { font-size: 22px; }.intro p { font-size: 15px; }
-      form { gap: 16px; }.field { padding: 21px 20px; border-radius: 26px; }
-      .field-label { margin-bottom: 12px; font-size: 18px; }
-      input, textarea, select { font-size: 16px; }.choice label { font-size: 14px; }
-      .submit { min-height: 78px; margin-top: 17px; border-radius: 27px; font-size: 21px; }
-    }
-  </style>
-</head>
-<body>
-  <main class="screen">
-    <header class="topbar">
-      <button class="back" type="button" aria-label="戻る">‹</button>
-      <h1>新しいルームをつくる</h1>
-      <span class="sparkle" aria-hidden="true">✦</span>
-    </header>
-
-    <section class="intro">
+  <section class="intro">
+    <span class="intro-icon" aria-hidden="true">
+      <i class="fa-solid fa-door-open"></i>
+    </span>
+    <div>
       <h2>どんなしりとりにする？</h2>
       <p>ルールを決めて、とっておきのルームをつくろう。</p>
+    </div>
+  </section>
+
+  <form class="create-room-form" action="{% url 'rooms:wait' %}" method="get">
+    <section class="field field-password">
+      <label class="field-label" for="password">
+        <span class="field-icon" aria-hidden="true"><i class="fa-solid fa-key"></i></span>
+        <span class="field-title">合言葉</span>
+        <span class="optional-badge">任意</span>
+      </label>
+      <p class="hint">知っている人だけが参加できるようにします。</p>
+      <input id="password" type="password" placeholder="合言葉を入力">
     </section>
 
-    <form>
-      <section class="field">
-        <label class="field-label" for="password">合言葉 <span class="required">任意</span></label>
-        <p class="hint">知っている人だけが参加できるようにします。</p>
-        <input id="password" type="password" placeholder="合言葉を入力" />
-      </section>
-
-      <section class="field">
-        <span class="field-label">持ち時間 <span class="required">必須</span></span>
-        <div class="choice-row" role="radiogroup" aria-label="持ち時間">
-          <div class="choice"><input id="time30" name="time" type="radio" /><label for="time30">30秒</label></div>
-          <div class="choice"><input id="time60" name="time" type="radio" checked /><label for="time60">60秒</label></div>
-          <div class="choice"><input id="time90" name="time" type="radio" /><label for="time90">90秒</label></div>
+    <section class="field field-time">
+      <span class="field-label">
+        <span class="field-icon" aria-hidden="true"><i class="fa-solid fa-clock"></i></span>
+        <span class="field-title">持ち時間</span>
+        <span class="required-badge">必須</span>
+      </span>
+      <div class="choice-row" role="radiogroup" aria-label="持ち時間">
+        <div class="choice">
+          <input id="time30" name="time" type="radio">
+          <label for="time30">30秒</label>
         </div>
-      </section>
-
-      <section class="field">
-        <label class="field-label" for="members">人数設定 <span class="required">必須</span></label>
-        <div class="member-control">
-          <button type="button" aria-label="人数を減らす" onclick="changeMembers(-1)">−</button>
-          <input id="members" type="number" min="2" max="8" value="4" aria-label="参加人数" />
-          <button type="button" aria-label="人数を増やす" onclick="changeMembers(1)">＋</button>
+        <div class="choice">
+          <input id="time60" name="time" type="radio" checked>
+          <label for="time60">60秒</label>
         </div>
-        <p class="member-note">2〜8人まで設定できます。</p>
-      </section>
+        <div class="choice">
+          <input id="time90" name="time" type="radio">
+          <label for="time90">90秒</label>
+        </div>
+      </div>
+    </section>
 
-      <section class="field">
-        <label class="field-label" for="theme">お題 <span class="required">任意</span></label>
-        <p class="hint">例：食べもの、動物、アニメ。空欄ならなんでもあり！</p>
-        <textarea id="theme" placeholder="お題を入力"></textarea>
-      </section>
+    <section class="field field-members">
+      <label class="field-label" for="members">
+        <span class="field-icon" aria-hidden="true"><i class="fa-solid fa-user-group"></i></span>
+        <span class="field-title">人数設定</span>
+        <span class="required-badge">必須</span>
+      </label>
+      <div class="member-control">
+        <button id="decrease-members" class="member-button" type="button" aria-label="人数を減らす">−</button>
+        <input id="members" name="members" type="number" min="2" max="4" value="4" aria-label="参加人数">
+        <button id="increase-members" class="member-button" type="button" aria-label="人数を増やす">＋</button>
+      </div>
+      <p class="member-note">2〜4人まで設定できます。</p>
+    </section>
 
-      <button class="submit" type="submit">ルームをつくる</button>
-    </form>
-  </main>
-  <script>
-    function changeMembers(amount) {
-      const members = document.getElementById('members');
-      members.value = Math.min(8, Math.max(2, Number(members.value) + amount));
-    }
-  </script>
-</body>
-</html>
+    <section class="field field-theme">
+      <label class="field-label" for="theme">
+        <span class="field-icon" aria-hidden="true"><i class="fa-solid fa-lightbulb"></i></span>
+        <span class="field-title">お題</span>
+        <span class="optional-badge">任意</span>
+      </label>
+      <p class="hint">例：食べもの、動物、アニメ。空欄ならなんでもあり！</p>
+      <textarea id="theme" placeholder="お題を入力"></textarea>
+    </section>
+
+    <button class="submit-button" type="submit">
+      <span class="submit-icon" aria-hidden="true"><i class="fa-solid fa-plus"></i></span>
+      ルームをつくる
+      <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+    </button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'rooms/js/createroom.js' %}?v=20260805-2"></script>
+{% endblock %}

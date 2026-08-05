@@ -1,60 +1,57 @@
 *{
     margin:0;
     padding:0;
-    box-sizing:border-box;
     font-family:'Noto Sans JP',sans-serif;
 }
 
 body{
-    background:#f6f7fb;
-    display:flex;
-    justify-content:center;
-    padding:30px;
+    color:#263746;
 }
 
 .phone{
 
-    width:390px;
-    min-height:844px;
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
     background:white;
-    border-radius:35px;
     overflow:hidden;
     position:relative;
-    padding:28px 24px 40px;
+    padding:20px 16px 28px;
 }
 
 /* 背景 */
 
 .bg1{
 
-    width:180px;
-    height:180px;
+    width:150px;
+    height:150px;
     background:#eef0ff;
     border-radius:50%;
     position:absolute;
     z-index:0;
-    left:-90px;
-    top:-90px;
+    left:-75px;
+    top:-75px;
     pointer-events:none;
 }
 
 .bg2{
 
-    width:170px;
-    height:170px;
+    width:145px;
+    height:145px;
     background:#e9f8ea;
     border-radius:50%;
     position:absolute;
     z-index:0;
-    right:-90px;
-    bottom:-90px;
+    right:-72px;
+    bottom:-72px;
     pointer-events:none;
 }
 
 .dot{
 
-    width:18px;
-    height:18px;
+    width:12px;
+    height:12px;
     border-radius:50%;
     position:absolute;
     z-index:0;
@@ -130,28 +127,39 @@ header{
 
 header h1{
 
-    font-size:32px;
+    font-size:24px;
     font-weight:800;
 }
 
 .circle-btn{
 
-    width:58px;
-    height:58px;
+    width:46px;
+    height:46px;
     border-radius:50%;
     border:none;
     background:white;
-    box-shadow:0 8px 20px rgba(0,0,0,.08);
-    font-size:23px;
+    box-shadow:0 6px 16px rgba(0,0,0,.08);
+    font-size:18px;
+    color:#263746;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-decoration:none;
+}
+
+.header-spacer{
+    width:46px;
+    height:46px;
 }
 
 /* コイン */
 
 .wallet{
 
-    display:flex;
-    gap:18px;
-    margin-top:45px;
+    display:grid;
+    grid-template-columns:1.35fr 1fr;
+    gap:10px;
+    margin-top:24px;
 }
 
 .wallet-card{
@@ -159,10 +167,10 @@ header h1{
     flex:1;
     display:flex;
     align-items:center;
-    gap:15px;
+    gap:8px;
 
-    border-radius:22px;
-    padding:18px;
+    border-radius:16px;
+    padding:10px;
 
     background:white;
 }
@@ -170,17 +178,36 @@ header h1{
 .coin{
 
     border:2px solid #ffc938;
+    justify-content:center;
 }
 
-.point{
-
+.history-button{
+    min-height:64px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:7px;
     border:2px solid #cba8ff;
+    border-radius:16px;
+    color:#7650b8;
+    background:#fff;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.history-button i{
+    font-size:18px;
+}
+
+.history-button:active{
+    transform:scale(.97);
 }
 
 .icon{
 
-    width:56px;
-    height:56px;
+    width:40px;
+    height:40px;
 
     border-radius:50%;
     display:flex;
@@ -188,7 +215,7 @@ header h1{
     align-items:center;
 
     color:white;
-    font-size:24px;
+    font-size:17px;
 }
 
 .yellow{
@@ -196,20 +223,15 @@ header h1{
     background:#ffbe20;
 }
 
-.star{
-
-    background:#ffc92f;
-}
-
 .wallet span{
 
-    font-size:15px;
+    font-size:11px;
 }
 
 .wallet h2{
 
-    font-size:22px;
-    margin-top:2px;
+    font-size:16px;
+    margin-top:1px;
 }
 
 /* タイトル */
@@ -219,39 +241,52 @@ header h1{
     display:flex;
     justify-content:center;
     align-items:center;
-    gap:12px;
+    gap:8px;
 
-    margin:42px 0 25px;
+    margin:26px 0 16px;
 }
 
 .recommend i{
 
     color:#ff5b6f;
-    font-size:26px;
+    font-size:19px;
 }
 
 .recommend h3{
 
-    font-size:26px;
+    font-size:19px;
 }
 
 /* 商品 */
 
 .shop{
 
+    flex:1;
+    min-height:0;
     display:flex;
     flex-direction:column;
-    gap:20px;
+    gap:12px;
+    overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-width:none;
+    padding-bottom:4px;
+}
+
+.shop::-webkit-scrollbar{
+    display:none;
 }
 
 .item{
 
+    flex:0 0 auto;
     display:flex;
     justify-content:space-between;
     align-items:center;
 
-    padding:18px;
-    border-radius:26px;
+    gap:10px;
+    padding:12px;
+    border-radius:18px;
 
     background:white;
 }
@@ -285,13 +320,20 @@ header h1{
 
     display:flex;
     align-items:center;
-    gap:18px;
+    flex:1;
+    min-width:0;
+    gap:10px;
+}
+
+.left > div:last-child{
+    min-width:0;
 }
 
 .item-icon{
 
-    width:72px;
-    height:72px;
+    width:48px;
+    height:48px;
+    flex:0 0 48px;
 
     border-radius:50%;
 
@@ -300,7 +342,7 @@ header h1{
     align-items:center;
 
     color:white;
-    font-size:32px;
+    font-size:21px;
 }
 
 .red-bg{
@@ -330,13 +372,14 @@ header h1{
 
 .left h4{
 
-    font-size:27px;
-    margin-bottom:5px;
+    font-size:16px;
+    margin-bottom:3px;
 }
 
 .left p{
 
-    font-size:16px;
+    font-size:11px;
+    line-height:1.4;
     color:#444;
 }
 
@@ -345,12 +388,13 @@ header h1{
     display:flex;
     flex-direction:column;
     align-items:flex-end;
-    gap:12px;
+    flex:0 0 auto;
+    gap:7px;
 }
 
 .price{
 
-    font-size:24px;
+    font-size:14px;
     font-weight:700;
 }
 
@@ -364,11 +408,11 @@ header h1{
     border:none;
     color:white;
 
-    width:110px;
-    height:50px;
+    width:76px;
+    height:36px;
 
     border-radius:999px;
-    font-size:20px;
+    font-size:13px;
     font-weight:700;
 
     cursor:pointer;

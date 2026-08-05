@@ -1,15 +1,14 @@
 "use strict";
 
 const MIN_MEMBERS = 2;
-const MAX_MEMBERS = 8;
+const MAX_MEMBERS = 4;
 
 const membersInput = document.getElementById("members");
 const decreaseButton = document.getElementById("decrease-members");
 const increaseButton = document.getElementById("increase-members");
-const backButton = document.querySelector(".back-button");
 
 /**
- * 人数を2〜8人の範囲に調整する
+ * 人数を2〜4人の範囲に調整する
  *
  * @param {number} amount 増減させる人数
  */
@@ -64,9 +63,5 @@ increaseButton.addEventListener("click", () => {
 membersInput.addEventListener("change", validateMemberValue);
 
 membersInput.addEventListener("input", updateMemberButtons);
-
-backButton.addEventListener("click", () => {
-  window.history.back();
-});
 
 updateMemberButtons();

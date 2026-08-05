@@ -1,17 +1,15 @@
-<!DOCTYPE html>
-<html lang="ja">
+{% extends "rooms/base.html" %}
+{% load static %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block title %}ロシアンしりとり｜ルール説明{% endblock %}
+
+{% block extra_css %}
   <meta name="description" content="ロシアンしりとりのルール説明ページ">
-  <title>ロシアンしりとり｜ルール説明</title>
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'rooms/css/rules.css' %}">
-</head>
+  <link rel="stylesheet" href="{% static 'rooms/css/rules.css' %}?v=20260805-4">
+{% endblock %}
 
-<body>
-  <main class="page">
+{% block content %}
+  <div class="page">
     <div class="stars" aria-hidden="true"></div>
     <div class="cloud cloud-a" aria-hidden="true"></div>
     <div class="cloud cloud-b" aria-hidden="true"></div>
@@ -19,7 +17,13 @@
 
     <div class="rule-wrapper">
       <header class="hero">
-        <div class="hero-badge">ルール説明</div>
+        <div class="hero-top">
+          <a class="rule-back" href="{% url 'rooms:home' %}" aria-label="ホームへ戻る">
+            <span aria-hidden="true">‹</span>
+          </a>
+          <div class="hero-badge">ルール説明</div>
+          <span class="hero-top-spacer" aria-hidden="true"></span>
+        </div>
         <h1>ルールをかんたん解説！</h1>
         <div class="hero-summary">
           <p>「鬼」が決めた文字を、</p>
@@ -170,7 +174,5 @@
       <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
       <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
-  </main>
-</body>
-
-</html>
+  </div>
+{% endblock %}

@@ -4,140 +4,137 @@
 {% block title %}しりとり｜マッチ{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'rooms/css/match.css' %}">
+<link rel="stylesheet" href="{% static 'rooms/css/match.css' %}?v=20260804-2">
 {% endblock %}
 
 {% block content %}
-    <!-- 背景の飾り -->
-    <div class="decoration decoration-top-left"></div>
-    <div class="decoration-red"></div>
-    <div class="decoration-blue"></div>
-    <div class="decoration-purple"></div>
-    <div class="decoration-green-small"></div>
-    <div class="decoration-bottom-green"></div>
+<!-- 背景の飾り -->
+<div class="decoration decoration-top-left"></div>
+<div class="decoration-red"></div>
+<div class="decoration-blue"></div>
+<div class="decoration-purple"></div>
+<div class="decoration-green-small"></div>
+<div class="decoration-bottom-green"></div>
 
-    <!-- ヘッダー -->
-    <header class="header">
-     <button type="button"
-        class="back-button"
-        onclick="history.back()"
-        aria-label="前の画面へ戻る">
-  ‹
-</button> 
-      <h1>マッチ</h1>
+<!-- ヘッダー -->
+<header class="header">
+  <a class="back-button" href="{% url 'rooms:home' %}" aria-label="ホーム画面へ戻る">
+    ‹
+  </a>
+  <h1>マッチ</h1>
 
-      <div class="header-space"></div>
+  <div class="header-space"></div>
 
-    </header>
+</header>
 
-    <!-- 説明文 -->
-    <section class="intro">
+<!-- 説明文 -->
+<section class="intro">
 
-      <span class="intro-line intro-line-left"></span>
+  <span class="intro-line intro-line-left"></span>
 
-      <h2>対戦モードを選ぼう！</h2>
+  <h2>対戦モードを選ぼう！</h2>
 
-      <span class="intro-line intro-line-right"></span>
+  <span class="intro-line intro-line-right"></span>
 
-    </section>
+</section>
 
-    <!-- 対戦モード一覧 -->
-    <section class="match-list">
+<!-- 対戦モード一覧 -->
+<section class="match-list">
 
-      <!-- 通常マッチ -->
-      <a href="normal-match.html" class="match-card normal-card">
+  <!-- 通常マッチ -->
+  <a href="normal-match.html" class="match-card normal-card">
 
-        <div class="match-icon normal-icon">
+    <div class="match-icon normal-icon">
 
-          <div class="people-icon">
-            <span class="person person-large"></span>
-            <span class="person person-small"></span>
-          </div>
+      <div class="people-icon">
+        <span class="person person-large"></span>
+        <span class="person person-small"></span>
+      </div>
 
-          <span class="effect effect-blue effect-blue-1"></span>
-          <span class="effect effect-blue effect-blue-2"></span>
+      <span class="effect effect-blue effect-blue-1"></span>
+      <span class="effect effect-blue effect-blue-2"></span>
 
+    </div>
+
+    <div class="match-text">
+      <h2>通常マッチ</h2>
+
+      <p>
+        気軽にオンラインで対戦！<br>
+        勝敗はレートに影響しません
+      </p>
+    </div>
+
+    <span class="match-arrow">›</span>
+
+  </a>
+
+  <!-- ランクマッチ -->
+  <a href="rank-match.html" class="match-card rank-card">
+
+    <div class="match-icon rank-icon">
+
+      <div class="crown">
+        <span class="crown-point point-left"></span>
+        <span class="crown-point point-center"></span>
+        <span class="crown-point point-right"></span>
+
+        <span class="crown-body"></span>
+        <span class="crown-band"></span>
+      </div>
+
+      <span class="sparkle sparkle-1">◆</span>
+      <span class="sparkle sparkle-2">◆</span>
+      <span class="sparkle sparkle-3">◆</span>
+
+    </div>
+
+    <div class="match-text">
+      <h2>ランクマッチ</h2>
+
+      <p>
+        実力の近い相手と本気の勝負！<br>
+        勝敗によってレートが変動します
+      </p>
+    </div>
+
+    <span class="match-arrow">›</span>
+
+  </a>
+
+  <!-- ルーム -->
+  <a href="{% url 'rooms:create' %}" class="match-card room-card">
+
+    <div class="match-icon room-icon">
+
+      <div class="door">
+        <div class="door-panel">
+          <span class="door-knob"></span>
         </div>
 
-        <div class="match-text">
-          <h2>通常マッチ</h2>
+        <div class="door-frame"></div>
+      </div>
 
-          <p>
-            気軽にオンラインで対戦！<br>
-            勝敗はレートに影響しません
-          </p>
-        </div>
+      <span class="effect effect-orange effect-orange-1"></span>
+      <span class="effect effect-orange effect-orange-2"></span>
 
-        <span class="match-arrow">›</span>
+    </div>
 
-      </a>
+    <div class="match-text">
+      <h2>ルーム</h2>
 
-      <!-- ランクマッチ -->
-      <a href="rank-match.html" class="match-card rank-card">
+      <p>
+        友達とルームを作成・参加して<br>
+        一緒に対戦できます
+      </p>
+    </div>
 
-        <div class="match-icon rank-icon">
+    <span class="match-arrow">›</span>
 
-          <div class="crown">
-            <span class="crown-point point-left"></span>
-            <span class="crown-point point-center"></span>
-            <span class="crown-point point-right"></span>
+  </a>
 
-            <span class="crown-body"></span>
-            <span class="crown-band"></span>
-          </div>
+</section>
 
-          <span class="sparkle sparkle-1">◆</span>
-          <span class="sparkle sparkle-2">◆</span>
-          <span class="sparkle sparkle-3">◆</span>
 
-        </div>
-
-        <div class="match-text">
-          <h2>ランクマッチ</h2>
-
-          <p>
-            実力の近い相手と本気の勝負！<br>
-            勝敗によってレートが変動します
-          </p>
-        </div>
-
-        <span class="match-arrow">›</span>
-
-      </a>
-
-      <!-- ルーム -->
-      <a href="ruumu.html" class="match-card room-card">
-
-        <div class="match-icon room-icon">
-
-          <div class="door">
-            <div class="door-panel">
-              <span class="door-knob"></span>
-            </div>
-
-            <div class="door-frame"></div>
-          </div>
-
-          <span class="effect effect-orange effect-orange-1"></span>
-          <span class="effect effect-orange effect-orange-2"></span>
-
-        </div>
-
-        <div class="match-text">
-          <h2>ルーム</h2>
-
-          <p>
-            友達とルームを作成・参加して<br>
-            一緒に対戦できます
-          </p>
-        </div>
-
-        <span class="match-arrow">›</span>
-
-      </a>
-
-    </section>
-
-    
 
 {% endblock %}
