@@ -4,7 +4,7 @@
 {% block title %}プロフィール｜しりとり{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'rooms/css/profile.css' %}?v=20260805-6">
+<link rel="stylesheet" href="{% static 'rooms/css/profile.css' %}?v=20260806-10">
 {% endblock %}
 
 {% block content %}
@@ -31,7 +31,7 @@
       <div class="member-identity">
         <h2>{{ user.username }}<span class="online-dot" aria-label="オンライン"></span></h2>
         <p>@{{ user.username }}</p>
-        <div class="rank-badge"><span aria-hidden="true">◆</span> ビギナー I</div>
+        <a class="rank-badge" href="{% url 'rooms:rank_rates' %}" aria-label="ランクレート一覧を見る"><span aria-hidden="true">{{ rank_data.current_rank.icon }}</span> {{ rank_data.current_rank.name }}</a>
       </div>
     </div>
 
@@ -48,10 +48,10 @@
     </div>
 
     <div class="battle-stats" aria-label="戦績">
-      <article><span class="stat-symbol stat-blue">⚔</span><small>対戦数</small><strong>0</strong></article>
-      <article><span class="stat-symbol stat-green">♛</span><small>勝利数</small><strong>0</strong></article>
-      <article><span class="stat-symbol stat-yellow">★</span><small>勝率</small><strong>0<em>%</em></strong></article>
-      <article><span class="stat-symbol stat-purple">↗</span><small>レート</small><strong>1000</strong></article>
+      <article><span class="stat-symbol stat-blue">⚔</span><small>対戦数</small><strong>{{ battle_stats.battle_count }}</strong></article>
+      <article><span class="stat-symbol stat-green">♛</span><small>勝利数</small><strong>{{ battle_stats.win_count }}</strong></article>
+      <article><span class="stat-symbol stat-yellow">★</span><small>勝率</small><strong>{{ battle_stats.win_rate }}<em>%</em></strong></article>
+      <article><span class="stat-symbol stat-purple">↗</span><small>レート</small><strong>{{ rank_data.rating }}</strong></article>
     </div>
 
     <section class="streak-card">
@@ -62,34 +62,33 @@
         </div>
       </div>
       <div class="rank-progress">
-        <small>次のランクまで</small>
-        <p>あと <strong>200</strong> レート</p>
-        <div class="progress-track"><span></span></div>
+        <small>{% if rank_data.next_rank %}次のランクまで{% else %}最高ランク{% endif %}</small>
+        <p>{% if rank_data.next_rank %}あと <strong>{{ rank_data.rate_to_next }}</strong> レート{% else %}<strong>MAX</strong>{% endif %}</p>
+        <div class="progress-track"><span style="width: {{ rank_data.progress }}%"></span></div>
       </div>
     </section>
 
     <section class="customize-section">
       <div class="section-heading">
         <h3><span aria-hidden="true">◆</span> カスタマイズ</h3>
-        <button type="button">すべて見る ›</button>
+        <a href="{% url 'rooms:inventory' %}?type=customize">すべて見る ›</a>
       </div>
       <div class="customize-grid">
-        <article class="custom-card custom-avatar">
+        <a class="custom-card custom-avatar" href="{% url 'rooms:inventory' %}?type=avatar" aria-label="所持しているアバターを見る">
           <strong>アバター</strong><span aria-hidden="true">🐧</span><i>✓</i>
-        </article>
-        <article class="custom-card custom-frame">
+        </a>
+        <a class="custom-card custom-frame" href="{% url 'rooms:inventory' %}?type=frame" aria-label="所持しているフレームを見る">
           <strong>フレーム</strong><span class="sample-frame" aria-hidden="true"></span><i>✓</i>
-        </article>
-        <article class="custom-card custom-stamp">
+        </a>
+        <a class="custom-card custom-stamp" href="{% url 'rooms:inventory' %}?type=stamp" aria-label="所持しているスタンプを見る">
           <strong>スタンプ</strong><span aria-hidden="true">●</span><i>✓</i>
-        </article>
+        </a>
       </div>
     </section>
 
     <nav class="profile-menu" aria-label="プロフィールメニュー">
-      <button type="button"><span class="menu-round purple-round" aria-hidden="true">●</span>プロフィール編集<b>›</b></button>
-      <button type="button"><span class="menu-round blue-round" aria-hidden="true">▥</span>戦績<b>›</b></button>
-      <a href="{% url 'rooms:shop' %}"><span class="menu-round green-round"
+      <a href="{% url 'rooms:battle_stats' %}"><span class="menu-round blue-round" aria-hidden="true">▥</span>戦績<b>›</b></a>
+      <a href="{% url 'rooms:inventory' %}"><span class="menu-round green-round"
           aria-hidden="true">◇</span>所持アイテム<b>›</b></a>
       <form method="post" action="{% url 'rooms:logout' %}">
         {% csrf_token %}

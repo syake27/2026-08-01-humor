@@ -4,7 +4,7 @@
 {% block title %}しりとりバトル{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260806-10">
+<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260806-27">
 {% endblock %}
 
 {% block content %}
@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <section class="players-strip" aria-label="参加プレイヤー" data-status-url="{% url 'game:players_status' %}?room_id={{ room.room_id }}">
+  <section class="players-strip" aria-label="参加プレイヤー" data-status-url="{% url 'game:players_status' %}?room_id={{ room.room_id }}" data-last-stamp-id="{{ latest_stamp_id }}">
     {% for player in players %}
     <article class="battle-player{% if player.is_current %} is-active{% endif %}{% if not player.is_alive %} is-eliminated{% endif %}" data-player-id="{{ player.id }}" tabindex="{% if player.is_current %}0{% else %}-1{% endif %}"{% if player.is_current %} aria-current="true"{% endif %}>
       <span class="player-placement"{% if not player.placement %} hidden{% endif %}>{% if player.placement %}{{ player.placement }}位{% endif %}</span>
@@ -63,9 +63,39 @@
     <span class="sparkle sparkle-three" aria-hidden="true">✦</span>
     <span class="sparkle sparkle-four" aria-hidden="true">●</span>
     <h2 id="current-letter-title">現在の言葉</h2>
+    <button id="baba-button" class="baba-button" type="button" aria-label="ババの文字を当てる" aria-haspopup="dialog" aria-controls="baba-guess-modal"{% if not can_guess_baba %} disabled{% endif %}>BABA!</button>
     <strong class="current-word">{{ current_word }}</strong>
     <p class="current-letter-prompt">次は「{{ current_letter_display }}」からはじまる言葉を入力！</p>
   </section>
+
+  <dialog id="baba-challenge-notice" class="baba-challenge-notice" aria-label="BABA挑戦中">
+    <div class="baba-challenge-panel">
+      <span id="baba-preview-letter" class="baba-preview-letter" aria-label="挑戦者が入力した文字">{{ session.baba_guess_preview|default:"？" }}</span>
+      <p id="baba-challenge-caption"><strong id="baba-challenger-name">{% if baba_challenger %}{{ baba_challenger.display_name }}{% endif %}</strong><span id="baba-challenge-status">がBABAに挑戦中！</span></p>
+      <div id="baba-roulette" class="baba-roulette" aria-live="polite" hidden>
+        <small id="baba-roulette-label">判定中</small>
+        <div class="baba-slot-window">
+          <div id="baba-slot-track" class="baba-slot-track" aria-hidden="true">
+            <span class="slot-correct">正解</span>
+            <span class="slot-wrong">不正解</span>
+            <span class="slot-correct">正解</span>
+            <span class="slot-wrong">不正解</span>
+            <span class="slot-correct">正解</span>
+            <span class="slot-wrong">不正解</span>
+          </div>
+          <strong id="baba-roulette-value" class="baba-slot-result" hidden>正解！</strong>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="baba-explosion" class="baba-explosion" aria-label="不正解の爆発エフェクト">
+    <span class="baba-explosion-core"></span>
+    <i style="--angle:0deg"></i><i style="--angle:45deg"></i>
+    <i style="--angle:90deg"></i><i style="--angle:135deg"></i>
+    <i style="--angle:180deg"></i><i style="--angle:225deg"></i>
+    <i style="--angle:270deg"></i><i style="--angle:315deg"></i>
+  </dialog>
 
   <section class="history-card">
     <button id="history-open" class="history-open" type="button" aria-haspopup="dialog" aria-controls="history-modal">
@@ -160,15 +190,97 @@
     </div>
   </dialog>
 
+  <dialog id="baba-guess-modal" class="baba-guess-modal" aria-labelledby="baba-guess-title" data-start-url="{% url 'game:start_baba_challenge' %}" data-preview-url="{% url 'game:update_baba_preview' %}" data-guess-url="{% url 'game:guess_baba' %}" data-room-id="{{ room.room_id }}" data-challenge-active="{% if baba_challenger %}true{% else %}false{% endif %}" data-self-challenging="{% if is_baba_challenger %}true{% else %}false{% endif %}" data-reveal-active="{% if session.baba_reveal_until %}true{% else %}false{% endif %}" data-reveal-correct="{% if session.baba_reveal_correct %}true{% else %}false{% endif %}" data-reveal-until="{{ session.baba_reveal_until|date:'c' }}" data-reveal-mode="{{ session.baba_reveal_mode|default:'guess' }}">
+    <form id="baba-guess-form" class="baba-guess-panel" method="dialog">
+      <header>
+        <span class="baba-guess-mark" aria-hidden="true">!</span>
+        <div>
+          <small>一発勝負</small>
+          <h2 id="baba-guess-title">ババの文字を当てる</h2>
+        </div>
+      </header>
+
+      <p class="baba-guess-warning">
+        ババの文字を当てたら<strong>1位</strong>、<br>
+        外したらその場で<strong>脱落</strong>します。
+      </p>
+
+      <div id="baba-confirm-step" class="baba-guess-step">
+        <p class="baba-confirm-question">本当に挑戦しますか？</p>
+        <div class="baba-guess-actions">
+          <button id="baba-guess-cancel" class="baba-guess-cancel" type="button">やめる</button>
+          <button id="baba-challenge-start" class="baba-guess-submit" type="button">挑戦する</button>
+        </div>
+      </div>
+
+      <div id="baba-input-step" class="baba-guess-step" hidden>
+        <p class="baba-input-guide">ババだと思う文字を入力してください</p>
+        <label class="baba-guess-field" for="baba-guess-input">
+          <span>予想する文字</span>
+          <input id="baba-guess-input" name="baba_letter" type="text" maxlength="1" autocomplete="off" placeholder="あ" aria-describedby="baba-guess-error" value="{% if is_baba_challenger %}{{ session.baba_guess_preview }}{% endif %}">
+        </label>
+        <p id="baba-guess-error" class="baba-guess-error" role="alert"></p>
+
+        <div class="baba-guess-actions baba-submit-only">
+          <button id="baba-guess-submit" class="baba-guess-submit" type="submit">この文字で決定</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="game-picker-modal" class="game-picker-modal" aria-labelledby="game-picker-title" data-stamp-url="{% url 'game:send_stamp' %}" data-room-id="{{ room.room_id }}">
+    <div class="game-picker-panel">
+      <header>
+        <div>
+          <span>バトルアクション</span>
+          <h2 id="game-picker-title">スタンプを選ぶ</h2>
+        </div>
+        <button id="game-picker-close" class="game-picker-close" type="button" aria-label="選択画面を閉じる">×</button>
+      </header>
+
+      <div class="game-picker-list" data-picker-panel="stamp">
+        {% for item in owned_stamps %}
+        <button class="game-picker-option" type="button" data-option-name="{{ item.name }}" data-option-kind="スタンプ" data-item-code="{{ item.item_code }}">
+          <span aria-hidden="true">{{ item.icon|default:"●" }}</span>
+          <strong>{{ item.name }}</strong>
+          <small>{% if item.is_equipped %}装備中{% else %}所持中{% endif %}</small>
+        </button>
+        {% empty %}
+        <p class="game-picker-empty">所持しているスタンプはありません</p>
+        {% endfor %}
+      </div>
+
+      <div class="game-picker-list" data-picker-panel="item" hidden>
+        {% for item in owned_game_items %}
+        <button class="game-picker-option" type="button" data-option-name="{{ item.name }}" data-option-kind="アイテム">
+          <span aria-hidden="true">{{ item.icon|default:"◆" }}</span>
+          <strong>{{ item.name }}</strong>
+          <small>{% if item.is_equipped %}装備中{% else %}所持中{% endif %}</small>
+        </button>
+        {% empty %}
+        <p class="game-picker-empty">所持しているアイテムはありません</p>
+        {% endfor %}
+      </div>
+    </div>
+  </dialog>
+
 
   <form class="answer-form" data-answer-url="{% url 'game:submit_word' %}" novalidate>
     {% csrf_token %}
     <input type="hidden" name="room_id" value="{{ room.room_id }}">
     <div class="answer-input-wrap">
-      <input id="answer-input" name="answer" type="text" maxlength="30" pattern="[ぁ-ゖー]+" placeholder="「{{ current_letter_display }}」から始まる言葉" autocomplete="off" aria-label="ひらがなで回答を入力"{% if not is_my_turn %} disabled{% endif %}>
-      <button id="clear-answer" class="clear-answer" type="button" aria-label="入力を消す">×</button>
+      <input id="answer-input" name="answer" type="text" maxlength="30" pattern="[ぁ-ゖー]+" placeholder="{% if baba_challenger %}BABAの判定を待っています{% else %}「{{ current_letter_display }}」から始まる言葉{% endif %}" autocomplete="off" aria-label="ひらがなで回答を入力"{% if not can_submit_word %} disabled{% endif %}>
+      <button id="clear-answer" class="clear-answer" type="button" aria-label="入力を消す"{% if not can_submit_word %} disabled{% endif %}>×</button>
     </div>
-    <button class="send-answer" type="submit"{% if not is_my_turn %} disabled{% endif %}><span aria-hidden="true">➤</span> 送信</button>
+    <div class="answer-actions">
+      <button class="answer-tool stamp-tool" type="button" data-picker="stamp" aria-haspopup="dialog" aria-controls="game-picker-modal">
+        <span aria-hidden="true">☺</span><small>スタンプ</small>
+      </button>
+      <button class="answer-tool item-tool" type="button" data-picker="item" aria-haspopup="dialog" aria-controls="game-picker-modal">
+        <span aria-hidden="true">◆</span><small>アイテム</small>
+      </button>
+      <button class="send-answer" type="submit"{% if not can_submit_word %} disabled{% endif %}><span aria-hidden="true">➤</span> 送信</button>
+    </div>
   </form>
 
   <div id="game-message" class="game-message" role="status" aria-live="polite">
@@ -179,5 +291,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'game/js/game.js' %}?v=20260806-16"></script>
+<script src="{% static 'game/js/game.js' %}?v=20260806-35"></script>
 {% endblock %}

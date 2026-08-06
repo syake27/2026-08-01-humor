@@ -18,7 +18,46 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .models import DEFAULT_BABA_CHARACTERS, Room, RoomParticipant, UserProfile
+from .models import (
+    DEFAULT_BABA_CHARACTERS,
+    OwnedItem,
+    Room,
+    RoomParticipant,
+    UserProfile,
+)
+from .services import ensure_default_owned_items
+
+ITEM_CATALOG = [
+    ("default_penguin", "avatar", "ペンギン", "🐧", "アカウント登録時に入手"),
+    ("avatar_cat", "avatar", "ねこ", "🐱", "ショップで購入"),
+    ("avatar_robot", "avatar", "ロボット", "🤖", "対戦を10回プレイ"),
+    ("avatar_alien", "avatar", "宇宙人", "👾", "ショップで購入"),
+    ("default_sky_frame", "frame", "スカイリング", "◯", "アカウント登録時に入手"),
+    ("frame_sunset", "frame", "サンセットリング", "◯", "ショップで購入"),
+    ("frame_gold", "frame", "ゴールドリング", "◯", "1位を10回獲得"),
+    ("frame_forest", "frame", "フォレストリング", "◯", "ショップで購入"),
+    ("default_fight_stamp", "stamp", "ファイトスタンプ", "●", "アカウント登録時に入手"),
+    ("stamp_nice", "stamp", "ナイス！", "👍", "ショップで購入"),
+    ("stamp_thanks", "stamp", "ありがとう", "✨", "対戦を5回プレイ"),
+    ("stamp_surprise", "stamp", "びっくり", "😲", "ショップで購入"),
+    ("default_first_step", "title", "はじめての一歩", "★", "アカウント登録時に入手"),
+    ("title_word_master", "title", "ことばマスター", "★", "100個の言葉を回答"),
+    ("title_baba_hunter", "title", "ババハンター", "◆", "ショップで購入"),
+    ("title_shiritori_king", "title", "しりとり王", "♛", "1位を25回獲得"),
+]
+
+RANK_TIERS = [
+    ("beginner-1", "ビギナー I", 1000, "◆"),
+    ("beginner-2", "ビギナー II", 1100, "◆"),
+    ("beginner-3", "ビギナー III", 1200, "◆"),
+    ("bronze", "ブロンズ", 1300, "♢"),
+    ("silver", "シルバー", 1500, "◇"),
+    ("gold", "ゴールド", 1700, "★"),
+    ("platinum", "プラチナ", 1900, "✦"),
+    ("diamond", "ダイヤモンド", 2100, "◆"),
+    ("master", "マスター", 2400, "♛"),
+    ("humor-king", "ユーモア王", 2800, "♛"),
+]
 
 
 def _clean_baba_characters(value):
@@ -28,6 +67,92 @@ def _clean_baba_characters(value):
         if character in DEFAULT_BABA_CHARACTERS and character not in selected:
             selected.append(character)
     return "".join(selected) or DEFAULT_BABA_CHARACTERS
+
+
+def _get_battle_stats(user):
+    from game.models import GamePlayer
+
+    recent_results = list(
+        GamePlayer.objects.filter(
+            user=user,
+            session__is_finished=True,
+            placement__isnull=False,
+        )
+        .select_related("session__room")
+        .annotate(word_count=Count("words"))
+        .order_by("-session__started_at", "-id")
+    )
+    battle_count = len(recent_results)
+    win_count = sum(player.placement == 1 for player in recent_results)
+    rank_counts = {
+        placement: sum(
+            player.placement == placement for player in recent_results
+        )
+        for placement in range(1, 5)
+    }
+    return {
+        "battle_count": battle_count,
+        "win_count": win_count,
+        "win_rate": round(win_count / battle_count * 100, 1) if battle_count else 0,
+        "total_words": sum(player.word_count for player in recent_results),
+        "best_rank": min(
+            (player.placement for player in recent_results),
+            default=None,
+        ),
+        "rank_counts": rank_counts,
+        "recent_results": recent_results[:20],
+    }
+
+
+def _get_rank_data(rating):
+    current_index = 0
+    for index, (_, _, minimum_rate, _) in enumerate(RANK_TIERS):
+        if rating >= minimum_rate:
+            current_index = index
+
+    rank_tiers = []
+    for index, (code, name, minimum_rate, icon) in enumerate(RANK_TIERS):
+        next_minimum = (
+            RANK_TIERS[index + 1][2]
+            if index + 1 < len(RANK_TIERS)
+            else None
+        )
+        rank_tiers.append(
+            {
+                "code": code,
+                "name": name,
+                "minimum_rate": minimum_rate,
+                "maximum_rate": next_minimum - 1 if next_minimum else None,
+                "icon": icon,
+                "is_current": index == current_index,
+            }
+        )
+
+    current_rank = rank_tiers[current_index]
+    next_rank = (
+        rank_tiers[current_index + 1]
+        if current_index + 1 < len(rank_tiers)
+        else None
+    )
+    if next_rank:
+        rank_span = next_rank["minimum_rate"] - current_rank["minimum_rate"]
+        progress = min(
+            100,
+            max(0, (rating - current_rank["minimum_rate"]) / rank_span * 100),
+        )
+    else:
+        progress = 100
+
+    return {
+        "rating": rating,
+        "current_rank": current_rank,
+        "next_rank": next_rank,
+        "progress": round(progress, 1),
+        "rate_to_next": (
+            max(0, next_rank["minimum_rate"] - rating) if next_rank else 0
+        ),
+        "rank_tiers": rank_tiers,
+    }
 
 
 def _add_room_participant(room_id, user):
@@ -329,13 +454,189 @@ def rule(request):
 
 def profile(request):
     coin_balance = 0
+    battle_stats = None
+    rank_data = None
     if request.user.is_authenticated:
         user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
         coin_balance = user_profile.coins
+        battle_stats = _get_battle_stats(request.user)
+        rank_data = _get_rank_data(user_profile.rating)
     return render(
         request,
         "rooms/profile.html",
-        {"coin_balance": coin_balance},
+        {
+            "coin_balance": coin_balance,
+            "battle_stats": battle_stats,
+            "rank_data": rank_data,
+        },
+    )
+
+
+@login_required(login_url="rooms:login")
+def battle_stats(request):
+    return render(
+        request,
+        "rooms/battle_stats.html",
+        {"battle_stats": _get_battle_stats(request.user)},
+    )
+
+
+@login_required(login_url="rooms:login")
+def rank_rates(request):
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    return render(
+        request,
+        "rooms/rank_rates.html",
+        {"rank_data": _get_rank_data(user_profile.rating)},
+    )
+
+
+@login_required(login_url="rooms:login")
+def inventory(request):
+    ensure_default_owned_items(request.user)
+    group_details = [
+        ("avatar", "アバター", "自分らしいアイコン"),
+        ("frame", "フレーム", "アイコンを囲むデザイン"),
+        ("stamp", "スタンプ", "対戦で使えるリアクション"),
+        ("title", "称号", "名前の下に表示する称号"),
+    ]
+    selected_type = request.GET.get("type", "").strip()
+    valid_types = {key for key, _, _ in group_details}
+    if selected_type not in valid_types | {"customize"}:
+        selected_type = ""
+
+    owned_items_query = OwnedItem.objects.filter(user=request.user)
+    if selected_type == "customize":
+        customize_types = {"avatar", "frame", "stamp", "title"}
+        owned_items_query = owned_items_query.filter(item_type__in=customize_types)
+        group_details = [
+            details for details in group_details if details[0] in customize_types
+        ]
+    elif selected_type:
+        owned_items_query = owned_items_query.filter(item_type=selected_type)
+        group_details = [
+            details for details in group_details if details[0] == selected_type
+        ]
+    owned_items = list(owned_items_query)
+    owned_by_code = {item.item_code: item for item in owned_items}
+    catalog_by_code = {item[0]: item for item in ITEM_CATALOG}
+    include_unowned = (
+        bool(selected_type)
+        and selected_type != "customize"
+        and request.GET.get("include") == "1"
+    )
+    display_items = []
+    if include_unowned:
+        for item_code, item_type, name, icon, acquisition_method in ITEM_CATALOG:
+            if item_type != selected_type:
+                continue
+            owned_item = owned_by_code.get(item_code)
+            display_items.append(
+                {
+                    "item_code": item_code,
+                    "item_type": item_type,
+                    "name": name,
+                    "icon": icon,
+                    "acquisition_method": acquisition_method,
+                    "is_owned": owned_item is not None,
+                    "is_equipped": bool(owned_item and owned_item.is_equipped),
+                }
+            )
+        catalog_codes = {item[0] for item in ITEM_CATALOG}
+        display_items.extend(
+            {
+                "item_code": item.item_code,
+                "item_type": item.item_type,
+                "name": item.name,
+                "icon": item.icon,
+                "acquisition_method": "ショップ・イベントで入手",
+                "is_owned": True,
+                "is_equipped": item.is_equipped,
+            }
+            for item in owned_items
+            if item.item_code not in catalog_codes
+        )
+    else:
+        display_items = [
+            {
+                "item_code": item.item_code,
+                "item_type": item.item_type,
+                "name": item.name,
+                "icon": item.icon,
+                "acquisition_method": (
+                    catalog_by_code[item.item_code][4]
+                    if item.item_code in catalog_by_code
+                    else "ショップ・イベントで入手"
+                ),
+                "is_owned": True,
+                "is_equipped": item.is_equipped,
+            }
+            for item in owned_items
+        ]
+
+    item_groups = [
+        {
+            "key": key,
+            "label": label,
+            "description": description,
+            "items": [item for item in display_items if item["item_type"] == key],
+            "owned_count": sum(item.item_type == key for item in owned_items),
+        }
+        for key, label, description in group_details
+    ]
+    return render(
+        request,
+        "rooms/inventory.html",
+        {
+            "item_groups": item_groups,
+            "item_count": len(owned_items),
+            "selected_type": selected_type,
+            "include_unowned": include_unowned,
+            "show_ownership_toggle": bool(
+                selected_type and selected_type != "customize"
+            ),
+            "page_title": (
+                "カスタマイズ一覧"
+                if selected_type == "customize"
+                else f"{group_details[0][1]}一覧"
+                if selected_type
+                else "所持アイテム"
+            ),
+        },
+    )
+
+
+@require_POST
+@login_required(login_url="rooms:login")
+def equip_item(request):
+    item_code = request.POST.get("item_code", "").strip()
+    with transaction.atomic():
+        item = (
+            OwnedItem.objects.select_for_update()
+            .filter(user=request.user, item_code=item_code)
+            .first()
+        )
+        if item is None:
+            return JsonResponse(
+                {"error": "このアイテムは所持していません。"},
+                status=404,
+            )
+
+        OwnedItem.objects.filter(
+            user=request.user,
+            item_type=item.item_type,
+            is_equipped=True,
+        ).exclude(pk=item.pk).update(is_equipped=False)
+        if not item.is_equipped:
+            item.is_equipped = True
+            item.save(update_fields=["is_equipped"])
+
+    return JsonResponse(
+        {
+            "message": f"「{item.name}」を装備しました。",
+            "item_code": item.item_code,
+            "item_type": item.item_type,
+        }
     )
 
 

@@ -13,6 +13,18 @@ class GameSession(models.Model):
     baba_letter = models.CharField(max_length=1, blank=True)
     is_finished = models.BooleanField(default=False)
     coin_rewards_granted = models.BooleanField(default=False)
+    baba_challenger = models.ForeignKey(
+        "game.GamePlayer",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="baba_challenge_sessions",
+    )
+    baba_guess_preview = models.CharField(max_length=1, blank=True)
+    baba_reveal_correct = models.BooleanField(null=True, blank=True)
+    baba_reveal_until = models.DateTimeField(null=True, blank=True)
+    baba_reveal_mode = models.CharField(max_length=10, blank=True)
+    turn_started_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -77,3 +89,26 @@ class GameWord(models.Model):
 
     def __str__(self):
         return self.word
+
+
+class GameStamp(models.Model):
+    session = models.ForeignKey(
+        GameSession,
+        on_delete=models.CASCADE,
+        related_name="stamps",
+    )
+    player = models.ForeignKey(
+        GamePlayer,
+        on_delete=models.CASCADE,
+        related_name="stamps",
+    )
+    stamp_code = models.CharField(max_length=50)
+    stamp_name = models.CharField(max_length=50)
+    stamp_icon = models.CharField(max_length=20, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.player.display_name}: {self.stamp_name}"

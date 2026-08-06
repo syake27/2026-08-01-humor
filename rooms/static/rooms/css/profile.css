@@ -845,6 +845,7 @@ a {
 }
 
 .rank-badge {
+  display: inline-block;
   width: fit-content;
   max-width: 100%;
   padding: 7px 12px;
@@ -857,7 +858,11 @@ a {
   font-weight: 900;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-decoration: none;
 }
+
+.rank-badge:active { transform: scale(.97); }
+.rank-badge:focus-visible { outline: 3px solid rgba(117,73,223,.24); outline-offset: 2px; }
 
 .rank-badge span {
   margin-right: 5px;
@@ -1090,17 +1095,20 @@ a {
 }
 
 .section-heading h3 span,
-.section-heading button {
+.section-heading button,
+.section-heading a {
   color: #7549df;
 }
 
-.section-heading button {
+.section-heading button,
+.section-heading a {
   border: 0;
   background: transparent;
   font: inherit;
   font-size: 11px;
   font-weight: 900;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .customize-grid {
@@ -1117,7 +1125,14 @@ a {
   flex-direction: column;
   align-items: center;
   border-radius: 15px;
+  text-decoration: none;
+  transition: transform .15s ease;
 }
+
+a.custom-card:active { transform: scale(.97); }
+a.custom-card:focus-visible { outline: 3px solid rgba(49,184,95,.28); outline-offset: 2px; }
+a.custom-frame:focus-visible { outline-color: rgba(61,148,233,.3); }
+a.custom-stamp:focus-visible { outline-color: rgba(237,89,103,.3); }
 
 .custom-card strong {
   font-size: 12px;
@@ -1189,6 +1204,10 @@ a {
 .profile-menu > a,
 .profile-menu form {
   border-top: 1px solid #e4e8ec;
+}
+
+.profile-menu > a:first-child {
+  border-top: 0;
 }
 
 .profile-menu form {

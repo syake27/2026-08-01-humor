@@ -1,0 +1,73 @@
+:root {
+  --rank-ink: #2b3c4c;
+  --rank-muted: #8190a0;
+  --rank-purple: #7650df;
+  --rank-blue: #4096e8;
+  --rank-line: #e2e7ed;
+}
+
+body { color: var(--rank-ink); font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif; }
+
+.rank-screen { position: relative; width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; background: linear-gradient(180deg,#fff 0%,#faf9ff 100%); }
+.rank-screen::-webkit-scrollbar { display: none; }
+.rank-decoration { position: absolute; z-index: 0; border-radius: 50%; pointer-events: none; }
+.rank-blue { top: -105px; left: -110px; width: 235px; height: 235px; background: #e5f3ff; }
+.rank-purple { top: 150px; right: -95px; width: 180px; height: 180px; background: #efe8ff; }
+.rank-header,
+.rank-content { position: relative; z-index: 1; }
+
+.rank-header { min-height: 94px; padding: 21px 18px 10px; display: grid; grid-template-columns: 48px 1fr 48px; align-items: center; }
+.rank-header > a { width: 46px; height: 46px; padding-bottom: 5px; display: grid; place-items: center; border: 1px solid #e0e6ec; border-radius: 50%; color: var(--rank-purple); background: #fff; font-size: 34px; font-weight: 800; line-height: 1; text-decoration: none; }
+.rank-header > div { text-align: center; }
+.rank-header small { color: var(--rank-blue); font-size: 8px; font-weight: 900; letter-spacing: .12em; }
+.rank-header h1 { margin: 2px 0 0; font-size: 20px; font-weight: 900; }
+.rank-header > span { justify-self: center; color: var(--rank-purple); font-size: 24px; }
+
+.rank-content { padding: 5px 18px 32px; }
+.current-rank-card { position: relative; min-height: 158px; padding: 17px; display: grid; grid-template-columns: 58px 1fr auto; align-items: center; gap: 12px; border: 1.5px solid #d5c6f7; border-radius: 23px; background: linear-gradient(145deg,#fff,#f5f0ff); }
+.current-rank-icon { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 18px; color: #fff; background: linear-gradient(135deg,#9b75ef,#6941cc); font-size: 29px; font-weight: 900; }
+.current-rank-card > div:nth-child(2) small { color: var(--rank-purple); font-size: 9px; font-weight: 900; }
+.current-rank-card h2 { margin: 3px 0 2px; font-size: 19px; font-weight: 900; }
+.current-rank-card > div:nth-child(2) p { margin: 0; color: var(--rank-muted); font-size: 10px; font-weight: 700; }
+.current-rank-card > div:nth-child(2) p strong { color: var(--rank-ink); font-size: 15px; }
+.current-rank-card > span { align-self: start; padding: 5px 8px; border-radius: 999px; color: var(--rank-purple); background: #ece3ff; font-size: 8px; font-weight: 900; white-space: nowrap; }
+.current-rank-progress { grid-column: 1 / -1; height: 9px; overflow: hidden; border-radius: 999px; background: #e5deef; }
+.current-rank-progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#855be2,#4e9ee8); }
+.rank-progress-note { grid-column: 1 / -1; margin: -4px 0 0; color: var(--rank-muted); font-size: 9px; font-weight: 700; text-align: right; }
+.rank-progress-note strong { color: var(--rank-purple); }
+
+.rank-list-section { margin-top: 12px; padding: 15px; border: 1px solid var(--rank-line); border-radius: 21px; background: rgba(255,255,255,.97); }
+.rank-list-section > header { display: flex; align-items: center; justify-content: space-between; }
+.rank-list-section header small { color: var(--rank-purple); font-size: 8px; font-weight: 900; letter-spacing: .1em; }
+.rank-list-section h2 { margin: 2px 0 0; font-size: 16px; font-weight: 900; }
+.rank-list-section header > span { padding: 5px 9px; border-radius: 999px; color: var(--rank-purple); background: #f0eaff; font-size: 9px; font-weight: 900; }
+.rank-tier-list { margin-top: 10px; }
+.rank-tier { min-height: 58px; padding: 8px 4px; display: grid; grid-template-columns: 42px 1fr auto; align-items: center; gap: 9px; border-top: 1px solid #edf0f3; }
+.rank-tier:first-child { border-top: 0; }
+.tier-icon { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 13px; color: #fff; background: #8e9baa; font-size: 19px; font-weight: 900; }
+.rank-tier > div strong,
+.rank-tier > div small { display: block; }
+.rank-tier > div strong { font-size: 12px; font-weight: 900; }
+.rank-tier > div small { margin-top: 2px; color: var(--rank-muted); font-size: 8px; font-weight: 700; }
+.rank-tier > b { padding: 4px 7px; border-radius: 999px; color: #fff; background: var(--rank-purple); font-size: 8px; font-weight: 900; }
+.rank-tier .locked-label { color: #8a96a2; background: #edf0f3; }
+.rank-tier .passed-label { color: #2b9e56; background: #e8f8ed; }
+.rank-tier.is-locked .tier-icon { filter: grayscale(1); opacity: .43; }
+.rank-tier.is-locked > div { opacity: .58; }
+.rank-tier.is-current { margin: 0 -7px; padding-right: 11px; padding-left: 11px; border: 1.5px solid #bba2f1; border-radius: 15px; background: #f7f3ff; }
+.rank-tier.is-current .tier-icon { background: linear-gradient(135deg,#9b75ef,#6941cc); }
+.tier-humor-king .tier-icon { background: linear-gradient(135deg,#ffcf42,#ed8c15); }
+.tier-master .tier-icon { background: linear-gradient(135deg,#ef6cc2,#8b4de0); }
+.tier-diamond .tier-icon { background: linear-gradient(135deg,#55d2ee,#477fe5); }
+.tier-platinum .tier-icon { background: linear-gradient(135deg,#93dcd5,#669fb7); }
+.tier-gold .tier-icon { background: linear-gradient(135deg,#ffd34e,#e99a12); }
+.tier-silver .tier-icon { background: linear-gradient(135deg,#dce3e9,#8998a5); }
+.tier-bronze .tier-icon { background: linear-gradient(135deg,#d89861,#95603d); }
+
+.rank-help { min-height: 65px; margin-top: 12px; padding: 10px 13px; display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 10px; border-radius: 17px; background: #fff8df; }
+.rank-help > span { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: #ffeaa2; font-size: 19px; }
+.rank-help p { margin: 0; }
+.rank-help strong,
+.rank-help small { display: block; }
+.rank-help strong { font-size: 11px; font-weight: 900; }
+.rank-help small { margin-top: 3px; color: var(--rank-muted); font-size: 8px; font-weight: 700; }

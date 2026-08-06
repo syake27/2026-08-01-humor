@@ -1,0 +1,106 @@
+{% extends "rooms/base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }}｜しりとり{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rooms/css/inventory.css' %}?v=20260806-4">
+{% endblock %}
+
+{% block content %}
+<div class="inventory-screen">
+  <div class="inventory-decoration inventory-blue" aria-hidden="true"></div>
+  <div class="inventory-decoration inventory-green" aria-hidden="true"></div>
+  <div class="inventory-dot dot-pink" aria-hidden="true"></div>
+  <div class="inventory-dot dot-yellow" aria-hidden="true"></div>
+
+  <header class="inventory-header">
+    <a href="{% url 'rooms:profile' %}" aria-label="プロフィールへ戻る">‹</a>
+    <div><small>MY COLLECTION</small><h1>{{ page_title }}</h1></div>
+    <span aria-hidden="true">◆</span>
+  </header>
+
+  <main class="inventory-content">
+    <section class="inventory-summary">
+      <span aria-hidden="true">▣</span>
+      <div><small>{% if selected_type == "customize" %}カスタマイズアイテム{% elif selected_type %}所持している{{ page_title }}{% else %}コレクション{% endif %}</small><strong>{{ item_count }}個のアイテムを所持</strong></div>
+      <a href="{% url 'rooms:shop' %}">ショップへ ›</a>
+    </section>
+
+    {% if show_ownership_toggle %}
+    <nav class="ownership-toggle" aria-label="アイテムの表示範囲">
+      <a class="{% if not include_unowned %}is-active{% endif %}" href="{% url 'rooms:inventory' %}?type={{ selected_type }}">所持品のみ</a>
+      <a class="{% if include_unowned %}is-active{% endif %}" href="{% url 'rooms:inventory' %}?type={{ selected_type }}&amp;include=1">未所持を含む</a>
+    </nav>
+    {% endif %}
+
+    {% for group in item_groups %}
+    <section class="inventory-group group-{{ group.key }}">
+      <header>
+        <div><small>{{ group.description }}</small><h2>{{ group.label }}</h2></div>
+        <div class="group-actions">
+          <span class="group-count">{{ group.items|length }}個</span>
+          <a href="{% url 'rooms:inventory' %}?type={{ group.key }}" aria-label="所持している{{ group.label }}を全て見る">全て</a>
+        </div>
+      </header>
+
+      <div class="inventory-grid">
+        {% for item in group.items %}
+        <button class="inventory-item{% if not item.is_owned %} is-locked{% endif %}" type="button"
+          data-item-code="{{ item.item_code }}"
+          data-item-type="{{ item.item_type }}"
+          data-item-type-label="{{ group.label }}"
+          data-item-name="{{ item.name }}"
+          data-item-icon="{{ item.icon }}"
+          data-acquisition-method="{{ item.acquisition_method }}"
+          data-is-owned="{{ item.is_owned|yesno:'true,false' }}"
+          data-is-equipped="{{ item.is_equipped|yesno:'true,false' }}"
+          aria-label="{{ item.name }}の詳細を見る">
+          <div class="item-preview preview-{{ item.item_type }}">
+            {% if item.item_type == "frame" %}<span class="owned-frame" aria-hidden="true"></span>
+            {% else %}<span aria-hidden="true">{{ item.icon }}</span>{% endif %}
+          </div>
+          <strong>{{ item.name }}</strong>
+          {% if not item.is_owned %}<span class="locked-badge">未所持</span>{% elif item.is_equipped %}<span class="equipped-badge">装備中</span>{% else %}<span class="owned-badge">所持中</span>{% endif %}
+        </button>
+        {% empty %}
+        <div class="group-empty">このカテゴリのアイテムはまだありません</div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endfor %}
+  </main>
+
+  <dialog id="item-detail-modal" class="item-detail-modal" aria-labelledby="item-modal-name">
+    <div class="item-modal-panel">
+      <header>
+        <div><small id="item-modal-type">ITEM</small><h2 id="item-modal-name">アイテム詳細</h2></div>
+        <button id="item-modal-close" class="item-modal-close" type="button" aria-label="アイテム詳細を閉じる">×</button>
+      </header>
+
+      <div id="item-modal-preview" class="item-modal-preview"><span id="item-modal-icon" aria-hidden="true"></span></div>
+
+      <section class="acquisition-card">
+        <span aria-hidden="true">◇</span>
+        <div><small>取得方法</small><strong id="item-modal-acquisition"></strong></div>
+      </section>
+
+      <div id="item-lock-state" class="item-lock-state" hidden>
+        <span aria-hidden="true">🔒</span>
+        <div><strong>ロック中</strong><small>取得条件を達成すると装備できます</small></div>
+      </div>
+
+      <form id="item-equip-form" class="item-equip-form" method="post" action="{% url 'rooms:equip_item' %}">
+        {% csrf_token %}
+        <input id="equip-item-code" type="hidden" name="item_code">
+        <button id="item-equip-button" type="submit">装備する</button>
+      </form>
+      <p id="item-modal-message" class="item-modal-message" role="status" aria-live="polite"></p>
+    </div>
+  </dialog>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'rooms/js/inventory.js' %}?v=20260806-1"></script>
+{% endblock %}
