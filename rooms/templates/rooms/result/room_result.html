@@ -1,0 +1,106 @@
+{% extends "rooms/base.html" %}
+{% load static %}
+
+{% block title %}しりとり｜対戦結果{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'rooms/css/result/6style.css' %}?v=20260806-3">
+{% endblock %}
+
+{% block content %}
+<div class="result-screen">
+  <div class="blob-tl" aria-hidden="true"></div>
+  <div class="blob-br" aria-hidden="true"></div>
+  <div class="dotgrid" aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+  <div class="float-dot fd1" aria-hidden="true"></div>
+  <div class="float-dot fd2" aria-hidden="true"></div>
+  <div class="float-dot fd3" aria-hidden="true"></div>
+
+  {% if is_winner %}<div class="confetti" id="confetti" aria-hidden="true"></div>{% endif %}
+
+  <div class="statusbar">ROOM {{ room.room_id }}</div>
+
+  <div class="content">
+    <div class="eyebrow"><span class="dot"></span> けっかはっぴょう</div>
+
+    <div class="title-wrap">
+      <span class="accent left">ヽ</span>
+      <div class="title">
+        {% if is_winner %}<span>か</span><span>ち</span><span>！</span>
+        {% else %}<span>け</span><span>っ</span><span>か</span>{% endif %}
+      </div>
+      <span class="accent right">ノ</span>
+    </div>
+
+    <div class="subtitle">
+      {% if is_winner %}さいごまでよくがんばったね！{% else %}たいせんおつかれさまでした！{% endif %}
+    </div>
+
+    <div class="badge-icon" aria-hidden="true">{% if is_winner %}🏆{% else %}👏{% endif %}</div>
+
+    <div class="rank-card">
+      <div class="rank-badge" aria-hidden="true">👥</div>
+      <div class="rank-info">
+        <div class="rank-label">あなたのじゅんい</div>
+        <div class="rank-value">
+          <span id="rankPos">{{ current_player.placement|default_if_none:"-" }}</span><span class="rank-unit">位</span>
+          <span class="rank-total">/ <span id="rankTotal">{{ player_count }}</span>人中</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="coin-reward-card" aria-label="獲得コイン {{ coin_reward }}、所持コイン {{ coin_balance }}">
+      <span class="coin-reward-icon" aria-hidden="true">C</span>
+      <div><small>順位報酬</small><strong>＋{{ coin_reward }} コイン</strong></div>
+      <p><small>所持</small><strong>{{ coin_balance }}</strong></p>
+    </div>
+
+    <div class="leaderboard" aria-label="最終順位">
+      {% for player in players %}
+      <div class="rank-row{% if player.user_id == user.id %} me{% endif %}{% if player.placement <= 3 %} top{{ player.placement }}{% endif %}">
+        <div class="rank-num">
+          {% if player.placement == 1 %}🥇{% elif player.placement == 2 %}🥈{% elif player.placement == 3 %}🥉{% else %}{{ player.placement }}{% endif %}
+        </div>
+        <div class="rank-name">{% if player.user_id == user.id %}あなた{% else %}{{ player.display_name }}{% endif %}</div>
+        <div class="rank-score">{{ player.word_count }}こ</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <nav class="actions" aria-label="結果画面メニュー">
+      <a class="action-btn filled" style="--btn-color:var(--blue);" href="{% url 'rooms:match' %}">
+        <span class="action-icon" aria-hidden="true">🔁</span>
+        <span class="action-label">もういちど遊ぶ</span>
+        <span class="action-chevron" aria-hidden="true">›</span>
+      </a>
+      <a class="action-btn" style="--btn-color:var(--sub);" href="{% url 'rooms:home' %}">
+        <span class="action-icon result-home-icon" aria-hidden="true">🏠</span>
+        <span class="action-label result-home-label">ホームにもどる</span>
+        <span class="action-chevron result-home-chevron" aria-hidden="true">›</span>
+      </a>
+    </nav>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if is_winner %}
+<script>
+  const confetti = document.getElementById("confetti");
+  const confettiColors = ["#F2545B", "#4A90E2", "#FFB627", "#4CAF50", "#8B5CF6"];
+  for (let index = 0; index < 26; index += 1) {
+    const piece = document.createElement("i");
+    piece.style.left = `${Math.random() * 100}%`;
+    piece.style.background = confettiColors[index % confettiColors.length];
+    piece.style.animationDuration = `${2.4 + Math.random() * 1.6}s`;
+    piece.style.animationDelay = `${Math.random() * 2}s`;
+    confetti.appendChild(piece);
+  }
+</script>
+{% endif %}
+{% endblock %}

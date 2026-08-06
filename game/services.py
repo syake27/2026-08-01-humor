@@ -1,20 +1,50 @@
 import secrets
 
 from django.db import transaction
+from django.db.models import F
 
 from .models import GamePlayer, GameSession
-from rooms.models import DEFAULT_BABA_CHARACTERS
+from rooms.models import DEFAULT_BABA_CHARACTERS, UserProfile
 
 
 DEFAULT_PLAYER_TITLE = "はじめての一歩"
+COIN_REWARDS = {1: 100, 2: 75, 3: 50, 4: 25}
+
+
+def choose_baba_letter(room, previous_letter=""):
+    candidates = list(room.baba_characters or DEFAULT_BABA_CHARACTERS)
+    different_candidates = [
+        character for character in candidates if character != previous_letter
+    ]
+    return secrets.choice(different_candidates or candidates)
+
+
+def coin_reward_for_placement(placement):
+    return COIN_REWARDS.get(placement, 0)
+
+
+def grant_coin_rewards(session):
+    if not session.is_finished or session.coin_rewards_granted:
+        return False
+
+    players = session.players.exclude(user=None).exclude(placement=None)
+    for player in players:
+        reward = coin_reward_for_placement(player.placement)
+        if not reward:
+            continue
+        profile, _ = UserProfile.objects.get_or_create(user_id=player.user_id)
+        UserProfile.objects.filter(pk=profile.pk).update(coins=F("coins") + reward)
+
+    session.coin_rewards_granted = True
+    session.save(update_fields=["coin_rewards_granted"])
+    return True
 
 
 def ensure_game_session(room):
     with transaction.atomic():
         session, _ = GameSession.objects.get_or_create(room=room)
         if not session.baba_letter:
-            candidates = room.baba_characters or DEFAULT_BABA_CHARACTERS
-            session.baba_letter = secrets.choice(candidates)
+            session.baba_letter = choose_baba_letter(room)
             session.save(update_fields=["baba_letter"])
 
         if session.players.exists():

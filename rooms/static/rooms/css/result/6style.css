@@ -11,28 +11,12 @@
     --bg-outer:#EEF1F6;
   }
   *{box-sizing:border-box;}
-  html,body{ height:100%; }
-  body{
-    margin:0;
-    min-height:100dvh;
-    background:var(--bg-outer);
-    font-family:'M PLUS Rounded 1c', sans-serif;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-  }
-
-  .phone{
-  max-width: 492px;
-}
-
-  .phone{
+  .result-screen{
     position:relative;
     width:100%;
-    max-width:480px;
-    height:100dvh;
-    min-height:100dvh;
+    height:100%;
     background:var(--bg-app);
+    font-family:'M PLUS Rounded 1c', sans-serif;
     overflow:hidden;
   }
 
@@ -70,7 +54,7 @@
 
   .content{
     position:relative; z-index:2;
-    height:100%;
+    height:calc(100% - 32px - env(safe-area-inset-top));
     display:flex; flex-direction:column; align-items:center;
     padding:14px 26px calc(24px + env(safe-area-inset-bottom));
   }
@@ -153,9 +137,33 @@
   .rank-value .rank-unit{ font-size:14px; color:var(--ink); font-weight:800; }
   .rank-value .rank-total{ font-size:13px; color:var(--sub); font-weight:700; margin-left:4px; }
 
+  .coin-reward-card{
+    width:100%;
+    min-height:58px;
+    margin-top:10px;
+    padding:8px 13px;
+    display:grid;
+    grid-template-columns:38px 1fr auto;
+    align-items:center;
+    gap:10px;
+    border:1.5px solid #FFE4A3;
+    border-radius:17px;
+    background:#FFF9E8;
+  }
+  .coin-reward-icon{
+    width:38px; height:38px; border-radius:50%;
+    display:grid; place-items:center;
+    color:#fff; background:linear-gradient(135deg,#FFD34E,#FFAD18);
+    font-size:17px; font-weight:900;
+  }
+  .coin-reward-card small{ display:block; color:#A47620; font-size:10px; font-weight:700; }
+  .coin-reward-card > div strong{ display:block; margin-top:2px; color:#9B6810; font-size:15px; font-weight:900; }
+  .coin-reward-card p{ margin:0; text-align:right; }
+  .coin-reward-card p strong{ display:block; margin-top:1px; color:var(--ink); font-size:16px; font-weight:900; }
+
   .leaderboard{
     width:100%;
-    margin-top:14px;
+    margin-top:10px;
     background:#fff;
     border:1.5px solid var(--line);
     border-radius:22px;
@@ -193,6 +201,7 @@
     cursor:pointer;
     font-family:inherit;
     text-align:left;
+    text-decoration:none;
   }
   .action-btn.filled{ background:var(--btn-color, var(--blue)); }
   .action-icon{
@@ -206,6 +215,10 @@
   .action-btn.filled .action-label{ color:#fff; }
   .action-chevron{ color:var(--btn-color, var(--blue)); font-size:18px; font-weight:900; }
   .action-btn.filled .action-chevron{ color:#fff; }
+
+  .result-home-icon{ background:#F1F2F5; color:var(--sub); }
+  .result-home-label{ color:var(--ink); }
+  .result-home-chevron{ color:var(--sub); }
 
   .confetti{ position:absolute; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
   .confetti i{
