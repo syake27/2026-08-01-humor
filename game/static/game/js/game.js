@@ -25,10 +25,49 @@ const roomRulesOpenButton = document.getElementById("room-rules-open");
 const roomRulesModal = document.getElementById("room-rules-modal");
 const roomRulesCloseButton = document.getElementById("room-rules-close");
 const babaDebugLetter = document.querySelector(".baba-debug-letter");
-const PLAYER_POLL_INTERVAL = 1500;
+const gamePickerModal = document.getElementById("game-picker-modal");
+const gamePickerTitle = document.getElementById("game-picker-title");
+const gamePickerCloseButton = document.getElementById("game-picker-close");
+const gamePickerButtons = document.querySelectorAll("[data-picker]");
+const gamePickerPanels = document.querySelectorAll("[data-picker-panel]");
+const gamePickerOptions = document.querySelectorAll(".game-picker-option");
+const babaButton = document.getElementById("baba-button");
+const babaGuessModal = document.getElementById("baba-guess-modal");
+const babaGuessForm = document.getElementById("baba-guess-form");
+const babaGuessInput = document.getElementById("baba-guess-input");
+const babaGuessError = document.getElementById("baba-guess-error");
+const babaGuessCancelButton = document.getElementById("baba-guess-cancel");
+const babaGuessSubmitButton = document.getElementById("baba-guess-submit");
+const babaChallengeStartButton = document.getElementById("baba-challenge-start");
+const babaConfirmStep = document.getElementById("baba-confirm-step");
+const babaInputStep = document.getElementById("baba-input-step");
+const babaChallengeNotice = document.getElementById("baba-challenge-notice");
+const babaChallengerName = document.getElementById("baba-challenger-name");
+const babaPreviewLetter = document.getElementById("baba-preview-letter");
+const babaChallengeCaption = document.getElementById("baba-challenge-caption");
+const babaChallengeStatus = document.getElementById("baba-challenge-status");
+const babaRoulette = document.getElementById("baba-roulette");
+const babaRouletteLabel = document.getElementById("baba-roulette-label");
+const babaRouletteValue = document.getElementById("baba-roulette-value");
+const babaSlotTrack = document.getElementById("baba-slot-track");
+const babaExplosion = document.getElementById("baba-explosion");
+const PLAYER_POLL_INTERVAL = 750;
+const BABA_RESULT_HOLD_MS = 2600;
+const BABA_EXPLOSION_DELAY_MS = 1000;
 let focusedPlayerId = null;
 let isComposingAnswer = false;
+let isComposingBaba = false;
 let isMovingToResult = false;
+let babaChallengeLocked = babaGuessModal.dataset.selfChallenging === "true";
+const initialBabaRevealActive = babaGuessModal.dataset.revealActive === "true";
+let babaPreviewTimer = null;
+let babaRouletteTimeout = null;
+let babaSlowdownTimers = [];
+let babaExplosionTimer = null;
+let babaExplosionEndTimer = null;
+let babaWordExplosionTimer = null;
+let babaRevealSignature = "";
+let lastRenderedStampId = Number(playersStrip.dataset.lastStampId || 0);
 let renderedHistorySignature = JSON.stringify(
   Array.from(modalHistoryList.querySelectorAll("li:not(.history-empty)")).map((row) => ({
     turn_number: row.querySelector("span")?.textContent || "",
@@ -54,6 +93,103 @@ function showMessage(title, detail, isSuccess = false) {
   gameMessage.querySelector(".message-icon").textContent = isSuccess ? "✓" : "!";
   gameMessage.querySelector("strong").textContent = title;
   gameMessage.querySelector("small").textContent = detail;
+}
+
+function resetBabaRoulette() {
+  window.clearTimeout(babaRouletteTimeout);
+  babaSlowdownTimers.forEach((timer) => window.clearTimeout(timer));
+  window.clearTimeout(babaExplosionTimer);
+  window.clearTimeout(babaExplosionEndTimer);
+  window.clearTimeout(babaWordExplosionTimer);
+  babaSlowdownTimers = [];
+  babaExplosionTimer = null;
+  babaExplosionEndTimer = null;
+  babaWordExplosionTimer = null;
+  babaRouletteTimeout = null;
+  babaRevealSignature = "";
+  babaRoulette.hidden = true;
+  babaRoulette.classList.remove(
+    "is-spinning",
+    "is-slow",
+    "is-stopping",
+    "is-correct",
+    "is-wrong"
+  );
+  babaSlotTrack.hidden = false;
+  babaRouletteValue.hidden = true;
+  if (babaExplosion.open) babaExplosion.close();
+  babaChallengeNotice.classList.remove("is-shaking");
+  babaChallengeCaption.hidden = false;
+}
+
+function showBabaExplosion() {
+  if (babaExplosion.open) babaExplosion.close();
+  babaChallengeNotice.classList.remove("is-shaking");
+  void babaExplosion.offsetWidth;
+  babaExplosion.showModal();
+  babaChallengeNotice.classList.add("is-shaking");
+  babaExplosionEndTimer = window.setTimeout(() => {
+    if (babaExplosion.open) babaExplosion.close();
+    babaChallengeNotice.classList.remove("is-shaking");
+  }, 950);
+}
+
+function startBabaWordExplosion(reveal) {
+  const signature = `${reveal.mode}:${reveal.ends_at}`;
+  if (signature === babaRevealSignature) return;
+  resetBabaRoulette();
+  babaRevealSignature = signature;
+  babaChallengeCaption.hidden = true;
+  babaRoulette.hidden = true;
+  if (babaChallengeNotice.open) babaChallengeNotice.close();
+  babaWordExplosionTimer = window.setTimeout(showBabaExplosion, 60);
+}
+
+function startBabaRoulette(reveal) {
+  const signature = `${reveal.ends_at}:${reveal.correct}`;
+  if (signature === babaRevealSignature) return;
+  resetBabaRoulette();
+  babaRevealSignature = signature;
+  babaChallengeCaption.hidden = true;
+  babaRoulette.hidden = false;
+  babaRoulette.classList.add("is-spinning");
+  babaRouletteLabel.textContent = "判定中";
+  babaSlotTrack.hidden = false;
+  babaRouletteValue.hidden = true;
+
+  const remaining = Math.max(Date.parse(reveal.ends_at) - Date.now(), 0);
+  const settleDelay = Math.max(350, remaining - BABA_RESULT_HOLD_MS);
+  const slowDelay = Math.max(0, settleDelay - 1450);
+  const stoppingDelay = Math.max(slowDelay + 250, settleDelay - 650);
+  babaSlowdownTimers.push(
+    window.setTimeout(() => {
+      babaRoulette.classList.add("is-slow");
+    }, slowDelay),
+    window.setTimeout(() => {
+      babaRoulette.classList.remove("is-slow");
+      babaRoulette.classList.add("is-stopping");
+    }, stoppingDelay)
+  );
+  babaRouletteTimeout = window.setTimeout(() => {
+    babaRoulette.classList.remove(
+      "is-spinning",
+      "is-slow",
+      "is-stopping",
+      "is-correct",
+      "is-wrong"
+    );
+    babaRoulette.classList.add(reveal.correct ? "is-correct" : "is-wrong");
+    babaRouletteLabel.textContent = "判定結果";
+    babaSlotTrack.hidden = true;
+    babaRouletteValue.hidden = false;
+    babaRouletteValue.textContent = reveal.correct ? "正解！" : "不正解";
+    if (!reveal.correct) {
+      babaExplosionTimer = window.setTimeout(
+        showBabaExplosion,
+        BABA_EXPLOSION_DELAY_MS
+      );
+    }
+  }, settleDelay);
 }
 
 function moveToResult(game) {
@@ -177,6 +313,254 @@ roomRulesModal.addEventListener("close", () => {
   roomRulesOpenButton.focus();
 });
 
+babaButton.addEventListener("click", () => {
+  if (babaChallengeLocked) return;
+  babaGuessInput.value = "";
+  babaGuessError.textContent = "";
+  babaConfirmStep.hidden = false;
+  babaInputStep.hidden = true;
+  babaGuessModal.showModal();
+});
+
+babaGuessCancelButton.addEventListener("click", () => {
+  if (!babaChallengeLocked) babaGuessModal.close();
+});
+
+function showBabaInputStep() {
+  babaConfirmStep.hidden = true;
+  babaInputStep.hidden = false;
+  if (!babaGuessModal.open) babaGuessModal.showModal();
+  window.setTimeout(() => babaGuessInput.focus(), 50);
+}
+
+babaChallengeStartButton.addEventListener("click", async () => {
+  babaChallengeStartButton.disabled = true;
+  const formData = new FormData();
+  formData.append("room_id", babaGuessModal.dataset.roomId);
+  formData.append("csrfmiddlewaretoken", answerForm.querySelector("[name=csrfmiddlewaretoken]").value);
+
+  try {
+    const response = await fetch(babaGuessModal.dataset.startUrl, {
+      method: "POST",
+      body: formData,
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    });
+    const game = await response.json();
+    if (!response.ok) {
+      showMessage("挑戦を開始できませんでした", game.error || "もう一度お試しください");
+      return;
+    }
+    babaChallengeLocked = true;
+    applyGameState(game);
+    showBabaInputStep();
+  } catch (error) {
+    showMessage("挑戦を開始できませんでした", "通信を確認してもう一度お試しください");
+  } finally {
+    babaChallengeStartButton.disabled = false;
+  }
+});
+
+babaGuessModal.addEventListener("click", (event) => {
+  if (event.target === babaGuessModal && !babaChallengeLocked) {
+    babaGuessModal.close();
+  }
+});
+
+babaGuessModal.addEventListener("cancel", (event) => {
+  if (babaChallengeLocked) event.preventDefault();
+});
+
+if (babaChallengeLocked && !initialBabaRevealActive) {
+  showBabaInputStep();
+}
+
+if (
+  babaGuessModal.dataset.challengeActive === "true" &&
+  (babaGuessModal.dataset.selfChallenging !== "true" || initialBabaRevealActive) &&
+  babaGuessModal.dataset.revealMode !== "word" &&
+  !babaChallengeNotice.open
+) {
+  babaChallengeNotice.showModal();
+}
+
+if (initialBabaRevealActive) {
+  const initialReveal = {
+    correct: babaGuessModal.dataset.revealCorrect === "true",
+    ends_at: babaGuessModal.dataset.revealUntil,
+    mode: babaGuessModal.dataset.revealMode,
+  };
+  if (["word", "timeout"].includes(initialReveal.mode)) {
+    startBabaWordExplosion(initialReveal);
+  } else {
+    startBabaRoulette(initialReveal);
+  }
+}
+
+babaChallengeNotice.addEventListener("cancel", (event) => {
+  event.preventDefault();
+});
+
+babaExplosion.addEventListener("cancel", (event) => {
+  event.preventDefault();
+});
+
+async function sendBabaPreview() {
+  if (!babaChallengeLocked) return;
+  const normalizedPreview = babaGuessInput.value.normalize("NFKC").trim();
+  const preview = /^[ぁ-ゖー]$/.test(normalizedPreview) ? normalizedPreview : "";
+  const formData = new FormData();
+  formData.append("room_id", babaGuessModal.dataset.roomId);
+  formData.append("preview", preview);
+  formData.append("csrfmiddlewaretoken", answerForm.querySelector("[name=csrfmiddlewaretoken]").value);
+  try {
+    await fetch(babaGuessModal.dataset.previewUrl, {
+      method: "POST",
+      body: formData,
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    });
+  } catch (error) {
+    // 判定送信は止めず、次の入力更新または状態取得で復帰する。
+  }
+}
+
+function scheduleBabaPreview() {
+  window.clearTimeout(babaPreviewTimer);
+  babaPreviewTimer = window.setTimeout(sendBabaPreview, 160);
+}
+
+babaGuessInput.addEventListener("compositionstart", () => {
+  isComposingBaba = true;
+});
+
+babaGuessInput.addEventListener("compositionend", () => {
+  isComposingBaba = false;
+  scheduleBabaPreview();
+});
+
+babaGuessInput.addEventListener("input", () => {
+  if (!isComposingBaba) scheduleBabaPreview();
+});
+
+babaGuessForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const guessedLetter = babaGuessInput.value.normalize("NFKC").trim();
+  if (!/^[ぁ-ゖ]$/.test(guessedLetter)) {
+    babaGuessError.textContent = "ひらがな1文字を入力してください";
+    babaGuessInput.focus();
+    return;
+  }
+
+  babaGuessSubmitButton.disabled = true;
+  babaGuessError.textContent = "";
+  const formData = new FormData();
+  formData.append("room_id", babaGuessModal.dataset.roomId);
+  formData.append("baba_letter", guessedLetter);
+  formData.append("csrfmiddlewaretoken", answerForm.querySelector("[name=csrfmiddlewaretoken]").value);
+
+  try {
+    const response = await fetch(babaGuessModal.dataset.guessUrl, {
+      method: "POST",
+      body: formData,
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    });
+    const game = await response.json();
+    if (!response.ok) {
+      babaGuessError.textContent = game.error || "もう一度お試しください";
+      if (moveToResult(game)) return;
+      return;
+    }
+
+    babaGuessModal.close();
+    if (moveToResult(game)) return;
+    applyGameState(game);
+  } catch (error) {
+    babaGuessError.textContent = "通信できませんでした。もう一度お試しください";
+  } finally {
+    babaGuessSubmitButton.disabled = false;
+  }
+});
+
+gamePickerButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const picker = button.dataset.picker;
+    gamePickerTitle.textContent = picker === "stamp" ? "スタンプを選ぶ" : "アイテムを選ぶ";
+    gamePickerPanels.forEach((panel) => {
+      panel.hidden = panel.dataset.pickerPanel !== picker;
+    });
+    gamePickerModal.showModal();
+  });
+});
+
+gamePickerCloseButton.addEventListener("click", () => {
+  gamePickerModal.close();
+});
+
+gamePickerModal.addEventListener("click", (event) => {
+  if (event.target === gamePickerModal) {
+    gamePickerModal.close();
+  }
+});
+
+function renderStamp(stamp) {
+  if (!stamp || stamp.id <= lastRenderedStampId) return;
+  lastRenderedStampId = stamp.id;
+
+  const playerCard = playersStrip.querySelector(`[data-player-id="${stamp.player_id}"]`);
+  const avatarFrame = playerCard?.querySelector(".player-avatar-frame");
+  if (!avatarFrame) return;
+
+  const previousStamp = avatarFrame.querySelector(".player-stamp-pop");
+  if (previousStamp) previousStamp.remove();
+
+  const bubble = document.createElement("span");
+  bubble.className = "player-stamp-pop";
+  const icon = document.createElement("strong");
+  const label = document.createElement("small");
+  icon.textContent = stamp.icon || "☺";
+  label.textContent = stamp.name;
+  bubble.append(icon, label);
+  avatarFrame.append(bubble);
+  bubble.addEventListener("animationend", () => bubble.remove(), { once: true });
+}
+
+gamePickerOptions.forEach((option) => {
+  option.addEventListener("click", async () => {
+    const name = option.dataset.optionName;
+    const kind = option.dataset.optionKind;
+    if (kind !== "スタンプ") {
+      gamePickerModal.close();
+      showMessage(`${kind}を選びました`, `「${name}」を選択しています`, true);
+      return;
+    }
+
+    option.disabled = true;
+    const formData = new FormData();
+    formData.append("room_id", gamePickerModal.dataset.roomId);
+    formData.append("stamp_code", option.dataset.itemCode);
+    formData.append("csrfmiddlewaretoken", answerForm.querySelector("[name=csrfmiddlewaretoken]").value);
+
+    try {
+      const response = await fetch(gamePickerModal.dataset.stampUrl, {
+        method: "POST",
+        body: formData,
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        showMessage("スタンプを送れませんでした", data.error || "もう一度お試しください");
+        return;
+      }
+      gamePickerModal.close();
+      renderStamp(data.stamp);
+      showMessage("スタンプを送りました", `「${name}」`, true);
+    } catch (error) {
+      showMessage("スタンプを送れませんでした", "接続を確認してもう一度お試しください");
+    } finally {
+      option.disabled = false;
+    }
+  });
+});
+
 gameMenuButton.addEventListener("click", () => {
   const willOpen = gameMenu.hidden;
   gameMenu.hidden = !willOpen;
@@ -286,13 +670,53 @@ function applyGameState(game) {
   }
 
   const me = game.players.find((player) => player.is_self);
-  const canAnswer = Boolean(me && me.is_alive && me.is_current);
+  const babaChallenge = game.baba_challenge;
+  const babaReveal = game.baba_reveal;
+  const canAnswer = Boolean(
+    me && me.is_alive && me.is_current && !babaChallenge
+  );
+  babaButton.disabled = !(me && me.is_alive) || Boolean(babaChallenge);
+  if (babaChallenge) {
+    babaChallengerName.textContent = babaChallenge.player_name;
+    babaPreviewLetter.textContent = babaChallenge.preview || "？";
+    babaChallengeStatus.textContent = "がBABAに挑戦中！";
+  }
+  if (babaReveal) {
+    if (["word", "timeout"].includes(babaReveal.mode)) {
+      startBabaWordExplosion(babaReveal);
+    } else {
+      startBabaRoulette(babaReveal);
+    }
+  } else {
+    resetBabaRoulette();
+  }
+  const isWordExplosion = ["word", "timeout"].includes(babaReveal?.mode);
+  if (babaChallenge && (!babaChallenge.is_self || babaReveal) && babaGuessModal.open) {
+    babaGuessModal.close();
+  }
+  if (
+    babaChallenge &&
+    !isWordExplosion &&
+    (!babaChallenge.is_self || babaReveal)
+  ) {
+    if (!babaChallengeNotice.open) babaChallengeNotice.showModal();
+  } else if (babaChallengeNotice.open) {
+    babaChallengeNotice.close();
+  }
+  if (babaChallenge?.is_self && !babaChallengeLocked && !babaReveal) {
+    babaChallengeLocked = true;
+    showBabaInputStep();
+  }
+  if (!babaChallenge) babaChallengeLocked = false;
   const acceptedLetterDisplay = game.accepted_start_letters.join("・");
   answerInput.disabled = !canAnswer;
+  clearAnswerButton.disabled = !canAnswer;
   sendAnswerButton.disabled = !canAnswer;
-  answerInput.placeholder = canAnswer
-    ? `「${acceptedLetterDisplay}」から始まる言葉`
-    : "あなたの番を待っています";
+  answerInput.placeholder = babaChallenge
+    ? "BABAの判定を待っています"
+    : canAnswer
+      ? `「${acceptedLetterDisplay}」から始まる言葉`
+      : "あなたの番を待っています";
 
   aliveCount.textContent = livingPlayers;
   turnNumber.textContent = game.turn_number;
@@ -304,6 +728,7 @@ function applyGameState(game) {
   currentLetterPrompt.textContent = `次は「${acceptedLetterDisplay}」からはじまる言葉を入力！`;
   renderHistory(game.words, game.current_letter);
   renderModalHistory(game.words, game.current_letter);
+  game.stamps.forEach(renderStamp);
 }
 
 function renderHistory(words, nextLetter) {

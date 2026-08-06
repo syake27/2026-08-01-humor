@@ -14,9 +14,43 @@ class UserProfile(models.Model):
         related_name="shiritori_profile",
     )
     coins = models.PositiveIntegerField(default=0)
+    rating = models.PositiveIntegerField(default=1000)
 
     def __str__(self):
         return f"{self.user.username}: {self.coins} coins"
+
+
+class OwnedItem(models.Model):
+    ITEM_TYPES = [
+        ("avatar", "アバター"),
+        ("frame", "フレーム"),
+        ("stamp", "スタンプ"),
+        ("title", "称号"),
+    ]
+
+    user = models.ForeignKey(
+        "auth.User",
+        on_delete=models.CASCADE,
+        related_name="owned_items",
+    )
+    item_code = models.CharField(max_length=50)
+    item_type = models.CharField(max_length=12, choices=ITEM_TYPES)
+    name = models.CharField(max_length=50)
+    icon = models.CharField(max_length=20, blank=True)
+    is_equipped = models.BooleanField(default=False)
+    acquired_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["item_type", "acquired_at", "id"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "item_code"],
+                name="unique_owned_item_per_user",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.user.username}: {self.name}"
 
 
 class Room(models.Model):

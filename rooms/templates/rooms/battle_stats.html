@@ -1,0 +1,65 @@
+{% extends "rooms/base.html" %}
+{% load static %}
+
+{% block title %}戦績｜しりとり{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rooms/css/battle_stats.css' %}?v=20260806-1">
+{% endblock %}
+
+{% block content %}
+<div class="stats-screen">
+  <div class="stats-decoration stats-blue" aria-hidden="true"></div>
+  <div class="stats-decoration stats-green" aria-hidden="true"></div>
+
+  <header class="stats-header">
+    <a href="{% url 'rooms:profile' %}" aria-label="プロフィールへ戻る">‹</a>
+    <div><small>MY RECORD</small><h1>戦績</h1></div>
+    <span aria-hidden="true">✦</span>
+  </header>
+
+  <main class="stats-content">
+    <section class="stats-hero">
+      <div class="win-rate-ring" style="--win-rate: {{ battle_stats.win_rate }}%">
+        <div><strong>{{ battle_stats.win_rate }}</strong><small>%</small></div>
+      </div>
+      <div>
+        <small>現在の勝率</small>
+        <h2>{{ battle_stats.win_count }}勝 / {{ battle_stats.battle_count }}戦</h2>
+        <p>{% if battle_stats.best_rank %}最高順位 {{ battle_stats.best_rank }}位{% else %}対戦すると戦績が記録されます{% endif %}</p>
+      </div>
+    </section>
+
+    <section class="stats-summary" aria-label="戦績まとめ">
+      <article><span class="summary-icon battle-icon" aria-hidden="true">⚔</span><small>対戦数</small><strong>{{ battle_stats.battle_count }}</strong></article>
+      <article><span class="summary-icon win-icon" aria-hidden="true">♛</span><small>勝利数</small><strong>{{ battle_stats.win_count }}</strong></article>
+      <article><span class="summary-icon word-icon" aria-hidden="true">あ</span><small>回答数</small><strong>{{ battle_stats.total_words }}</strong></article>
+    </section>
+
+    <section class="rank-breakdown">
+      <header><div><small>RANKING</small><h2>順位の内訳</h2></div><span aria-hidden="true">🏆</span></header>
+      <div class="rank-count-grid">
+        <article class="rank-first"><span>🥇</span><small>1位</small><strong>{{ battle_stats.rank_counts.1 }}回</strong></article>
+        <article class="rank-second"><span>🥈</span><small>2位</small><strong>{{ battle_stats.rank_counts.2 }}回</strong></article>
+        <article class="rank-third"><span>🥉</span><small>3位</small><strong>{{ battle_stats.rank_counts.3 }}回</strong></article>
+        <article class="rank-fourth"><span>4</span><small>4位</small><strong>{{ battle_stats.rank_counts.4 }}回</strong></article>
+      </div>
+    </section>
+
+    <section class="recent-results">
+      <header><div><small>HISTORY</small><h2>最近の対戦</h2></div><span>{{ battle_stats.battle_count }}戦</span></header>
+      <div class="result-list">
+        {% for result in battle_stats.recent_results %}
+        <article>
+          <span class="result-rank rank-{{ result.placement }}">{{ result.placement }}位</span>
+          <div><strong>ROOM {{ result.session.room.room_id }}</strong><small>{{ result.session.started_at|date:"Y/m/d H:i" }}</small></div>
+          <p><strong>{{ result.word_count }}</strong><small>回答</small></p>
+        </article>
+        {% empty %}
+        <div class="stats-empty"><span aria-hidden="true">⚔</span><strong>まだ戦績がありません</strong><p>マッチで遊ぶと、ここに結果が記録されます。</p><a href="{% url 'rooms:match' %}">対戦をはじめる</a></div>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+</div>
+{% endblock %}

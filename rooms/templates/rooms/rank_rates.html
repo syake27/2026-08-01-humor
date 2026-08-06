@@ -1,0 +1,55 @@
+{% extends "rooms/base.html" %}
+{% load static %}
+
+{% block title %}ランクレート一覧｜しりとり{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'rooms/css/rank_rates.css' %}?v=20260806-1">
+{% endblock %}
+
+{% block content %}
+<div class="rank-screen">
+  <div class="rank-decoration rank-blue" aria-hidden="true"></div>
+  <div class="rank-decoration rank-purple" aria-hidden="true"></div>
+
+  <header class="rank-header">
+    <a href="{% url 'rooms:profile' %}" aria-label="プロフィールへ戻る">‹</a>
+    <div><small>RANK GUIDE</small><h1>ランクレート一覧</h1></div>
+    <span aria-hidden="true">◆</span>
+  </header>
+
+  <main class="rank-content">
+    <section class="current-rank-card">
+      <div class="current-rank-icon" aria-hidden="true">{{ rank_data.current_rank.icon }}</div>
+      <div>
+        <small>現在のランク</small>
+        <h2>{{ rank_data.current_rank.name }}</h2>
+        <p><strong>{{ rank_data.rating }}</strong> レート</p>
+      </div>
+      {% if rank_data.next_rank %}<span>次は {{ rank_data.next_rank.name }}</span>{% else %}<span>最高ランク</span>{% endif %}
+      <div class="current-rank-progress"><i style="width: {{ rank_data.progress }}%"></i></div>
+      <p class="rank-progress-note">
+        {% if rank_data.next_rank %}あと <strong>{{ rank_data.rate_to_next }}</strong> レートで昇格{% else %}最高ランクに到達しています！{% endif %}
+      </p>
+    </section>
+
+    <section class="rank-list-section">
+      <header><div><small>ALL RANKS</small><h2>全ランク</h2></div><span>{{ rank_data.rank_tiers|length }}段階</span></header>
+      <div class="rank-tier-list">
+        {% for rank in rank_data.rank_tiers reversed %}
+        <article class="rank-tier tier-{{ rank.code }}{% if rank.is_current %} is-current{% endif %}{% if rank_data.rating < rank.minimum_rate %} is-locked{% endif %}">
+          <span class="tier-icon" aria-hidden="true">{{ rank.icon }}</span>
+          <div><strong>{{ rank.name }}</strong><small>{% if rank.maximum_rate %}{{ rank.minimum_rate }}〜{{ rank.maximum_rate }}{% else %}{{ rank.minimum_rate }}以上{% endif %} レート</small></div>
+          {% if rank.is_current %}<b>現在</b>{% elif rank_data.rating < rank.minimum_rate %}<b class="locked-label">未到達</b>{% else %}<b class="passed-label">達成</b>{% endif %}
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <aside class="rank-help">
+      <span aria-hidden="true">💡</span>
+      <p><strong>レートを上げてランクアップ！</strong><small>ランクマッチの結果に応じてレートが変動します。</small></p>
+    </aside>
+  </main>
+</div>
+{% endblock %}
