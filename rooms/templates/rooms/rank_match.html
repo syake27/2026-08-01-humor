@@ -4,29 +4,76 @@
 {% block title %}ランクマッチ｜しりとり{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'rooms/css/ai.css' %}?v=20260805-2">
+<link rel="stylesheet" href="{% static 'rooms/css/rank_match.css' %}?v=20260806-1">
 {% endblock %}
 
 {% block content %}
-<div class="ai-screen rank-screen">
-  <div class="ai-decoration decoration-left" aria-hidden="true"></div>
-  <div class="ai-decoration decoration-right" aria-hidden="true"></div>
-  <span class="ai-dot dot-red" aria-hidden="true"></span>
-  <span class="ai-dot dot-blue" aria-hidden="true"></span>
+<div
+  class="rank-match-screen{% if rank_state.matched %} is-matched{% endif %}"
+  data-status-url="{% url 'rooms:rank_match_status' %}"
+  data-initial-count="{{ rank_state.waiting_count }}"
+  data-initial-countdown="{{ rank_state.countdown|default_if_none:'' }}"
+>
+  <span class="rank-shape rank-shape-left" aria-hidden="true"></span>
+  <span class="rank-shape rank-shape-right" aria-hidden="true"></span>
+  <span class="rank-spark rank-spark-one" aria-hidden="true">✦</span>
+  <span class="rank-spark rank-spark-two" aria-hidden="true">●</span>
 
-  <header class="ai-header">
-    <a href="{% url 'rooms:match' %}" class="ai-back" aria-label="マッチ画面へ戻る">‹</a>
+  <header class="rank-match-header">
+    <form method="post" action="{% url 'rooms:leave_rank_match' %}" class="rank-leave-form">
+      {% csrf_token %}
+      <button class="rank-back rank-leave-button" type="submit" aria-label="マッチ選択へ戻る">‹</button>
+    </form>
     <h1>ランクマッチ</h1>
-    <span aria-hidden="true"></span>
+    <div class="rank-mini-badge" aria-label="現在のランク">
+      <span>{{ rank_data.current_rank.icon }}</span>
+    </div>
   </header>
 
-  <section class="ai-coming-soon">
-    <div class="rank-page-icon" aria-hidden="true">♛</div>
-    <div class="soon-label">現在のレート 1000</div>
-    <h2>ランクマッチ</h2>
-    <p>実力の近いプレイヤーと対戦する機能を<br>現在準備しています。</p>
-    <div class="preparing-dots" aria-hidden="true"><span></span><span></span><span></span></div>
-    <a href="{% url 'rooms:match' %}" class="home-button">マッチ選択へ戻る</a>
-  </section>
+  <main class="rank-match-content">
+    <section class="rank-card">
+      <p class="rank-card-label">CURRENT RANK</p>
+      <div class="rank-emblem" aria-hidden="true">{{ rank_data.current_rank.icon }}</div>
+      <h2>{{ rank_data.current_rank.name }}</h2>
+      <p class="rank-rating">RATE <strong>{{ rank_data.rating }}</strong></p>
+    </section>
+
+    <section class="matching-card" aria-live="polite">
+      <div class="matching-animation" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <p class="matching-kicker">4 PLAYER BATTLE</p>
+      <h2 class="matching-title">
+        {% if rank_state.matched %}対戦相手が見つかりました！{% else %}対戦相手を探しています{% endif %}
+      </h2>
+      <p class="matching-message">
+        {% if rank_state.matched %}まもなくゲームを開始します{% else %}4人集まると自動で試合が始まります{% endif %}
+      </p>
+
+      <div class="player-slots" aria-label="現在の待機人数">
+        {% for slot in "1234" %}
+          <span class="player-slot" data-slot="{{ forloop.counter }}">
+            <span class="player-head"></span>
+            <span class="player-body"></span>
+          </span>
+        {% endfor %}
+      </div>
+      <p class="matching-count"><strong class="matching-count-current">{{ rank_state.waiting_count }}</strong><span>/4 人</span></p>
+
+      <div class="rank-countdown{% if not rank_state.matched %} is-hidden{% endif %}">
+        <span class="rank-countdown-label">GAME START</span>
+        <strong class="rank-countdown-number">{{ rank_state.countdown }}</strong>
+      </div>
+    </section>
+
+    <form method="post" action="{% url 'rooms:leave_rank_match' %}" class="rank-cancel-form">
+      {% csrf_token %}
+      <button class="rank-cancel rank-leave-button" type="submit">マッチングをやめる</button>
+    </form>
+  </main>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'rooms/js/rank_match.js' %}?v=20260806-1"></script>
 {% endblock %}

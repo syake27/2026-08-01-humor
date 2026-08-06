@@ -6,6 +6,7 @@ const itemModalClose = document.getElementById("item-modal-close");
 const itemModalType = document.getElementById("item-modal-type");
 const itemModalName = document.getElementById("item-modal-name");
 const itemModalPreview = document.getElementById("item-modal-preview");
+const itemModalImage = document.getElementById("item-modal-image");
 const itemModalIcon = document.getElementById("item-modal-icon");
 const itemModalAcquisition = document.getElementById("item-modal-acquisition");
 const itemLockState = document.getElementById("item-lock-state");
@@ -30,15 +31,20 @@ function openItemModal(card) {
   activeItemCard = card;
   const isOwned = card.dataset.isOwned === "true";
   const isEquipped = card.dataset.isEquipped === "true";
+  const canEquip = card.dataset.canEquip === "true";
   const itemType = card.dataset.itemType;
+  const itemImage = card.dataset.itemImage;
 
   itemModalType.textContent = card.dataset.itemTypeLabel;
   itemModalName.textContent = card.dataset.itemName;
   itemModalAcquisition.textContent = card.dataset.acquisitionMethod;
   itemModalPreview.className = `item-modal-preview is-${itemType}`;
+  itemModalImage.hidden = !itemImage;
+  itemModalImage.src = itemImage || "";
+  itemModalIcon.hidden = Boolean(itemImage);
   itemModalIcon.textContent = itemType === "frame" ? "" : card.dataset.itemIcon;
   itemLockState.hidden = isOwned;
-  itemEquipForm.hidden = !isOwned;
+  itemEquipForm.hidden = !isOwned || !canEquip;
   equipItemCode.value = card.dataset.itemCode;
   itemEquipButton.disabled = isEquipped;
   itemEquipButton.textContent = isEquipped ? "装備中" : "装備する";
@@ -88,7 +94,16 @@ itemEquipForm.addEventListener("submit", async (event) => {
         card.dataset.itemType === result.item_type &&
         card.dataset.isOwned === "true"
       ) {
-        updateCardBadge(card, card.dataset.itemCode === result.item_code);
+        // Stamps occupy six independent slots; equipping one must not
+        // clear the other equipped stamps. Other customization types remain
+        // single-select as before.
+        if (result.item_type === "stamp") {
+          if (card.dataset.itemCode === result.item_code) {
+            updateCardBadge(card, true);
+          }
+        } else {
+          updateCardBadge(card, card.dataset.itemCode === result.item_code);
+        }
       }
     });
     itemEquipButton.textContent = "装備中";

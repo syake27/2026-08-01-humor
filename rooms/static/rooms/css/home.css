@@ -7,13 +7,8 @@ html {
 }
 
 body {
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Hiragino Sans",
-    "Yu Gothic",
-    "Meiryo",
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic",
+    "Meiryo", sans-serif;
 
   color: #344351;
 }
@@ -26,12 +21,9 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  isolation: isolate;
 
-  padding:
-    32px
-    46px
-    32px;
-
+  padding: 32px 46px 32px;
 }
 
 /* =========================
@@ -53,17 +45,20 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
 
-  font-size: 4.6rem;
-  font-weight: 800;
-  line-height: 1;
-
-  letter-spacing: 0;
+  min-height: 165px;
+  height: 165px;
+  overflow: visible;
 }
 
-.logo span{
+.logo-image {
+  position: relative;
+  z-index: 3;
+
   display: block;
+  width: min(250px, 78vw);
+  height: auto;
+  flex: 0 0 auto;
 }
 
 .logo-red {
@@ -83,10 +78,7 @@ body {
 }
 
 .catch-copy {
-  margin:
-    24px
-    0
-    0;
+  margin: 24px 0 0;
 
   font-size: 1rem;
   font-weight: 700;
@@ -118,16 +110,9 @@ body {
   grid-template-columns: 58px 1fr 24px;
   align-items: center;
 
-  padding:
-    10px
-    18px
-    10px
-    14px;
+  padding: 10px 18px 10px 14px;
 
-  border:
-    1.5px
-    solid
-    var(--menu-color);
+  border: 1.5px solid var(--menu-color);
 
   border-radius: 18px;
 
@@ -136,20 +121,14 @@ body {
 
   text-decoration: none;
 
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
     background-color 0.2s ease;
 }
 
 .menu-item:hover {
   transform: translateY(-2px);
 
-  box-shadow:
-    0
-    8px
-    18px
-    rgba(52, 67, 81, 0.12);
+  box-shadow: 0 8px 18px rgba(52, 67, 81, 0.12);
 }
 
 .menu-item:active {
@@ -157,6 +136,9 @@ body {
 }
 
 .menu-icon {
+  position: relative;
+  z-index: 3;
+
   width: 52px;
   height: 52px;
 
@@ -233,6 +215,8 @@ body {
 
 .decoration {
   position: absolute;
+  z-index: 0;
+  pointer-events: none;
 
   border-radius: 50%;
 }
@@ -259,6 +243,8 @@ body {
 
 .small-circle {
   position: absolute;
+  z-index: 0;
+  pointer-events: none;
 
   width: 18px;
   height: 18px;
@@ -291,11 +277,30 @@ body {
    小さいスマホへの対応
 ========================= */
 
-@media (max-width: 360px) {
+@media (max-width: 600px) {
+  .logo {
+    min-height: 175px;
+    height: 175px;
+  }
 
+  .logo-image {
+    width: min(285px, 84vw);
+  }
+}
+
+@media (max-width: 360px) {
   .app {
     padding-right: 28px;
     padding-left: 28px;
+  }
+
+  .logo {
+    min-height: 150px;
+    height: 150px;
+  }
+
+  .logo-image {
+    width: min(250px, 84vw);
   }
 
   .logo {
@@ -309,7 +314,6 @@ body {
 
 /* ブラウザUIを含めた表示領域が低いスマホでも、1画面内に収める */
 @media (max-height: 780px) {
-
   .app {
     padding-top: 24px;
     padding-bottom: 24px;
@@ -320,7 +324,12 @@ body {
   }
 
   .logo {
-    font-size: 3.6rem;
+    min-height: 120px;
+    height: 120px;
+  }
+
+  .logo-image {
+    width: min(190px, 72vw);
   }
 
   .catch-copy {
@@ -341,5 +350,34 @@ body {
     width: 46px;
     height: 46px;
     font-size: 1.35rem;
+  }
+}
+
+@media (max-width: 600px) and (max-height: 780px) {
+  .logo {
+    min-height: 135px;
+    height: 135px;
+  }
+
+  .logo-image {
+    width: min(235px, 80vw);
+  }
+}
+
+/* PCのスマホ枠では、背景装飾をロゴの外側へ逃がす */
+@media (min-width: 601px) and (hover: hover) and (pointer: fine) {
+  .decoration-blue {
+    top: -150px;
+    left: -150px;
+  }
+
+  .circle-pink {
+    top: 26px;
+    left: 22px;
+  }
+
+  .circle-blue {
+    top: 275px;
+    right: 12px;
   }
 }

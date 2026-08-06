@@ -23,6 +23,7 @@ class UserProfile(models.Model):
 class OwnedItem(models.Model):
     ITEM_TYPES = [
         ("avatar", "アバター"),
+        ("card", "カード"),
         ("frame", "フレーム"),
         ("stamp", "スタンプ"),
         ("title", "称号"),
@@ -37,6 +38,7 @@ class OwnedItem(models.Model):
     item_type = models.CharField(max_length=12, choices=ITEM_TYPES)
     name = models.CharField(max_length=50)
     icon = models.CharField(max_length=20, blank=True)
+    quantity = models.PositiveSmallIntegerField(default=1)
     is_equipped = models.BooleanField(default=False)
     acquired_at = models.DateTimeField(auto_now_add=True)
 
@@ -46,6 +48,10 @@ class OwnedItem(models.Model):
             models.UniqueConstraint(
                 fields=["user", "item_code"],
                 name="unique_owned_item_per_user",
+            ),
+            models.CheckConstraint(
+                check=models.Q(quantity__gte=1, quantity__lte=99),
+                name="owned_item_quantity_between_1_and_99",
             ),
         ]
 
@@ -74,6 +80,7 @@ class Room(models.Model):
     password_hash = models.CharField(max_length=128, blank=True)
     is_active = models.BooleanField(default=True)
     is_started = models.BooleanField(default=False)
+    is_ranked = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -106,3 +113,28 @@ class RoomParticipant(models.Model):
 
     def __str__(self):
         return f"{self.room.room_id}: {self.user.username}"
+
+
+class RankMatchEntry(models.Model):
+    user = models.OneToOneField(
+        "auth.User",
+        on_delete=models.CASCADE,
+        related_name="rank_match_entry",
+    )
+    room = models.ForeignKey(
+        Room,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="rank_match_entries",
+    )
+    joined_at = models.DateTimeField(auto_now_add=True)
+    last_seen_at = models.DateTimeField(auto_now=True)
+    matched_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["joined_at", "id"]
+
+    def __str__(self):
+        state = self.room.room_id if self.room_id else "waiting"
+        return f"{self.user.username}: {state}"

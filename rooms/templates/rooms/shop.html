@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link rel="stylesheet" href="{% static 'rooms/css/shop.css' %}?v=20260805-6">
+<link rel="stylesheet" href="{% static 'rooms/css/shop.css' %}?v=20260807-13">
 {% endblock %}
 
 {% block content %}
@@ -53,7 +53,7 @@
 
                 <span>コイン</span>
 
-                <h2>{{ coin_balance }}</h2>
+                <h2 class="coin-balance">{{ coin_balance }}</h2>
 
             </div>
 
@@ -76,25 +76,43 @@
 
     </div>
 
+    <nav class="shop-tabs" aria-label="商品カテゴリ">
+        <button class="shop-tab is-active" type="button" data-category="limited" aria-selected="true">期間限定</button>
+        <button class="shop-tab" type="button" data-category="card" aria-selected="false">カード</button>
+        <button class="shop-tab" type="button" data-category="stamp" aria-selected="false">スタンプ</button>
+        <button class="shop-tab" type="button" data-category="frame" aria-selected="false">フレーム</button>
+        <button class="shop-tab" type="button" data-category="icon" aria-selected="false">アイコン</button>
+        <button class="shop-tab" type="button" data-category="title" aria-selected="false">称号</button>
+    </nav>
+
+    <div id="shop-purchase-config"
+        data-purchase-url="{% url 'rooms:purchase_shop_item' %}"
+        data-login-url="{% url 'rooms:login' %}?next={% url 'rooms:shop' %}"
+        data-authenticated="{{ user.is_authenticated|yesno:'true,false' }}" hidden>
+        {% csrf_token %}
+    </div>
+    <p id="shop-purchase-message" class="shop-purchase-message" role="status" aria-live="polite" hidden></p>
+
     <!-- 商品 -->
 
     <div class="shop">
 
         <!-- 1 -->
 
-        <div class="item red">
+        <div class="item red featured-item" data-categories="limited icon">
 
             <div class="left">
 
-                <div class="item-icon red-bg">
-                    <i class="fa-solid fa-fire"></i>
+                <div class="item-icon avatar-image-wrap">
+                    <img src="{% static 'rooms/images/icons/avatar_palm_limited.png' %}"
+                        alt="ヤシの木と南国の海を描いたトロピカルパームアバター">
                 </div>
 
                 <div>
 
-                    <h4>レートブースト</h4>
+                    <h4>トロピカルパーム</h4>
 
-                    <p>勝利時のレートが1.5倍に！</p>
+                    <p>夏だけ手に入る期間限定アバター！</p>
 
                 </div>
 
@@ -102,9 +120,9 @@
 
             <div class="right">
 
-                <div class="price">200 <i class="fa-solid fa-coins"></i></div>
+                <div class="price">800 <i class="fa-solid fa-coins"></i></div>
 
-                <button class="buy red-btn">購入</button>
+                <button class="buy red-btn" type="button" data-item-code="avatar_palm_limited" data-item-name="トロピカルパーム" data-price="800"{% if "avatar_palm_limited" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "avatar_palm_limited" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
 
             </div>
 
@@ -112,19 +130,22 @@
 
         <!-- 2 -->
 
-        <div class="item blue">
+        <div class="item blue compact-item" data-categories="limited card">
 
             <div class="left">
 
-                <div class="item-icon blue-bg">
-                    <i class="fa-solid fa-paintbrush"></i>
+                <div class="item-icon product-image-wrap card-image-wrap">
+                    <img
+                        src="{% static 'rooms/images/cards/card_reta_up.png' %}"
+                        alt="レートブーストカード"
+                    >
                 </div>
 
                 <div>
 
-                    <h4>テーマ変更</h4>
+                    <h4>レートブースト</h4>
 
-                    <p>アプリの背景を変更！</p>
+                    <p>勝利時に獲得できるレートがアップ！</p>
 
                 </div>
 
@@ -132,9 +153,10 @@
 
             <div class="right">
 
+                <span class="card-owned-count">所持 {{ owned_item_quantities.card_help_limited }}/99</span>
                 <div class="price">300 <i class="fa-solid fa-coins"></i></div>
 
-                <button class="buy blue-btn">購入</button>
+                <button class="buy blue-btn" type="button" data-item-type="card" data-quantity="{{ owned_item_quantities.card_help_limited }}" data-item-code="card_help_limited" data-item-name="レートブースト" data-price="300"{% if owned_item_quantities.card_help_limited >= 99 %} disabled{% endif %}>{% if owned_item_quantities.card_help_limited >= 99 %}上限{% else %}購入{% endif %}</button>
 
             </div>
 
@@ -142,17 +164,17 @@
 
         <!-- 3 -->
 
-        <div class="item purple">
+        <div class="item purple compact-item" data-categories="limited stamp">
 
             <div class="left">
 
-                <div class="item-icon purple-bg">
-                    <i class="fa-regular fa-face-smile"></i>
+                <div class="item-icon product-image-wrap">
+                    <img src="{% static 'rooms/images/stamps/stamp_coconut.png' %}" alt="親指を立てたココナッツのキャラクタースタンプ">
                 </div>
 
                 <div>
 
-                    <h4>スタンプセット</h4>
+                    <h4>ココナッツスタンプ</h4>
 
                     <p>対戦中に使えるスタンプ！</p>
 
@@ -164,7 +186,7 @@
 
                 <div class="price">400 <i class="fa-solid fa-coins"></i></div>
 
-                <button class="buy purple-btn">購入</button>
+                <button class="buy purple-btn" type="button" data-item-code="stamp_coconut" data-item-name="ココナッツスタンプ" data-price="400"{% if "stamp_coconut" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "stamp_coconut" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
 
             </div>
 
@@ -172,7 +194,7 @@
 
         <!-- 4 -->
 
-        <div class="item orange">
+        <div class="item orange compact-item" data-categories="limited title">
 
             <div class="left">
 
@@ -182,7 +204,7 @@
 
                 <div>
 
-                    <h4>限定称号</h4>
+                    <h4>ババハンター</h4>
 
                     <p>ここでしか手に入らない称号！</p>
 
@@ -194,7 +216,7 @@
 
                 <div class="price">1000 <i class="fa-solid fa-coins"></i></div>
 
-                <button class="buy orange-btn">購入</button>
+                <button class="buy orange-btn" type="button" data-item-code="title_baba_hunter" data-item-name="ババハンター" data-price="1000"{% if "title_baba_hunter" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "title_baba_hunter" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
 
             </div>
 
@@ -202,17 +224,17 @@
 
         <!-- 5 -->
 
-        <div class="item green">
+        <div class="item green compact-item" data-categories="limited frame">
 
             <div class="left">
 
-                <div class="item-icon green-bg">
-                    <i class="fa-regular fa-id-badge"></i>
+                <div class="item-icon product-image-wrap">
+                    <img src="{% static 'rooms/images/frames/frame_tropical_beach.png' %}" alt="ヤシの葉や花、海で飾られたトロピカルビーチフレーム">
                 </div>
 
                 <div>
 
-                    <h4>アイコンフレーム</h4>
+                    <h4>トロピカルビーチ</h4>
 
                     <p>プロフィールを彩ろう！</p>
 
@@ -224,7 +246,143 @@
 
                 <div class="price">500 <i class="fa-solid fa-coins"></i></div>
 
-                <button class="buy green-btn">購入</button>
+                <button class="buy green-btn" type="button" data-item-code="frame_tropical_beach" data-item-name="トロピカルビーチ" data-price="500"{% if "frame_tropical_beach" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "frame_tropical_beach" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
+
+            </div>
+
+        </div>
+
+        <!-- 6 -->
+
+        <div class="item blue compact-item" data-categories="limited card">
+
+            <div class="left">
+
+                <div class="item-icon product-image-wrap card-image-wrap">
+                    <img
+                        src="{% static 'rooms/images/cards/card_skip.png' %}"
+                        alt="相手のターンを1回スキップするカード"
+                    >
+                </div>
+
+                <div>
+
+                    <h4>スキップカード</h4>
+
+                    <p>相手のターンを1回スキップ！</p>
+
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <span class="card-owned-count">所持 {{ owned_item_quantities.card_skip }}/99</span>
+                <div class="price">300 <i class="fa-solid fa-coins"></i></div>
+
+                <button class="buy blue-btn" type="button" data-item-type="card" data-quantity="{{ owned_item_quantities.card_skip }}" data-item-code="card_skip" data-item-name="スキップカード" data-price="300"{% if owned_item_quantities.card_skip >= 99 %} disabled{% endif %}>{% if owned_item_quantities.card_skip >= 99 %}上限{% else %}購入{% endif %}</button>
+
+            </div>
+
+        </div>
+
+        <!-- 7 -->
+
+        <div class="item blue compact-item" data-categories="limited card">
+
+            <div class="left">
+
+                <div class="item-icon product-image-wrap card-image-wrap">
+                    <img
+                        src="{% static 'rooms/images/cards/card_reverse.png' %}"
+                        alt="しりとりの順番を逆転するカード"
+                    >
+                </div>
+
+                <div>
+
+                    <h4>リバースカード</h4>
+
+                    <p>しりとりの順番を逆転！</p>
+
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <span class="card-owned-count">所持 {{ owned_item_quantities.card_reverse }}/99</span>
+                <div class="price">300 <i class="fa-solid fa-coins"></i></div>
+
+                <button class="buy blue-btn" type="button" data-item-type="card" data-quantity="{{ owned_item_quantities.card_reverse }}" data-item-code="card_reverse" data-item-name="リバースカード" data-price="300"{% if owned_item_quantities.card_reverse >= 99 %} disabled{% endif %}>{% if owned_item_quantities.card_reverse >= 99 %}上限{% else %}購入{% endif %}</button>
+
+            </div>
+
+        </div>
+
+        <!-- 8 -->
+
+        <div class="item blue compact-item" data-categories="limited card">
+
+            <div class="left">
+
+                <div class="item-icon product-image-wrap card-image-wrap">
+                    <img
+                        src="{% static 'rooms/images/cards/card_time_plus.png' %}"
+                        alt="残り時間を増やすタイムプラスカード"
+                    >
+                </div>
+
+                <div>
+
+                    <h4>タイムプラス</h4>
+
+                    <p>残り時間を増やせるカード！</p>
+
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <span class="card-owned-count">所持 {{ owned_item_quantities.card_time_plus }}/99</span>
+                <div class="price">300 <i class="fa-solid fa-coins"></i></div>
+
+                <button class="buy blue-btn" type="button" data-item-type="card" data-quantity="{{ owned_item_quantities.card_time_plus }}" data-item-code="card_time_plus" data-item-name="タイムプラス" data-price="300"{% if owned_item_quantities.card_time_plus >= 99 %} disabled{% endif %}>{% if owned_item_quantities.card_time_plus >= 99 %}上限{% else %}購入{% endif %}</button>
+
+            </div>
+
+        </div>
+
+        <!-- 9 -->
+
+        <div class="item blue compact-item" data-categories="limited card">
+
+            <div class="left">
+
+                <div class="item-icon product-image-wrap card-image-wrap">
+                    <img
+                        src="{% static 'rooms/images/cards/card_time_minus.png' %}"
+                        alt="相手の残り時間を減らすタイムマイナスカード"
+                    >
+                </div>
+
+                <div>
+
+                    <h4>タイムマイナス</h4>
+
+                    <p>相手の残り時間を減らすカード！</p>
+
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <span class="card-owned-count">所持 {{ owned_item_quantities.card_time_minus }}/99</span>
+                <div class="price">300 <i class="fa-solid fa-coins"></i></div>
+
+                <button class="buy blue-btn" type="button" data-item-type="card" data-quantity="{{ owned_item_quantities.card_time_minus }}" data-item-code="card_time_minus" data-item-name="タイムマイナス" data-price="300"{% if owned_item_quantities.card_time_minus >= 99 %} disabled{% endif %}>{% if owned_item_quantities.card_time_minus >= 99 %}上限{% else %}購入{% endif %}</button>
 
             </div>
 
@@ -232,5 +390,38 @@
 
     </div>
 
+    <dialog id="purchase-modal" class="purchase-modal" aria-labelledby="purchase-modal-name">
+        <div class="purchase-modal-panel">
+            <header>
+                <div>
+                    <small>ITEM DETAILS</small>
+                    <h2>商品詳細</h2>
+                </div>
+                <button id="purchase-modal-close" class="purchase-modal-close" type="button" aria-label="商品詳細を閉じる">×</button>
+            </header>
+
+            <div id="purchase-modal-preview" class="purchase-modal-preview" aria-hidden="true"></div>
+            <h3 id="purchase-modal-name"></h3>
+            <p id="purchase-modal-description" class="purchase-modal-description"></p>
+
+            <div class="purchase-modal-price">
+                <div><small>価格</small><strong><span id="purchase-modal-price"></span> <i class="fa-solid fa-coins" aria-hidden="true"></i></strong></div>
+                <div><small>現在のコイン</small><strong><span id="purchase-modal-balance">{{ coin_balance }}</span></strong></div>
+            </div>
+
+            <p id="purchase-modal-error" class="purchase-modal-error" role="alert" hidden></p>
+            <div class="purchase-modal-actions">
+                <button id="purchase-modal-cancel" class="purchase-modal-cancel" type="button">キャンセル</button>
+                <button id="purchase-modal-confirm" class="purchase-modal-confirm" type="button">
+                    <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> 購入する
+                </button>
+            </div>
+        </div>
+    </dialog>
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'rooms/js/shop.js' %}?v=20260807-5"></script>
 {% endblock %}

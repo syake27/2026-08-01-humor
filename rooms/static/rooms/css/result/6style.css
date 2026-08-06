@@ -161,6 +161,35 @@
   .coin-reward-card p{ margin:0; text-align:right; }
   .coin-reward-card p strong{ display:block; margin-top:1px; color:var(--ink); font-size:16px; font-weight:900; }
 
+  .rank-rating-card{
+    width:100%;
+    min-height:64px;
+    margin-top:10px;
+    padding:9px 13px;
+    display:grid;
+    grid-template-columns:42px 1fr auto;
+    align-items:center;
+    gap:10px;
+    border:1.5px solid #DCCBFF;
+    border-radius:17px;
+    background:linear-gradient(135deg,#FAF7FF,#F1EAFF);
+  }
+  .rank-result-icon{
+    width:42px; height:42px; border-radius:14px;
+    display:grid; place-items:center;
+    color:#fff; background:linear-gradient(135deg,#9B72F4,#6E3DDA);
+    font-size:22px; font-weight:900;
+    box-shadow:0 5px 12px rgba(110,61,218,.2);
+  }
+  .rank-result-info small,
+  .rank-result-rate small{ display:block; color:#8E7BAF; font-size:10px; font-weight:700; }
+  .rank-result-info strong{ display:block; margin-top:2px; color:#51358D; font-size:15px; font-weight:900; }
+  .rank-result-rate{ text-align:right; }
+  .rank-result-rate strong{ display:block; margin-top:1px; font-size:22px; font-weight:900; }
+  .rank-rating-card.positive .rank-result-rate strong{ color:#2EAD67; }
+  .rank-rating-card.neutral .rank-result-rate strong{ color:#7B8491; }
+  .rank-rating-card.negative .rank-result-rate strong{ color:#EF5668; }
+
   .leaderboard{
     width:100%;
     margin-top:10px;
@@ -187,6 +216,28 @@
   .rank-row.top3 .rank-num{ background:#F3D9C4; color:#A0602E; }
   .rank-row .rank-name{ flex:1; font-size:14px; font-weight:700; color:var(--ink); }
   .rank-row .rank-score{ font-size:14px; font-weight:800; color:var(--ink); }
+  .player-rating-result{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-shrink:0;
+  }
+  .player-rating-result span{
+    color:#6F7784;
+    font-size:10px;
+    font-weight:800;
+  }
+  .player-rating-result strong{
+    min-width:34px;
+    padding:3px 5px;
+    border-radius:7px;
+    font-size:11px;
+    font-weight:900;
+    text-align:center;
+  }
+  .player-rating-result .positive{ color:#24985A; background:#E7F8EE; }
+  .player-rating-result .neutral{ color:#747D89; background:#F0F2F5; }
+  .player-rating-result .negative{ color:#E3485D; background:#FFF0F2; }
   .rank-row.me{ background:#FFFBF0; border-radius:14px; margin:0 -10px; padding:10px; }
   .rank-row.me .rank-name{ color:#B8862F; }
 

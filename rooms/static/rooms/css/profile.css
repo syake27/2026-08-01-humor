@@ -795,7 +795,47 @@ a {
   place-items: center;
   border: 7px solid #e3d2ff;
   border-radius: 50%;
+  overflow: visible;
   background: #f1eaff;
+}
+
+.member-avatar-content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.member-avatar.frame-sunset { border-color: #ff9b77; box-shadow: 0 0 0 5px #ffd75f; }
+.member-avatar.frame-gold { border-color: #eaae13; box-shadow: 0 0 0 5px #fff0a4; }
+.member-avatar.frame-forest { border-color: #37ae63; box-shadow: 0 0 0 5px #b8efb0; }
+
+.member-avatar.has-image-frame {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.member-avatar-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  transform: scale(1.38);
+}
+
+.equipped-frame-overlay {
+  position: absolute;
+  z-index: 3;
+  inset: -22px;
+  width: calc(100% + 44px);
+  height: calc(100% + 44px);
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .avatar-penguin {
@@ -1144,6 +1184,32 @@ a.custom-stamp:focus-visible { outline-color: rgba(237,89,103,.3); }
   line-height: 1;
 }
 
+.custom-avatar-image {
+  width: 62px;
+  height: 62px;
+  margin-top: 8px;
+  display: block;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.custom-frame-image {
+  width: 82px;
+  height: 82px;
+  margin-top: 1px;
+  display: block;
+  object-fit: contain;
+}
+
+.custom-stamp-image {
+  width: 68px;
+  height: 68px;
+  margin-top: 7px;
+  display: block;
+  border-radius: 18px;
+  object-fit: contain;
+}
+
 .custom-card i {
   position: absolute;
   right: 7px;
@@ -1172,6 +1238,10 @@ a.custom-stamp:focus-visible { outline-color: rgba(237,89,103,.3); }
   border-radius: 50%;
   box-shadow: 0 0 0 3px #d4b8fa;
 }
+
+.sample-frame.frame-sunset { border-color: #ff9474; box-shadow: 0 0 0 3px #ffd45d; }
+.sample-frame.frame-gold { border-color: #e5aa12; box-shadow: 0 0 0 3px #fff0a0; }
+.sample-frame.frame-forest { border-color: #38ad62; box-shadow: 0 0 0 3px #b9edb0; }
 
 .profile-menu {
   margin-top: 17px;
