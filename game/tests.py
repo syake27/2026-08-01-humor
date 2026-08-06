@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from rooms.models import OwnedItem, Room, UserProfile
 
-from .models import GamePlayer, GameSession, GameStamp
+from .models import GameCardUse, GamePlayer, GameSession, GameStamp
 from .services import (
     ensure_game_session,
     coin_reward_for_placement,
@@ -19,6 +19,238 @@ from rooms.views import _get_rank_data
 
 
 class GameResultFlowTests(TestCase):
+    def test_time_plus_card_is_confirmed_by_api_consumed_and_applied(self):
+        user = get_user_model().objects.create_user("card-user", password="test")
+        room = Room.objects.create(
+            room_id="CARDUSE",
+            host=user,
+            max_players=2,
+            is_started=True,
+        )
+        session = GameSession.objects.create(room=room, current_turn_order=0)
+        player = GamePlayer.objects.create(
+            session=session,
+            user=user,
+            display_name=user.username,
+            remaining_seconds=30,
+            turn_order=0,
+        )
+        card = OwnedItem.objects.create(
+            user=user,
+            item_code="card_time_plus",
+            item_type="card",
+            name="タイムプラス",
+            quantity=2,
+        )
+
+        self.client.force_login(user)
+        response = self.client.post(
+            reverse("game:use_card"),
+            {"room_id": room.room_id, "card_code": card.item_code},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["card_quantity"], 1)
+        player.refresh_from_db()
+        card.refresh_from_db()
+        self.assertEqual(player.remaining_seconds, 40)
+        self.assertEqual(card.quantity, 1)
+        card_use = GameCardUse.objects.get(session=session)
+        self.assertEqual(card_use.player, player)
+        self.assertEqual(card_use.card_code, "card_time_plus")
+        self.assertEqual(response.json()["card_use"]["id"], card_use.id)
+        session.refresh_from_db()
+        self.assertGreater(session.card_reveal_until, timezone.now())
+
+        player.remaining_seconds = 40
+        player.save(update_fields=["remaining_seconds"])
+        session.turn_started_at = timezone.now() - timedelta(seconds=5)
+        session.card_reveal_until = timezone.now() + timedelta(seconds=2)
+        session.save(update_fields=["turn_started_at", "card_reveal_until"])
+        status_response = self.client.get(
+            reverse("game:players_status"),
+            {"room_id": room.room_id},
+        )
+        self.assertEqual(status_response.status_code, 200)
+        player.refresh_from_db()
+        self.assertEqual(player.remaining_seconds, 40)
+
+    def test_used_card_is_sent_to_every_player_status(self):
+        user_model = get_user_model()
+        host = user_model.objects.create_user("card-host", password="test")
+        opponent = user_model.objects.create_user("card-opponent", password="test")
+        room = Room.objects.create(
+            room_id="CARDSYNC",
+            host=host,
+            max_players=2,
+            is_started=True,
+        )
+        session = GameSession.objects.create(room=room, current_turn_order=0)
+        host_player = GamePlayer.objects.create(
+            session=session,
+            user=host,
+            display_name=host.username,
+            turn_order=0,
+        )
+        GamePlayer.objects.create(
+            session=session,
+            user=opponent,
+            display_name=opponent.username,
+            turn_order=1,
+        )
+        OwnedItem.objects.create(
+            user=host,
+            item_code="card_reverse",
+            item_type="card",
+            name="リバースカード",
+        )
+
+        self.client.force_login(host)
+        use_response = self.client.post(
+            reverse("game:use_card"),
+            {"room_id": room.room_id, "card_code": "card_reverse"},
+        )
+        self.assertEqual(use_response.status_code, 200)
+
+        self.client.force_login(opponent)
+        status_response = self.client.get(
+            reverse("game:players_status"),
+            {"room_id": room.room_id},
+        )
+
+        self.assertEqual(status_response.status_code, 200)
+        card_use = status_response.json()["card_use"]
+        self.assertEqual(card_use["player_name"], host_player.display_name)
+        self.assertEqual(card_use["card_code"], "card_reverse")
+        self.assertIn("card_reverse.png", card_use["image_url"])
+        self.assertIn("caard_back.png", card_use["back_image_url"])
+        self.assertEqual(status_response.json()["card_uses"], [card_use])
+
+    def test_card_cannot_be_used_outside_players_turn(self):
+        user_model = get_user_model()
+        current_user = user_model.objects.create_user("turn-current", password="test")
+        waiting_user = user_model.objects.create_user("turn-waiting", password="test")
+        room = Room.objects.create(
+            room_id="CARDWAIT",
+            host=waiting_user,
+            max_players=2,
+            is_started=True,
+        )
+        session = GameSession.objects.create(room=room, current_turn_order=0)
+        GamePlayer.objects.create(
+            session=session,
+            user=current_user,
+            display_name=current_user.username,
+            turn_order=0,
+        )
+        GamePlayer.objects.create(
+            session=session,
+            user=waiting_user,
+            display_name=waiting_user.username,
+            turn_order=1,
+        )
+        card = OwnedItem.objects.create(
+            user=waiting_user,
+            item_code="card_skip",
+            item_type="card",
+            name="スキップカード",
+        )
+
+        self.client.force_login(waiting_user)
+        response = self.client.post(
+            reverse("game:use_card"),
+            {"room_id": room.room_id, "card_code": card.item_code},
+        )
+
+        self.assertEqual(response.status_code, 409)
+        card.refresh_from_db()
+        self.assertEqual(card.quantity, 1)
+
+    def test_skip_card_ends_current_turn_and_moves_to_next_player(self):
+        user_model = get_user_model()
+        users = [
+            user_model.objects.create_user(f"skip-{index}", password="test")
+            for index in range(3)
+        ]
+        room = Room.objects.create(
+            room_id="CARDSKIP",
+            host=users[0],
+            max_players=3,
+            is_started=True,
+        )
+        session = GameSession.objects.create(
+            room=room,
+            current_turn_order=0,
+            current_letter="き",
+            baba_letter="あ",
+        )
+        for index, user in enumerate(users):
+            GamePlayer.objects.create(
+                session=session,
+                user=user,
+                display_name=user.username,
+                turn_order=index,
+            )
+        OwnedItem.objects.create(
+            user=users[0],
+            item_code="card_skip",
+            item_type="card",
+            name="スキップカード",
+        )
+
+        self.client.force_login(users[0])
+        use_response = self.client.post(
+            reverse("game:use_card"),
+            {"room_id": room.room_id, "card_code": "card_skip"},
+        )
+
+        self.assertEqual(use_response.status_code, 200)
+        session.refresh_from_db()
+        self.assertEqual(session.current_turn_order, 1)
+        self.assertEqual(session.turn_number, 2)
+        self.assertFalse(session.skip_next_turn)
+        self.assertFalse(
+            OwnedItem.objects.filter(
+                user=users[0],
+                item_code="card_skip",
+            ).exists()
+        )
+
+    def test_item_button_is_disabled_outside_my_turn(self):
+        user_model = get_user_model()
+        host = user_model.objects.create_user("item-host", password="test")
+        opponent = user_model.objects.create_user("item-opponent", password="test")
+        room = Room.objects.create(
+            room_id="ITEMTURN",
+            host=host,
+            max_players=2,
+            is_started=True,
+        )
+        session = GameSession.objects.create(room=room, current_turn_order=0)
+        GamePlayer.objects.create(
+            session=session,
+            user=opponent,
+            display_name=opponent.username,
+            turn_order=0,
+        )
+        GamePlayer.objects.create(
+            session=session,
+            user=host,
+            display_name=host.username,
+            turn_order=1,
+        )
+
+        self.client.force_login(host)
+        response = self.client.get(
+            f'{reverse("game:game")}?room_id={room.room_id}'
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'disabled title="アイテムは自分のターンだけ使えます"',
+        )
+
     def test_new_game_uses_a_random_start_letter(self):
         room = Room.objects.create(room_id="RANDOM")
 
@@ -398,6 +630,65 @@ class GameResultFlowTests(TestCase):
         self.assertEqual(rank_rating_change_for_placement(3), 0)
         self.assertEqual(rank_rating_change_for_placement(4), -50)
 
+    def test_reaching_rank_grants_all_achieved_rank_titles(self):
+        user_model = get_user_model()
+        winner = user_model.objects.create_user("rank-title-winner", password="test")
+        opponents = [
+            user_model.objects.create_user(f"rank-title-{index}", password="test")
+            for index in range(1, 4)
+        ]
+        profile = UserProfile.objects.create(user=winner, rating=1080)
+        room = Room.objects.create(
+            room_id="RANKTITLE",
+            host=winner,
+            max_players=4,
+            current_players=4,
+            is_started=True,
+            is_ranked=True,
+        )
+        session = GameSession.objects.create(room=room, is_finished=True)
+        for index, user in enumerate([winner, *opponents], start=1):
+            GamePlayer.objects.create(
+                session=session,
+                user=user,
+                display_name=user.username,
+                placement=index,
+                is_alive=index == 1,
+                turn_order=index - 1,
+            )
+
+        self.client.force_login(winner)
+        response = self.client.get(
+            reverse("game:room_result"),
+            {"room_id": room.room_id},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        profile.refresh_from_db()
+        self.assertEqual(profile.rating, 1130)
+        self.assertTrue(
+            OwnedItem.objects.filter(
+                user=winner,
+                item_code="title_rank_beginner_1",
+                item_type="title",
+                name="ビギナー I",
+            ).exists()
+        )
+        self.assertTrue(
+            OwnedItem.objects.filter(
+                user=winner,
+                item_code="title_rank_beginner_2",
+                item_type="title",
+                name="ビギナー II",
+            ).exists()
+        )
+        self.assertFalse(
+            OwnedItem.objects.filter(
+                user=winner,
+                item_code="title_rank_beginner_3",
+            ).exists()
+        )
+
     def test_voiced_current_letter_accepts_unvoiced_start(self):
         self.assertTrue(_matches_current_letter("かめ", "が"))
         self.assertTrue(_matches_current_letter("さる", "ざ"))
@@ -489,8 +780,8 @@ class GameResultFlowTests(TestCase):
         inventory_response = self.client.get(reverse("rooms:inventory"))
         self.assertEqual(inventory_response.status_code, 200)
         self.assertTemplateUsed(inventory_response, "rooms/base.html")
-        self.assertEqual(inventory_response.context["item_count"], 4)
-        self.assertEqual(OwnedItem.objects.filter(user=first_user).count(), 4)
+        self.assertEqual(inventory_response.context["item_count"], 5)
+        self.assertEqual(OwnedItem.objects.filter(user=first_user).count(), 5)
 
         avatar_response = self.client.get(
             f'{reverse("rooms:inventory")}?type=avatar'
@@ -554,7 +845,7 @@ class GameResultFlowTests(TestCase):
         self.assertEqual(customize_response.status_code, 200)
         self.assertEqual(customize_response.context["selected_type"], "customize")
         self.assertEqual(customize_response.context["page_title"], "カスタマイズ一覧")
-        self.assertEqual(customize_response.context["item_count"], 4)
+        self.assertEqual(customize_response.context["item_count"], 5)
         self.assertEqual(
             [group["key"] for group in customize_response.context["item_groups"]],
             ["avatar", "frame", "stamp", "title"],

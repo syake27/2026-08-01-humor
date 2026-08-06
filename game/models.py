@@ -8,6 +8,8 @@ class GameSession(models.Model):
         related_name="game_session",
     )
     current_turn_order = models.PositiveSmallIntegerField(default=0)
+    turn_direction = models.SmallIntegerField(default=1)
+    skip_next_turn = models.BooleanField(default=False)
     turn_number = models.PositiveIntegerField(default=1)
     current_letter = models.CharField(max_length=1, default="き")
     baba_letter = models.CharField(max_length=1, blank=True)
@@ -25,6 +27,7 @@ class GameSession(models.Model):
     baba_reveal_correct = models.BooleanField(null=True, blank=True)
     baba_reveal_until = models.DateTimeField(null=True, blank=True)
     baba_reveal_mode = models.CharField(max_length=10, blank=True)
+    card_reveal_until = models.DateTimeField(null=True, blank=True)
     turn_started_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(auto_now_add=True)
 
@@ -52,6 +55,7 @@ class GamePlayer(models.Model):
     rating_before = models.PositiveIntegerField(null=True, blank=True)
     rating_change = models.SmallIntegerField(default=0)
     rating_after = models.PositiveIntegerField(null=True, blank=True)
+    rate_boost_active = models.BooleanField(default=False)
     turn_order = models.PositiveSmallIntegerField()
 
     class Meta:
@@ -116,3 +120,25 @@ class GameStamp(models.Model):
 
     def __str__(self):
         return f"{self.player.display_name}: {self.stamp_name}"
+
+
+class GameCardUse(models.Model):
+    session = models.ForeignKey(
+        GameSession,
+        on_delete=models.CASCADE,
+        related_name="card_uses",
+    )
+    player = models.ForeignKey(
+        GamePlayer,
+        on_delete=models.CASCADE,
+        related_name="card_uses",
+    )
+    card_code = models.CharField(max_length=50)
+    card_name = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.player.display_name}: {self.card_name}"

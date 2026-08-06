@@ -29,8 +29,10 @@ from .models import (
 )
 from .services import (
     ITEM_IMAGE_PATHS,
+    RANK_TIERS,
     ensure_default_owned_items,
     get_equipped_customization,
+    rank_title_code,
 )
 
 ITEM_CATALOG = [
@@ -115,6 +117,17 @@ ITEM_CATALOG = [
     ("title_shiritori_king", "title", "しりとり王", "♛", "1位を25回獲得"),
 ]
 
+ITEM_CATALOG.extend(
+    (
+        rank_title_code(rank_code),
+        "title",
+        rank_name,
+        icon,
+        f"{minimum_rate}レート到達",
+    )
+    for rank_code, rank_name, minimum_rate, icon in RANK_TIERS
+)
+
 SHOP_PRODUCT_PRICES = {
     "avatar_palm_limited": 800,
     "card_help_limited": 300,
@@ -126,19 +139,6 @@ SHOP_PRODUCT_PRICES = {
     "title_baba_hunter": 1000,
     "frame_tropical_beach": 500,
 }
-
-RANK_TIERS = [
-    ("beginner-1", "ビギナー I", 1000, "◆"),
-    ("beginner-2", "ビギナー II", 1100, "◆"),
-    ("beginner-3", "ビギナー III", 1200, "◆"),
-    ("bronze", "ブロンズ", 1300, "♢"),
-    ("silver", "シルバー", 1500, "◇"),
-    ("gold", "ゴールド", 1700, "★"),
-    ("platinum", "プラチナ", 1900, "✦"),
-    ("diamond", "ダイヤモンド", 2100, "◆"),
-    ("master", "マスター", 2400, "♛"),
-    ("humor-king", "ユーモア王", 2800, "♛"),
-]
 
 RANK_MATCH_PLAYERS = 4
 RANK_MATCH_COUNTDOWN_SECONDS = 3
@@ -1071,7 +1071,9 @@ def purchase_shop_item(request):
         profile.save(update_fields=["coins"])
         if owned_item:
             owned_item.quantity += 1
-            owned_item.save(update_fields=["quantity"])
+            owned_item.name = name
+            owned_item.icon = icon
+            owned_item.save(update_fields=["quantity", "name", "icon"])
         else:
             owned_item = OwnedItem.objects.create(
                 user=request.user,

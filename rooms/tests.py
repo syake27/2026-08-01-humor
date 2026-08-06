@@ -280,6 +280,13 @@ class ShopPurchaseTests(TestCase):
             icon="◆",
             is_equipped=True,
         )
+        OwnedItem.objects.create(
+            user=self.user,
+            item_code="card_skip",
+            item_type="card",
+            name="スキップカード",
+            quantity=2,
+        )
         room = Room.objects.create(
             room_id="EQUIP",
             host=self.user,
@@ -310,8 +317,14 @@ class ShopPurchaseTests(TestCase):
             "rooms/images/frames/frame_tropical_beach.png",
         )
         self.assertEqual(player.title, "ババハンター")
+        self.assertEqual(
+            [item.item_code for item in response.context["owned_game_items"]],
+            ["card_skip"],
+        )
+        self.assertEqual(response.context["owned_game_items"][0].quantity, 2)
         self.assertContains(response, "avatar_palm_limited.png")
         self.assertContains(response, "frame_tropical_beach.png")
+        self.assertContains(response, "card_skip.png")
 
 
 class CreateRoomTests(TestCase):
