@@ -2,6 +2,7 @@ import re
 import secrets
 import string
 from datetime import timedelta
+from math import ceil
 from urllib.parse import urlencode
 
 from django.contrib.auth import authenticate, get_user_model
@@ -21,30 +22,110 @@ from django.views.decorators.http import require_POST
 from .models import (
     DEFAULT_BABA_CHARACTERS,
     OwnedItem,
+    RankMatchEntry,
     Room,
     RoomParticipant,
     UserProfile,
 )
-from .services import ensure_default_owned_items
+from .services import (
+    ITEM_IMAGE_PATHS,
+    ensure_default_owned_items,
+    get_equipped_customization,
+)
 
 ITEM_CATALOG = [
     ("default_penguin", "avatar", "ペンギン", "🐧", "アカウント登録時に入手"),
+    (
+        "avatar_palm_limited",
+        "avatar",
+        "トロピカルパーム",
+        "",
+        "期間限定ショップで購入",
+    ),
     ("avatar_cat", "avatar", "ねこ", "🐱", "ショップで購入"),
     ("avatar_robot", "avatar", "ロボット", "🤖", "対戦を10回プレイ"),
     ("avatar_alien", "avatar", "宇宙人", "👾", "ショップで購入"),
+    (
+        "card_help_limited",
+        "card",
+        "レートブースト",
+        "⚡",
+        "期間限定ショップで購入",
+    ),
+    (
+        "card_skip",
+        "card",
+        "スキップカード",
+        "⏭️",
+        "期間限定ショップで購入",
+    ),
+    (
+        "card_reverse",
+        "card",
+        "リバースカード",
+        "🔄",
+        "期間限定ショップで購入",
+    ),
+    (
+        "card_time_plus",
+        "card",
+        "タイムプラス",
+        "⏱️",
+        "期間限定ショップで購入",
+    ),
+    (
+        "card_time_minus",
+        "card",
+        "タイムマイナス",
+        "⏳",
+        "期間限定ショップで購入",
+    ),
     ("default_sky_frame", "frame", "スカイリング", "◯", "アカウント登録時に入手"),
     ("frame_sunset", "frame", "サンセットリング", "◯", "ショップで購入"),
     ("frame_gold", "frame", "ゴールドリング", "◯", "1位を10回獲得"),
     ("frame_forest", "frame", "フォレストリング", "◯", "ショップで購入"),
+    (
+        "frame_tropical_beach",
+        "frame",
+        "トロピカルビーチ",
+        "◯",
+        "期間限定ショップで購入",
+    ),
     ("default_fight_stamp", "stamp", "ファイトスタンプ", "●", "アカウント登録時に入手"),
     ("stamp_nice", "stamp", "ナイス！", "👍", "ショップで購入"),
     ("stamp_thanks", "stamp", "ありがとう", "✨", "対戦を5回プレイ"),
     ("stamp_surprise", "stamp", "びっくり", "😲", "ショップで購入"),
+    (
+        "stamp_summer_set",
+        "stamp",
+        "サマースタンプ",
+        "🏖️",
+        "期間限定ショップで購入",
+    ),
+    (
+        "stamp_coconut",
+        "stamp",
+        "ココナッツスタンプ",
+        "",
+        "期間限定ショップで購入",
+    ),
     ("default_first_step", "title", "はじめての一歩", "★", "アカウント登録時に入手"),
     ("title_word_master", "title", "ことばマスター", "★", "100個の言葉を回答"),
     ("title_baba_hunter", "title", "ババハンター", "◆", "ショップで購入"),
     ("title_shiritori_king", "title", "しりとり王", "♛", "1位を25回獲得"),
 ]
+
+SHOP_PRODUCT_PRICES = {
+    "avatar_palm_limited": 800,
+    "card_help_limited": 300,
+    "card_skip": 300,
+    "card_reverse": 300,
+    "card_time_plus": 300,
+    "card_time_minus": 300,
+    "stamp_coconut": 400,
+    "title_baba_hunter": 1000,
+    "frame_tropical_beach": 500,
+}
 
 RANK_TIERS = [
     ("beginner-1", "ビギナー I", 1000, "◆"),
@@ -58,6 +139,10 @@ RANK_TIERS = [
     ("master", "マスター", 2400, "♛"),
     ("humor-king", "ユーモア王", 2800, "♛"),
 ]
+
+RANK_MATCH_PLAYERS = 4
+RANK_MATCH_COUNTDOWN_SECONDS = 3
+RANK_MATCH_ACTIVE_SECONDS = 20
 
 
 def _clean_baba_characters(value):
@@ -175,6 +260,115 @@ def _add_room_participant(room_id, user):
         return room, True
 
 
+def _generate_room_id():
+    alphabet = string.ascii_uppercase + string.digits
+    while True:
+        room_id = "".join(secrets.choice(alphabet) for _ in range(4))
+        if not Room.objects.filter(room_id=room_id).exists():
+            return room_id
+
+
+def _join_rank_queue(user):
+    """待機を更新し、先着4人が揃ったらランクルームを確定する。"""
+    now = timezone.now()
+    active_since = now - timedelta(seconds=RANK_MATCH_ACTIVE_SECONDS)
+
+    with transaction.atomic():
+        entry = (
+            RankMatchEntry.objects.select_for_update()
+            .select_related("room")
+            .filter(user=user)
+            .first()
+        )
+        if entry and entry.room_id:
+            game_session = getattr(entry.room, "game_session", None)
+            if game_session and game_session.is_finished:
+                entry.delete()
+                entry = None
+
+        if entry is None:
+            entry = RankMatchEntry.objects.create(user=user)
+        elif entry.room_id is None:
+            entry.last_seen_at = now
+            entry.save(update_fields=["last_seen_at"])
+
+        if entry.room_id:
+            return entry
+
+        RankMatchEntry.objects.filter(
+            room__isnull=True,
+            last_seen_at__lt=active_since,
+        ).exclude(pk=entry.pk).delete()
+
+        waiting_entries = list(
+            RankMatchEntry.objects.select_for_update()
+            .filter(room__isnull=True, last_seen_at__gte=active_since)
+            .select_related("user")
+            .order_by("joined_at", "id")[:RANK_MATCH_PLAYERS]
+        )
+        if len(waiting_entries) < RANK_MATCH_PLAYERS:
+            return entry
+
+        room = Room.objects.create(
+            room_id=_generate_room_id(),
+            host=waiting_entries[0].user,
+            max_players=RANK_MATCH_PLAYERS,
+            current_players=RANK_MATCH_PLAYERS,
+            time_limit=60,
+            is_ranked=True,
+        )
+        RoomParticipant.objects.bulk_create(
+            [
+                RoomParticipant(room=room, user=waiting_entry.user)
+                for waiting_entry in waiting_entries
+            ]
+        )
+        waiting_ids = [waiting_entry.pk for waiting_entry in waiting_entries]
+        RankMatchEntry.objects.filter(pk__in=waiting_ids).update(
+            room=room,
+            matched_at=now,
+        )
+        return RankMatchEntry.objects.select_related("room").get(pk=entry.pk)
+
+
+def _rank_match_state(entry):
+    if not entry.room_id:
+        active_since = timezone.now() - timedelta(seconds=RANK_MATCH_ACTIVE_SECONDS)
+        waiting_count = RankMatchEntry.objects.filter(
+            room__isnull=True,
+            last_seen_at__gte=active_since,
+        ).count()
+        return {
+            "matched": False,
+            "waiting_count": min(waiting_count, RANK_MATCH_PLAYERS),
+            "countdown": None,
+            "is_started": False,
+            "game_url": "",
+        }
+
+    room = entry.room
+    start_at = entry.matched_at + timedelta(seconds=RANK_MATCH_COUNTDOWN_SECONDS)
+    countdown = max(0, ceil((start_at - timezone.now()).total_seconds()))
+    if countdown == 0 and not room.is_started:
+        with transaction.atomic():
+            room = Room.objects.select_for_update().get(pk=room.pk)
+            if not room.is_started:
+                from game.services import ensure_game_session
+
+                ensure_game_session(room)
+                room.is_started = True
+                room.save(update_fields=["is_started"])
+
+    game_url = f'{reverse("game:game")}?{urlencode({"room_id": room.room_id})}'
+    return {
+        "matched": True,
+        "waiting_count": RANK_MATCH_PLAYERS,
+        "countdown": countdown,
+        "is_started": room.is_started,
+        "game_url": game_url if room.is_started else "",
+    }
+
+
 def home(request):
     return render(request, "rooms/home.html")
 
@@ -191,6 +385,7 @@ def normal_match(request):
         Room.objects.filter(
             is_active=True,
             is_started=False,
+            is_ranked=False,
             created_at__gte=active_since,
         )
         .select_related("host")
@@ -211,6 +406,7 @@ def normal_match_status(request):
     rooms = Room.objects.filter(
         is_active=True,
         is_started=False,
+        is_ranked=False,
         created_at__gte=active_since,
     ).annotate(participant_count=Count("participants"))
     return JsonResponse(
@@ -235,6 +431,7 @@ def join_normal_room(request, room_id):
         room_id=room_id.upper(),
         is_active=True,
         is_started=False,
+        is_ranked=False,
         created_at__gte=active_since,
     )
 
@@ -333,8 +530,7 @@ def create(request):
             time_limit = int(request.POST.get("time", 60))
         except (TypeError, ValueError):
             time_limit = 60
-        if time_limit not in (30, 60, 90):
-            time_limit = 60
+        time_limit = max(1, min(90, time_limit))
 
         alphabet = string.ascii_uppercase + string.digits
         while True:
@@ -375,7 +571,49 @@ def join(request):
 
 @login_required(login_url="rooms:login")
 def rank(request):
-    return render(request, "rooms/rank_match.html")
+    entry = _join_rank_queue(request.user)
+    state = _rank_match_state(entry)
+    if state["is_started"]:
+        return redirect(state["game_url"])
+
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    return render(
+        request,
+        "rooms/rank_match.html",
+        {
+            "rank_data": _get_rank_data(user_profile.rating),
+            "rank_state": state,
+        },
+    )
+
+
+@login_required(login_url="rooms:login")
+def rank_match_status(request):
+    entry = _join_rank_queue(request.user)
+    return JsonResponse(_rank_match_state(entry))
+
+
+@require_POST
+@login_required(login_url="rooms:login")
+def leave_rank_match(request):
+    matched_room = None
+    with transaction.atomic():
+        entry = (
+            RankMatchEntry.objects.select_for_update()
+            .select_related("room")
+            .filter(user=request.user)
+            .first()
+        )
+        if entry and entry.room_id is None:
+            entry.delete()
+        elif entry:
+            matched_room = entry.room
+    if matched_room:
+        if matched_room.is_started:
+            game_url = f'{reverse("game:game")}?{urlencode({"room_id": matched_room.room_id})}'
+            return redirect(game_url)
+        return redirect("rooms:rank")
+    return redirect("rooms:match")
 
 
 def wait(request):
@@ -457,6 +695,7 @@ def profile(request):
     battle_stats = None
     rank_data = None
     if request.user.is_authenticated:
+        customization = get_equipped_customization(request.user)
         user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
         coin_balance = user_profile.coins
         battle_stats = _get_battle_stats(request.user)
@@ -468,6 +707,7 @@ def profile(request):
             "coin_balance": coin_balance,
             "battle_stats": battle_stats,
             "rank_data": rank_data,
+            "customization": customization if request.user.is_authenticated else None,
         },
     )
 
@@ -496,6 +736,7 @@ def inventory(request):
     ensure_default_owned_items(request.user)
     group_details = [
         ("avatar", "アバター", "自分らしいアイコン"),
+        ("card", "カード", "対戦で使えるアイテム"),
         ("frame", "フレーム", "アイコンを囲むデザイン"),
         ("stamp", "スタンプ", "対戦で使えるリアクション"),
         ("title", "称号", "名前の下に表示する称号"),
@@ -537,9 +778,12 @@ def inventory(request):
                     "item_type": item_type,
                     "name": name,
                     "icon": icon,
+                    "image_path": ITEM_IMAGE_PATHS.get(item_code, ""),
                     "acquisition_method": acquisition_method,
                     "is_owned": owned_item is not None,
+                    "quantity": owned_item.quantity if owned_item else 0,
                     "is_equipped": bool(owned_item and owned_item.is_equipped),
+                    "can_equip": item_type != "card",
                 }
             )
         catalog_codes = {item[0] for item in ITEM_CATALOG}
@@ -549,9 +793,12 @@ def inventory(request):
                 "item_type": item.item_type,
                 "name": item.name,
                 "icon": item.icon,
+                "image_path": ITEM_IMAGE_PATHS.get(item.item_code, ""),
                 "acquisition_method": "ショップ・イベントで入手",
                 "is_owned": True,
+                "quantity": item.quantity,
                 "is_equipped": item.is_equipped,
+                "can_equip": item.item_type != "card",
             }
             for item in owned_items
             if item.item_code not in catalog_codes
@@ -563,13 +810,16 @@ def inventory(request):
                 "item_type": item.item_type,
                 "name": item.name,
                 "icon": item.icon,
+                "image_path": ITEM_IMAGE_PATHS.get(item.item_code, ""),
                 "acquisition_method": (
                     catalog_by_code[item.item_code][4]
                     if item.item_code in catalog_by_code
                     else "ショップ・イベントで入手"
                 ),
                 "is_owned": True,
+                "quantity": item.quantity,
                 "is_equipped": item.is_equipped,
+                "can_equip": item.item_type != "card",
             }
             for item in owned_items
         ]
@@ -621,12 +871,34 @@ def equip_item(request):
                 {"error": "このアイテムは所持していません。"},
                 status=404,
             )
+        if item.item_type == "card":
+            return JsonResponse(
+                {"error": "カードは装備するアイテムではありません。"},
+                status=400,
+            )
 
-        OwnedItem.objects.filter(
-            user=request.user,
-            item_type=item.item_type,
-            is_equipped=True,
-        ).exclude(pk=item.pk).update(is_equipped=False)
+        if item.item_type == "stamp":
+            # Stamps are multi-slot customizations, with a maximum of six.
+            equipped_stamp_count = len(
+                list(
+                    OwnedItem.objects.select_for_update().filter(
+                        user=request.user,
+                        item_type="stamp",
+                        is_equipped=True,
+                    )
+                )
+            )
+            if not item.is_equipped and equipped_stamp_count >= 6:
+                return JsonResponse(
+                    {"error": "スタンプは最大6個まで装備できます。"},
+                    status=400,
+                )
+        else:
+            OwnedItem.objects.filter(
+                user=request.user,
+                item_type=item.item_type,
+                is_equipped=True,
+            ).exclude(pk=item.pk).update(is_equipped=False)
         if not item.is_equipped:
             item.is_equipped = True
             item.save(update_fields=["is_equipped"])
@@ -732,7 +1004,94 @@ def shop(request):
     if request.user.is_authenticated:
         user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
         coin_balance = user_profile.coins
-    return render(request, "rooms/shop.html", {"coin_balance": coin_balance})
+    owned_item_codes = set()
+    owned_item_quantities = {item_code: 0 for item_code in SHOP_PRODUCT_PRICES}
+    if request.user.is_authenticated:
+        owned_items = OwnedItem.objects.filter(user=request.user)
+        owned_item_codes = set(owned_items.values_list("item_code", flat=True))
+        owned_item_quantities.update(
+            dict(owned_items.values_list("item_code", "quantity"))
+        )
+    return render(
+        request,
+        "rooms/shop.html",
+        {
+            "coin_balance": coin_balance,
+            "owned_item_codes": owned_item_codes,
+            "owned_item_quantities": owned_item_quantities,
+        },
+    )
+
+
+@require_POST
+@login_required(login_url="rooms:login")
+def purchase_shop_item(request):
+    item_code = request.POST.get("item_code", "").strip()
+    price = SHOP_PRODUCT_PRICES.get(item_code)
+    catalog_item = next(
+        (item for item in ITEM_CATALOG if item[0] == item_code),
+        None,
+    )
+    if price is None or catalog_item is None:
+        return JsonResponse({"error": "この商品は購入できません。"}, status=404)
+
+    _, item_type, name, icon, _ = catalog_item
+    with transaction.atomic():
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        profile = UserProfile.objects.select_for_update().get(pk=profile.pk)
+        owned_item = (
+            OwnedItem.objects.select_for_update()
+            .filter(user=request.user, item_code=item_code)
+            .first()
+        )
+        if item_type == "card" and owned_item and owned_item.quantity >= 99:
+            return JsonResponse(
+                {
+                    "error": "このカードは99枚まで所持できます。",
+                    "quantity": owned_item.quantity,
+                    "max_quantity": 99,
+                },
+                status=409,
+            )
+        if item_type != "card" and owned_item:
+            return JsonResponse(
+                {"error": "このアイテムはすでに所持しています。"},
+                status=409,
+            )
+        if profile.coins < price:
+            return JsonResponse(
+                {
+                    "error": "コインが足りません。",
+                    "coin_balance": profile.coins,
+                },
+                status=400,
+            )
+
+        profile.coins -= price
+        profile.save(update_fields=["coins"])
+        if owned_item:
+            owned_item.quantity += 1
+            owned_item.save(update_fields=["quantity"])
+        else:
+            owned_item = OwnedItem.objects.create(
+                user=request.user,
+                item_code=item_code,
+                item_type=item_type,
+                name=name,
+                icon=icon,
+            )
+
+    return JsonResponse(
+        {
+            "message": f"「{name}」を購入しました！",
+            "item_code": item_code,
+            "item_type": item_type,
+            "quantity": owned_item.quantity,
+            "max_quantity": 99 if item_type == "card" else 1,
+            "is_maxed": item_type == "card" and owned_item.quantity >= 99,
+            "coin_balance": profile.coins,
+        }
+    )
 
 
 def ai(request):

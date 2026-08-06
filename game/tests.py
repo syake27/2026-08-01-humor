@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -8,12 +9,24 @@ from django.utils import timezone
 from rooms.models import OwnedItem, Room, UserProfile
 
 from .models import GamePlayer, GameSession, GameStamp
-from .services import coin_reward_for_placement
+from .services import (
+    ensure_game_session,
+    coin_reward_for_placement,
+    rank_rating_change_for_placement,
+)
 from .views import _matches_current_letter
 from rooms.views import _get_rank_data
 
 
 class GameResultFlowTests(TestCase):
+    def test_new_game_uses_a_random_start_letter(self):
+        room = Room.objects.create(room_id="RANDOM")
+
+        with patch("game.services.choose_start_letter", return_value="さ"):
+            session = ensure_game_session(room)
+
+        self.assertEqual(session.current_letter, "さ")
+
     def test_current_player_explodes_and_is_eliminated_when_time_reaches_zero(self):
         user_model = get_user_model()
         users = [
@@ -241,6 +254,7 @@ class GameResultFlowTests(TestCase):
             item_type="stamp",
             name="ナイス！",
             icon="👍",
+            is_equipped=True,
         )
 
         self.client.force_login(user)
@@ -260,6 +274,49 @@ class GameResultFlowTests(TestCase):
         self.assertEqual(status.status_code, 200)
         self.assertEqual(status.json()["stamps"][0]["name"], "ナイス！")
 
+    def test_image_stamp_is_sent_with_its_static_image(self):
+        user_model = get_user_model()
+        user = user_model.objects.create_user("coconut-player", password="test")
+        room = Room.objects.create(
+            room_id="COCO",
+            host=user,
+            max_players=2,
+            is_started=True,
+        )
+        session = GameSession.objects.create(room=room)
+        GamePlayer.objects.create(
+            session=session,
+            user=user,
+            display_name=user.username,
+            turn_order=0,
+        )
+        OwnedItem.objects.create(
+            user=user,
+            item_code="stamp_coconut",
+            item_type="stamp",
+            name="ココナッツスタンプ",
+            is_equipped=True,
+        )
+
+        self.client.force_login(user)
+        response = self.client.post(
+            reverse("game:send_stamp"),
+            {"room_id": room.room_id, "stamp_code": "stamp_coconut"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()["stamp"]["image_url"],
+            "/static/rooms/images/stamps/stamp_coconut.png",
+        )
+        status = self.client.get(
+            f'{reverse("game:players_status")}?room_id={room.room_id}'
+        )
+        self.assertEqual(
+            status.json()["stamps"][0]["image_url"],
+            "/static/rooms/images/stamps/stamp_coconut.png",
+        )
+
     def test_rating_resolves_current_and_next_rank(self):
         rank_data = _get_rank_data(1000)
         self.assertEqual(rank_data["current_rank"]["name"], "ビギナー I")
@@ -271,6 +328,75 @@ class GameResultFlowTests(TestCase):
         self.assertEqual(coin_reward_for_placement(2), 75)
         self.assertEqual(coin_reward_for_placement(3), 50)
         self.assertEqual(coin_reward_for_placement(4), 25)
+
+    def test_rank_match_result_updates_rating_once_and_displays_rank(self):
+        user_model = get_user_model()
+        users = [
+            user_model.objects.create_user(
+                f"rank-result-{index}",
+                password="test",
+            )
+            for index in range(1, 5)
+        ]
+        room = Room.objects.create(
+            room_id="RANKED",
+            host=users[0],
+            max_players=4,
+            current_players=4,
+            is_started=True,
+            is_ranked=True,
+        )
+        session = GameSession.objects.create(room=room, is_finished=True)
+        players = [
+            GamePlayer.objects.create(
+                session=session,
+                user=user,
+                display_name=user.username,
+                placement=index,
+                is_alive=index == 1,
+                turn_order=index - 1,
+            )
+            for index, user in enumerate(users, start=1)
+        ]
+
+        self.client.force_login(users[0])
+        result_url = f'{reverse("game:room_result")}?room_id={room.room_id}'
+        response = self.client.get(result_url)
+
+        self.assertEqual(response.status_code, 200)
+        expected_ratings = [1050, 1020, 1000, 950]
+        expected_changes = [50, 20, 0, -50]
+        for user, player, rating, rating_change in zip(
+            users,
+            players,
+            expected_ratings,
+            expected_changes,
+        ):
+            player.refresh_from_db()
+            self.assertEqual(UserProfile.objects.get(user=user).rating, rating)
+            self.assertEqual(player.rating_before, 1000)
+            self.assertEqual(player.rating_change, rating_change)
+            self.assertEqual(player.rating_after, rating)
+
+        self.assertTrue(response.context["is_ranked"])
+        self.assertEqual(response.context["rank_rating_change"], 50)
+        self.assertEqual(response.context["rank_data"]["rating"], 1050)
+        self.assertContains(response, "ビギナー I")
+        self.assertContains(response, "＋50")
+        self.assertContains(response, "RATE 1050")
+        self.assertContains(response, "RATE 1020")
+        self.assertContains(response, "＋20")
+        self.assertContains(response, "±0")
+        self.assertContains(response, "-50")
+
+        self.client.get(result_url)
+        self.assertEqual(UserProfile.objects.get(user=users[0]).rating, 1050)
+
+    def test_rank_rating_changes_match_each_placement(self):
+        self.assertEqual(rank_rating_change_for_placement(1), 50)
+        self.assertEqual(rank_rating_change_for_placement(2), 20)
+        self.assertEqual(rank_rating_change_for_placement(3), 0)
+        self.assertEqual(rank_rating_change_for_placement(4), -50)
 
     def test_voiced_current_letter_accepts_unvoiced_start(self):
         self.assertTrue(_matches_current_letter("かめ", "が"))
@@ -385,9 +511,30 @@ class GameResultFlowTests(TestCase):
         self.assertEqual(avatar_all_response.status_code, 200)
         self.assertTrue(avatar_all_response.context["include_unowned"])
         avatar_items = avatar_all_response.context["item_groups"][0]["items"]
-        self.assertEqual(len(avatar_items), 4)
+        self.assertEqual(len(avatar_items), 5)
         self.assertEqual(sum(item["is_owned"] for item in avatar_items), 1)
-        self.assertEqual(sum(not item["is_owned"] for item in avatar_items), 3)
+        self.assertEqual(sum(not item["is_owned"] for item in avatar_items), 4)
+        palm_avatar = next(
+            item
+            for item in avatar_items
+            if item["item_code"] == "avatar_palm_limited"
+        )
+        self.assertEqual(
+            palm_avatar["image_path"],
+            "rooms/images/icons/avatar_palm_limited.png",
+        )
+        frame_all_response = self.client.get(
+            f'{reverse("rooms:inventory")}?type=frame&include=1'
+        )
+        tropical_frame = next(
+            item
+            for item in frame_all_response.context["item_groups"][0]["items"]
+            if item["item_code"] == "frame_tropical_beach"
+        )
+        self.assertEqual(
+            tropical_frame["image_path"],
+            "rooms/images/frames/frame_tropical_beach.png",
+        )
 
         for item_type, page_title in (
             ("frame", "フレーム一覧"),

@@ -350,11 +350,33 @@ button {
   background: linear-gradient(135deg, #79c9f5 10%, #bca3ff 52%, #7150e8 100%);
 }
 
+.player-avatar-frame.frame-sunset {
+  background: linear-gradient(135deg, #ffd35c, #ff8e72 52%, #d85de6);
+}
+
+.player-avatar-frame.frame-gold {
+  background: linear-gradient(135deg, #fff2a8, #f5b913 48%, #d98b00);
+}
+
+.player-avatar-frame.frame-forest {
+  background: linear-gradient(135deg, #a9ed99, #39ae62 52%, #147b51);
+}
+
+.player-avatar-frame.has-image {
+  padding: 1px;
+}
+
+.player-avatar-frame.has-art-frame {
+  padding: 0;
+  background: transparent;
+}
+
 .player-stamp-pop {
   position: absolute;
   z-index: 8;
   left: 50%;
-  bottom: 28px;
+  top: 50%;
+  bottom: auto;
   min-width: 58px;
   max-width: 88px;
   min-height: 44px;
@@ -368,12 +390,20 @@ button {
   box-shadow: 0 8px 20px rgba(35, 51, 72, 0.2);
   text-align: center;
   pointer-events: none;
-  animation: stamp-float-up 1.8s ease-out forwards;
+  animation: stamp-pop-stay 1.8s ease-out forwards;
 }
 
 .player-stamp-pop strong {
   font-size: 20px;
   line-height: 1;
+}
+
+.player-stamp-pop > img {
+  width: 52px;
+  height: 52px;
+  display: block;
+  border-radius: 12px;
+  object-fit: contain;
 }
 
 .player-stamp-pop small {
@@ -387,25 +417,25 @@ button {
   white-space: nowrap;
 }
 
-@keyframes stamp-float-up {
+@keyframes stamp-pop-stay {
   0% {
     opacity: 0;
-    transform: translate(-50%, 12px) scale(0.35) rotate(-8deg);
+    transform: translate(-50%, -50%) scale(0.72) rotate(-4deg);
   }
   18% {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1.12) rotate(3deg);
+    transform: translate(-50%, -50%) scale(1.04) rotate(2deg);
   }
   34% {
-    transform: translate(-50%, -4px) scale(1) rotate(0deg);
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
   }
   76% {
     opacity: 1;
-    transform: translate(-50%, -12px) scale(1);
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -24px) scale(0.9);
+    transform: translate(-50%, -50%) scale(0.96) rotate(0deg);
   }
 }
 
@@ -416,8 +446,33 @@ button {
   height: 100%;
   border: 2px solid #ffffff;
   border-radius: 50%;
+  overflow: hidden;
   background: #f2f4f7;
   font-size: 22px;
+}
+
+.player-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  object-fit: cover;
+  transform: scale(1.38);
+}
+
+.player-avatar.avatar-equipped {
+  border-width: 0;
+}
+
+.player-frame-overlay {
+  position: absolute;
+  z-index: 5;
+  inset: -11px;
+  width: calc(100% + 22px);
+  height: calc(100% + 22px);
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
 }
 
 .avatar-purple {
@@ -1312,6 +1367,14 @@ button {
   font-size: 22px;
 }
 
+.game-picker-option > span img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  object-fit: contain;
+}
+
 .game-picker-option strong {
   font-size: 13px;
   font-weight: 900;
@@ -1871,6 +1934,15 @@ button {
 
 .game-message.is-success .message-icon {
   background: var(--green);
+}
+
+@media (max-width: 600px) {
+  .players-strip {
+    min-height: 118px;
+    padding-top: 24px;
+    padding-bottom: 14px;
+    align-items: center;
+  }
 }
 
 @media (max-width: 360px) {

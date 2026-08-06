@@ -14,6 +14,8 @@ urlpatterns = [
     path("create/", views.create, name="create"),
     path("join/", views.join, name="join"),
     path("rank/", views.rank, name="rank"),
+    path("rank/status/", views.rank_match_status, name="rank_match_status"),
+    path("rank/leave/", views.leave_rank_match, name="leave_rank_match"),
     path("wait/", views.wait, name="wait"),
     path("room/<str:room_id>/status/", views.room_status, name="room_status"),
     path("profile/", views.profile, name="profile"),
@@ -25,6 +27,7 @@ urlpatterns = [
     path("register/", views.register_page, name="register"),
     path("logout/", views.logout_page, name="logout"),
     path("shop/", views.shop, name="shop"),
+    path("shop/purchase/", views.purchase_shop_item, name="purchase_shop_item"),
     path("ai/", views.ai, name="ai"),
     path("rule/", views.rule, name="rule"),
 ]

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="{% static 'rooms/css/createroom.css' %}?v=20260806-3">
+<link rel="stylesheet" href="{% static 'rooms/css/createroom.css' %}?v=20260807-4">
 {% endblock %}
 
 {% block content %}
@@ -48,23 +48,17 @@
     </section>
 
     <section class="field field-time">
-      <span class="field-label">
+      <label class="field-label" for="time-slider">
         <span class="field-icon" aria-hidden="true"><i class="fa-solid fa-clock"></i></span>
         <span class="field-title">持ち時間</span>
         <span class="required-badge">必須</span>
-      </span>
-      <div class="choice-row" role="radiogroup" aria-label="持ち時間">
-        <div class="choice">
-          <input id="time30" name="time" type="radio" value="30">
-          <label for="time30">30秒</label>
-        </div>
-        <div class="choice">
-          <input id="time60" name="time" type="radio" value="60" checked>
-          <label for="time60">60秒</label>
-        </div>
-        <div class="choice">
-          <input id="time90" name="time" type="radio" value="90">
-          <label for="time90">90秒</label>
+      </label>
+      <div class="time-slider-control">
+        <output id="time-value" class="time-value" for="time-slider">60秒</output>
+        <input id="time-slider" name="time" type="range" min="1" max="90" step="1" value="60" aria-describedby="time-range-note">
+        <div id="time-range-note" class="time-range-labels" aria-hidden="true">
+          <span>1秒</span>
+          <span>90秒</span>
         </div>
       </div>
     </section>
@@ -114,5 +108,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'rooms/js/createroom.js' %}?v=20260806-3"></script>
+<script src="{% static 'rooms/js/createroom.js' %}?v=20260807-4"></script>
 {% endblock %}

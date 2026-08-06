@@ -6,7 +6,7 @@
 {% block extra_css %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'rooms/css/result/6style.css' %}?v=20260806-3">
+<link rel="stylesheet" href="{% static 'rooms/css/result/6style.css' %}?v=20260806-5">
 {% endblock %}
 
 {% block content %}
@@ -54,11 +54,25 @@
       </div>
     </div>
 
+    {% if is_ranked %}
+    <div class="rank-rating-card {{ rank_change_class }}" aria-label="{{ rank_data.current_rank.name }}、レート {{ rank_data.rating }}、変動 {{ rank_rating_change }}">
+      <span class="rank-result-icon" aria-hidden="true">{{ rank_data.current_rank.icon }}</span>
+      <div class="rank-result-info">
+        <small>現在のランク</small>
+        <strong>{{ rank_data.current_rank.name }}</strong>
+      </div>
+      <div class="rank-result-rate">
+        <small>RATE {{ rank_data.rating }}</small>
+        <strong>{% if rank_rating_change > 0 %}＋{% elif rank_rating_change == 0 %}±{% endif %}{{ rank_rating_change }}{% if rank_rating_change == 0 %}{% endif %}</strong>
+      </div>
+    </div>
+    {% else %}
     <div class="coin-reward-card" aria-label="獲得コイン {{ coin_reward }}、所持コイン {{ coin_balance }}">
       <span class="coin-reward-icon" aria-hidden="true">C</span>
       <div><small>順位報酬</small><strong>＋{{ coin_reward }} コイン</strong></div>
       <p><small>所持</small><strong>{{ coin_balance }}</strong></p>
     </div>
+    {% endif %}
 
     <div class="leaderboard" aria-label="最終順位">
       {% for player in players %}
@@ -67,7 +81,16 @@
           {% if player.placement == 1 %}🥇{% elif player.placement == 2 %}🥈{% elif player.placement == 3 %}🥉{% else %}{{ player.placement }}{% endif %}
         </div>
         <div class="rank-name">{% if player.user_id == user.id %}あなた{% else %}{{ player.display_name }}{% endif %}</div>
+        {% if is_ranked %}
+        <div class="player-rating-result">
+          <span>RATE {{ player.rating_after|default_if_none:"-" }}</span>
+          <strong class="{% if player.rating_change > 0 %}positive{% elif player.rating_change < 0 %}negative{% else %}neutral{% endif %}">
+            {% if player.rating_change > 0 %}＋{% elif player.rating_change == 0 %}±{% endif %}{{ player.rating_change }}
+          </strong>
+        </div>
+        {% else %}
         <div class="rank-score">{{ player.word_count }}こ</div>
+        {% endif %}
       </div>
       {% endfor %}
     </div>

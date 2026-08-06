@@ -13,6 +13,7 @@ class GameSession(models.Model):
     baba_letter = models.CharField(max_length=1, blank=True)
     is_finished = models.BooleanField(default=False)
     coin_rewards_granted = models.BooleanField(default=False)
+    rating_rewards_granted = models.BooleanField(default=False)
     baba_challenger = models.ForeignKey(
         "game.GamePlayer",
         null=True,
@@ -48,6 +49,9 @@ class GamePlayer(models.Model):
     remaining_seconds = models.PositiveIntegerField(default=60)
     is_alive = models.BooleanField(default=True)
     placement = models.PositiveSmallIntegerField(null=True, blank=True)
+    rating_before = models.PositiveIntegerField(null=True, blank=True)
+    rating_change = models.SmallIntegerField(default=0)
+    rating_after = models.PositiveIntegerField(null=True, blank=True)
     turn_order = models.PositiveSmallIntegerField()
 
     class Meta:

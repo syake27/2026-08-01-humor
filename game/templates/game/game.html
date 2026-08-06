@@ -4,7 +4,7 @@
 {% block title %}しりとりバトル{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260806-27">
+<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260806-37">
 {% endblock %}
 
 {% block content %}
@@ -46,8 +46,12 @@
     {% for player in players %}
     <article class="battle-player{% if player.is_current %} is-active{% endif %}{% if not player.is_alive %} is-eliminated{% endif %}" data-player-id="{{ player.id }}" tabindex="{% if player.is_current %}0{% else %}-1{% endif %}"{% if player.is_current %} aria-current="true"{% endif %}>
       <span class="player-placement"{% if not player.placement %} hidden{% endif %}>{% if player.placement %}{{ player.placement }}位{% endif %}</span>
-      <span class="player-avatar-frame">
-        <span class="player-avatar {{ player.avatar_class }}">{{ player.avatar }}</span>
+      <span class="player-avatar-frame {{ player.frame_class }}{% if player.avatar_image_path %} has-image{% endif %}{% if player.frame_image_path %} has-art-frame{% endif %}">
+        <span class="player-avatar {{ player.avatar_class }}">
+          {% if player.avatar_image_path %}<img src="{% static player.avatar_image_path %}" alt="">
+          {% else %}{{ player.avatar }}{% endif %}
+        </span>
+        {% if player.frame_image_path %}<img class="player-frame-overlay" src="{% static player.frame_image_path %}" alt="">{% endif %}
       </span>
       <span class="player-name">
         <span class="player-display-name{% if player.is_self %} is-self{% endif %}">{% if player.is_self %}あなた{% else %}{{ player.display_name }}{% endif %}</span>
@@ -241,7 +245,7 @@
       <div class="game-picker-list" data-picker-panel="stamp">
         {% for item in owned_stamps %}
         <button class="game-picker-option" type="button" data-option-name="{{ item.name }}" data-option-kind="スタンプ" data-item-code="{{ item.item_code }}">
-          <span aria-hidden="true">{{ item.icon|default:"●" }}</span>
+          <span aria-hidden="true">{% if item.image_path %}<img src="{% static item.image_path %}" alt="">{% else %}{{ item.icon|default:"●" }}{% endif %}</span>
           <strong>{{ item.name }}</strong>
           <small>{% if item.is_equipped %}装備中{% else %}所持中{% endif %}</small>
         </button>
@@ -291,5 +295,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'game/js/game.js' %}?v=20260806-35"></script>
+<script src="{% static 'game/js/game.js' %}?v=20260806-36"></script>
 {% endblock %}

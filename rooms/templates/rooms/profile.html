@@ -4,7 +4,7 @@
 {% block title %}プロフィール｜しりとり{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'rooms/css/profile.css' %}?v=20260806-10">
+<link rel="stylesheet" href="{% static 'rooms/css/profile.css' %}?v=20260806-17">
 {% endblock %}
 
 {% block content %}
@@ -25,8 +25,15 @@
   {% if user.is_authenticated %}
   <section class="member-profile">
     <div class="member-hero">
-      <div class="member-avatar" aria-label="ペンギンのアバター">
-        <span class="avatar-penguin" aria-hidden="true">🐧</span>
+      <div class="member-avatar {{ customization.frame_class }}{% if customization.frame_image_path %} has-image-frame{% endif %}" aria-label="{{ customization.avatar_name }}のアバター">
+        <span class="member-avatar-content">
+        {% if customization.avatar_image_path %}
+        <img class="member-avatar-image" src="{% static customization.avatar_image_path %}" alt="">
+        {% else %}
+        <span class="avatar-penguin" aria-hidden="true">{{ customization.avatar_icon }}</span>
+        {% endif %}
+        </span>
+        {% if customization.frame_image_path %}<img class="equipped-frame-overlay" src="{% static customization.frame_image_path %}" alt="">{% endif %}
       </div>
       <div class="member-identity">
         <h2>{{ user.username }}<span class="online-dot" aria-label="オンライン"></span></h2>
@@ -43,7 +50,7 @@
       </article>
       <article class="highlight-card favorite-card">
         <span class="highlight-icon" aria-hidden="true">★</span>
-        <div><small>お気に入り称号</small><strong>はじめての一歩</strong></div>
+        <div><small>称号</small><strong>{{ customization.title_name }}</strong></div>
       </article>
     </div>
 
@@ -75,13 +82,13 @@
       </div>
       <div class="customize-grid">
         <a class="custom-card custom-avatar" href="{% url 'rooms:inventory' %}?type=avatar" aria-label="所持しているアバターを見る">
-          <strong>アバター</strong><span aria-hidden="true">🐧</span><i>✓</i>
+          <strong>アバター</strong>{% if customization.avatar_image_path %}<img class="custom-avatar-image" src="{% static customization.avatar_image_path %}" alt="">{% else %}<span aria-hidden="true">{{ customization.avatar_icon }}</span>{% endif %}<i>✓</i>
         </a>
         <a class="custom-card custom-frame" href="{% url 'rooms:inventory' %}?type=frame" aria-label="所持しているフレームを見る">
-          <strong>フレーム</strong><span class="sample-frame" aria-hidden="true"></span><i>✓</i>
+          <strong>フレーム</strong>{% if customization.frame_image_path %}<img class="custom-frame-image" src="{% static customization.frame_image_path %}" alt="">{% else %}<span class="sample-frame {{ customization.frame_class }}" aria-hidden="true"></span>{% endif %}<i>✓</i>
         </a>
         <a class="custom-card custom-stamp" href="{% url 'rooms:inventory' %}?type=stamp" aria-label="所持しているスタンプを見る">
-          <strong>スタンプ</strong><span aria-hidden="true">●</span><i>✓</i>
+          <strong>スタンプ</strong>{% if customization.stamp_image_path %}<img class="custom-stamp-image" src="{% static customization.stamp_image_path %}" alt="">{% else %}<span aria-hidden="true">{{ customization.stamp_icon }}</span>{% endif %}<i>✓</i>
         </a>
       </div>
     </section>

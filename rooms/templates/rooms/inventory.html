@@ -4,7 +4,7 @@
 {% block title %}{{ page_title }}｜しりとり{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'rooms/css/inventory.css' %}?v=20260806-4">
+<link rel="stylesheet" href="{% static 'rooms/css/inventory.css' %}?v=20260806-5">
 {% endblock %}
 
 {% block content %}
@@ -52,16 +52,19 @@
           data-item-type-label="{{ group.label }}"
           data-item-name="{{ item.name }}"
           data-item-icon="{{ item.icon }}"
+          data-item-image="{% if item.image_path %}{% static item.image_path %}{% endif %}"
           data-acquisition-method="{{ item.acquisition_method }}"
           data-is-owned="{{ item.is_owned|yesno:'true,false' }}"
           data-is-equipped="{{ item.is_equipped|yesno:'true,false' }}"
+          data-can-equip="{{ item.can_equip|yesno:'true,false' }}"
           aria-label="{{ item.name }}の詳細を見る">
           <div class="item-preview preview-{{ item.item_type }}">
-            {% if item.item_type == "frame" %}<span class="owned-frame" aria-hidden="true"></span>
+            {% if item.image_path %}<img src="{% static item.image_path %}" alt="">
+            {% elif item.item_type == "frame" %}<span class="owned-frame" aria-hidden="true"></span>
             {% else %}<span aria-hidden="true">{{ item.icon }}</span>{% endif %}
           </div>
           <strong>{{ item.name }}</strong>
-          {% if not item.is_owned %}<span class="locked-badge">未所持</span>{% elif item.is_equipped %}<span class="equipped-badge">装備中</span>{% else %}<span class="owned-badge">所持中</span>{% endif %}
+          {% if not item.is_owned %}<span class="locked-badge">未所持</span>{% elif item.item_type == "card" %}<span class="owned-badge">×{{ item.quantity }}</span>{% elif item.is_equipped %}<span class="equipped-badge">装備中</span>{% else %}<span class="owned-badge">所持中</span>{% endif %}
         </button>
         {% empty %}
         <div class="group-empty">このカテゴリのアイテムはまだありません</div>
@@ -78,7 +81,10 @@
         <button id="item-modal-close" class="item-modal-close" type="button" aria-label="アイテム詳細を閉じる">×</button>
       </header>
 
-      <div id="item-modal-preview" class="item-modal-preview"><span id="item-modal-icon" aria-hidden="true"></span></div>
+      <div id="item-modal-preview" class="item-modal-preview">
+        <img id="item-modal-image" src="" alt="" hidden>
+        <span id="item-modal-icon" aria-hidden="true"></span>
+      </div>
 
       <section class="acquisition-card">
         <span aria-hidden="true">◇</span>
@@ -102,5 +108,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'rooms/js/inventory.js' %}?v=20260806-1"></script>
+<script src="{% static 'rooms/js/inventory.js' %}?v=20260806-2"></script>
 {% endblock %}

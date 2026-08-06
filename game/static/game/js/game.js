@@ -514,9 +514,16 @@ function renderStamp(stamp) {
 
   const bubble = document.createElement("span");
   bubble.className = "player-stamp-pop";
-  const icon = document.createElement("strong");
+  const icon = stamp.image_url
+    ? document.createElement("img")
+    : document.createElement("strong");
   const label = document.createElement("small");
-  icon.textContent = stamp.icon || "☺";
+  if (stamp.image_url) {
+    icon.src = stamp.image_url;
+    icon.alt = "";
+  } else {
+    icon.textContent = stamp.icon || "☺";
+  }
   label.textContent = stamp.name;
   bubble.append(icon, label);
   avatarFrame.append(bubble);

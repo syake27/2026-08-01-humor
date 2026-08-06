@@ -331,46 +331,95 @@ textarea::placeholder {
 }
 
 /* 持ち時間 */
-.choice-row {
+.time-slider-control {
+  --time-progress: 66.29%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
 
-.choice {
-  position: relative;
-}
-
-.choice input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.choice label {
-  display: grid;
-  place-items: center;
-  height: 44px;
-  border: 1.5px solid #eadfbf;
-  border-radius: 13px;
-  color: #858da6;
-  background: var(--field-soft);
-  font-size: 14px;
+.time-value {
+  justify-self: center;
+  min-width: 88px;
+  padding: 6px 15px;
+  border: 1.5px solid #ffd46a;
+  border-radius: 999px;
+  color: #9b6500;
+  background: #fff3cf;
+  font-size: 18px;
   font-weight: 800;
+  text-align: center;
+}
+
+.time-slider-control input[type="range"] {
+  width: 100%;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  appearance: none;
+  background: transparent;
   cursor: pointer;
 }
 
-.choice input:checked + label {
-  border-color: var(--orange);
-  color: #a96d00;
-  background: #ffefc2;
+.time-slider-control input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--orange) 0 var(--time-progress),
+    #f2e6c8 var(--time-progress) 100%
+  );
 }
 
-.choice input:focus-visible + label {
-  outline: 3px solid rgba(255, 179, 21, 0.22);
-  outline-offset: 2px;
+.time-slider-control input[type="range"]::-webkit-slider-thumb {
+  width: 24px;
+  height: 24px;
+  margin-top: -8px;
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+  appearance: none;
+  background: var(--orange);
+  box-shadow: 0 3px 9px rgba(201, 130, 0, 0.28);
+}
+
+.time-slider-control input[type="range"]::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #f2e6c8;
+}
+
+.time-slider-control input[type="range"]::-moz-range-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--orange);
+}
+
+.time-slider-control input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 3px 9px rgba(201, 130, 0, 0.28);
+}
+
+.field-time .time-slider-control input[type="range"]:focus {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.time-slider-control input[type="range"]:focus-visible {
+  box-shadow: none;
+  outline: 3px solid rgba(255, 179, 21, 0.25);
+  outline-offset: 3px;
+}
+
+.time-range-labels {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
 }
 
 /* 人数設定 */

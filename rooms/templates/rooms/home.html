@@ -4,7 +4,7 @@
 {% block title %}しりとりアプリ{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'rooms/css/home.css' %}">
+<link rel="stylesheet" href="{% static 'rooms/css/home.css' %}?v=20260806-5">
 <!-- アイコン用 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 {% endblock %}
@@ -20,11 +20,12 @@
 <!-- タイトル -->
 <section class="hero">
 
-  <h1 class="logo" aria-label="しりとり">
-    <span class="logo-red">し</span>
-    <span class="logo-blue">り</span>
-    <span class="logo-orange">と</span>
-    <span class="logo-green">り</span>
+  <h1 class="logo" aria-label="BABAHIDE">
+    <img
+      class="logo-image"
+      src="{% static 'rooms/images/BABAHIDE.png' %}"
+      alt="BABAHIDE"
+    >
   </h1>
 
   <p class="catch-copy">

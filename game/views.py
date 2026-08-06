@@ -8,19 +8,24 @@ from django.db import IntegrityError, transaction
 from django.db.models import Count
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.templatetags.static import static
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from rooms.models import OwnedItem, Room, UserProfile
-from rooms.services import ensure_default_owned_items
+from rooms.services import (
+    ITEM_IMAGE_PATHS,
+    ensure_default_owned_items,
+    get_equipped_customizations,
+)
 
 from .models import GamePlayer, GameSession, GameStamp, GameWord
 from .services import (
     choose_baba_letter,
     coin_reward_for_placement,
     ensure_game_session,
-    grant_coin_rewards,
+    grant_result_rewards,
 )
 
 
@@ -180,7 +185,7 @@ def _tick_game_clock(session):
         ]
     )
     if session.is_finished:
-        grant_coin_rewards(session)
+        grant_result_rewards(session)
 
 
 def _refresh_game_clock(session):
@@ -228,6 +233,12 @@ def _finalize_baba_reveal_if_due(session):
 def _serialize_game(session, request_user):
     _finalize_baba_reveal_if_due(session)
     players = list(session.players.order_by("turn_order"))
+    customizations = get_equipped_customizations(
+        [player.user_id for player in players]
+    )
+    for player in players:
+        if player.user_id in customizations:
+            player.title = customizations[player.user_id]["title_name"]
     words = list(
         session.words.select_related("player").order_by("turn_number", "id")
     )
@@ -302,6 +313,11 @@ def _serialize_game(session, request_user):
                 "player_id": stamp.player_id,
                 "name": stamp.stamp_name,
                 "icon": stamp.stamp_icon,
+                "image_url": (
+                    static(ITEM_IMAGE_PATHS[stamp.stamp_code])
+                    if stamp.stamp_code in ITEM_IMAGE_PATHS
+                    else ""
+                ),
             }
             for stamp in stamps
         ],
@@ -322,10 +338,25 @@ def game(request):
         return redirect(f'{reverse("game:room_result")}?{result_query}')
 
     players = list(session.players.select_related("user").order_by("turn_order"))
+    customizations = get_equipped_customizations(
+        [player.user_id for player in players]
+    )
     for player in players:
-        avatar, avatar_class = AVATARS[player.turn_order % len(AVATARS)]
-        player.avatar = avatar
-        player.avatar_class = avatar_class
+        customization = customizations.get(player.user_id)
+        if customization:
+            player.avatar = customization["avatar_icon"]
+            player.avatar_image_path = customization["avatar_image_path"]
+            player.avatar_class = "avatar-equipped"
+            player.frame_class = customization["frame_class"]
+            player.frame_image_path = customization["frame_image_path"]
+            player.title = customization["title_name"]
+        else:
+            avatar, avatar_class = AVATARS[player.turn_order % len(AVATARS)]
+            player.avatar = avatar
+            player.avatar_image_path = ""
+            player.avatar_class = avatar_class
+            player.frame_class = "frame-sky"
+            player.frame_image_path = ""
         player.is_current = player.turn_order == session.current_turn_order
         player.is_self = player.user_id == request.user.id
 
@@ -339,6 +370,8 @@ def game(request):
     words = list(session.words.select_related("player").order_by("turn_number", "id"))
     ensure_default_owned_items(request.user)
     owned_items = list(OwnedItem.objects.filter(user=request.user))
+    for item in owned_items:
+        item.image_path = ITEM_IMAGE_PATHS.get(item.item_code, "")
     latest_stamp_id = session.stamps.order_by("-id").values_list("id", flat=True).first() or 0
 
     return render(
@@ -370,7 +403,9 @@ def game(request):
                 self_player and self_player.id == session.baba_challenger_id
             ),
             "owned_stamps": [
-                item for item in owned_items if item.item_type == "stamp"
+                item
+                for item in owned_items
+                if item.item_type == "stamp" and item.is_equipped
             ],
             "owned_game_items": [
                 item for item in owned_items if item.item_type != "stamp"
@@ -393,7 +428,7 @@ def room_result(request):
 
     with transaction.atomic():
         session = GameSession.objects.select_for_update().get(pk=session.pk)
-        grant_coin_rewards(session)
+        grant_result_rewards(session)
 
     players = list(
         session.players.annotate(word_count=Count("words")).order_by(
@@ -406,6 +441,19 @@ def room_result(request):
         None,
     )
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    rank_data = None
+    rank_change_class = "neutral"
+    if room.is_ranked and current_player:
+        from rooms.views import _get_rank_data
+
+        result_rating = current_player.rating_after
+        if result_rating is None:
+            result_rating = profile.rating
+        rank_data = _get_rank_data(result_rating)
+        if current_player.rating_change > 0:
+            rank_change_class = "positive"
+        elif current_player.rating_change < 0:
+            rank_change_class = "negative"
     return render(
         request,
         "rooms/result/room_result.html",
@@ -421,6 +469,12 @@ def room_result(request):
                 else 0
             ),
             "coin_balance": profile.coins,
+            "is_ranked": room.is_ranked,
+            "rank_data": rank_data,
+            "rank_rating_change": (
+                current_player.rating_change if current_player else 0
+            ),
+            "rank_change_class": rank_change_class,
         },
     )
 
@@ -454,6 +508,7 @@ def send_stamp(request):
         user=request.user,
         item_code=stamp_code,
         item_type="stamp",
+        is_equipped=True,
     ).first()
     if player is None or stamp_item is None:
         return JsonResponse({"error": "このスタンプは使用できません。"}, status=404)
@@ -472,6 +527,11 @@ def send_stamp(request):
                 "player_id": player.id,
                 "name": stamp.stamp_name,
                 "icon": stamp.stamp_icon,
+                "image_url": (
+                    static(ITEM_IMAGE_PATHS[stamp.stamp_code])
+                    if stamp.stamp_code in ITEM_IMAGE_PATHS
+                    else ""
+                ),
             }
         }
     )
@@ -654,7 +714,7 @@ def guess_baba(request):
             ]
         )
         if session.is_finished:
-            grant_coin_rewards(session)
+            grant_result_rewards(session)
 
     return JsonResponse(
         {
@@ -771,7 +831,7 @@ def submit_word(request):
                 last_player.placement = _best_remaining_placement(session)
                 last_player.save(update_fields=["placement"])
             session.is_finished = True
-            grant_coin_rewards(session)
+            grant_result_rewards(session)
 
         if not alive_orders:
             session.current_turn_order = player.turn_order

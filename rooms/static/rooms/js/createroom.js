@@ -8,6 +8,24 @@ const decreaseButton = document.getElementById("decrease-members");
 const increaseButton = document.getElementById("increase-members");
 const babaCharactersInput = document.getElementById("baba-characters");
 const babaCharacterCount = document.getElementById("baba-character-count");
+const timeSlider = document.getElementById("time-slider");
+const timeValue = document.getElementById("time-value");
+
+function updateTimeSlider() {
+  const minimum = Number(timeSlider.min);
+  const maximum = Number(timeSlider.max);
+  const current = Number(timeSlider.value);
+  const progress = ((current - minimum) / (maximum - minimum)) * 100;
+
+  timeValue.textContent = `${current}秒`;
+  timeSlider.parentElement.style.setProperty(
+    "--time-progress",
+    `${progress}%`
+  );
+}
+
+timeSlider.addEventListener("input", updateTimeSlider);
+updateTimeSlider();
 
 /**
  * 人数を2〜4人の範囲に調整する
