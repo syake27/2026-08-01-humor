@@ -24,9 +24,11 @@ const modalCurrentLetter = document.querySelector(".modal-current-letter");
 const roomRulesOpenButton = document.getElementById("room-rules-open");
 const roomRulesModal = document.getElementById("room-rules-modal");
 const roomRulesCloseButton = document.getElementById("room-rules-close");
+const babaDebugLetter = document.querySelector(".baba-debug-letter");
 const PLAYER_POLL_INTERVAL = 1500;
 let focusedPlayerId = null;
 let isComposingAnswer = false;
+let isMovingToResult = false;
 let renderedHistorySignature = JSON.stringify(
   Array.from(modalHistoryList.querySelectorAll("li:not(.history-empty)")).map((row) => ({
     turn_number: row.querySelector("span")?.textContent || "",
@@ -52,6 +54,13 @@ function showMessage(title, detail, isSuccess = false) {
   gameMessage.querySelector(".message-icon").textContent = isSuccess ? "✓" : "!";
   gameMessage.querySelector("strong").textContent = title;
   gameMessage.querySelector("small").textContent = detail;
+}
+
+function moveToResult(game) {
+  if (!game.is_finished || !game.result_url || isMovingToResult) return false;
+  isMovingToResult = true;
+  window.location.replace(game.result_url);
+  return true;
 }
 
 clearAnswerButton.addEventListener("click", () => {
@@ -105,6 +114,8 @@ answerForm.addEventListener("submit", async (event) => {
       headers: { "X-Requested-With": "XMLHttpRequest" },
     });
     const game = await response.json();
+
+    if (moveToResult(game)) return;
 
     if (!response.ok) {
       showMessage("送信できませんでした", game.error || "もう一度お試しください");
@@ -211,6 +222,8 @@ async function updatePlayers() {
 }
 
 function applyGameState(game) {
+  if (moveToResult(game)) return;
+
   const playerStates = new Map(
     game.players.map((player) => [String(player.id), player])
   );
@@ -237,12 +250,17 @@ function applyGameState(game) {
     const name = card.querySelector(".player-display-name");
     const title = card.querySelector(".player-name small");
     const time = card.querySelector(".player-time");
+    const placement = card.querySelector(".player-placement");
     if (name) {
       name.textContent = player.is_self ? "あなた" : player.name;
       name.classList.toggle("is-self", player.is_self);
     }
     if (title) title.textContent = player.title;
     if (time) time.textContent = `残り ${player.remaining_seconds}秒`;
+    if (placement) {
+      placement.hidden = !player.placement;
+      placement.textContent = player.placement ? `${player.placement}位` : "";
+    }
 
   });
 
@@ -269,19 +287,21 @@ function applyGameState(game) {
 
   const me = game.players.find((player) => player.is_self);
   const canAnswer = Boolean(me && me.is_alive && me.is_current);
+  const acceptedLetterDisplay = game.accepted_start_letters.join("・");
   answerInput.disabled = !canAnswer;
   sendAnswerButton.disabled = !canAnswer;
   answerInput.placeholder = canAnswer
-    ? `「${game.current_letter}」から始まる言葉`
+    ? `「${acceptedLetterDisplay}」から始まる言葉`
     : "あなたの番を待っています";
 
   aliveCount.textContent = livingPlayers;
   turnNumber.textContent = game.turn_number;
   turnTime.textContent = currentSeconds;
   currentLetterCard.dataset.currentLetter = game.current_letter;
+  babaDebugLetter.textContent = game.baba_letter;
   currentWord.textContent = game.current_word;
   fitCurrentWord();
-  currentLetterPrompt.textContent = `次は「${game.current_letter}」からはじまる言葉を入力！`;
+  currentLetterPrompt.textContent = `次は「${acceptedLetterDisplay}」からはじまる言葉を入力！`;
   renderHistory(game.words, game.current_letter);
   renderModalHistory(game.words, game.current_letter);
 }

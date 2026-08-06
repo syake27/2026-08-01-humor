@@ -11,6 +11,8 @@ class GameSession(models.Model):
     turn_number = models.PositiveIntegerField(default=1)
     current_letter = models.CharField(max_length=1, default="き")
     baba_letter = models.CharField(max_length=1, blank=True)
+    is_finished = models.BooleanField(default=False)
+    coin_rewards_granted = models.BooleanField(default=False)
     started_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -33,6 +35,7 @@ class GamePlayer(models.Model):
     title = models.CharField(max_length=40, default="はじめての一歩")
     remaining_seconds = models.PositiveIntegerField(default=60)
     is_alive = models.BooleanField(default=True)
+    placement = models.PositiveSmallIntegerField(null=True, blank=True)
     turn_order = models.PositiveSmallIntegerField()
 
     class Meta:

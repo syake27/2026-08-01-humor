@@ -4,7 +4,7 @@
 {% block title %}しりとりバトル{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260806-9">
+<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260806-10">
 {% endblock %}
 
 {% block content %}
@@ -45,6 +45,7 @@
   <section class="players-strip" aria-label="参加プレイヤー" data-status-url="{% url 'game:players_status' %}?room_id={{ room.room_id }}">
     {% for player in players %}
     <article class="battle-player{% if player.is_current %} is-active{% endif %}{% if not player.is_alive %} is-eliminated{% endif %}" data-player-id="{{ player.id }}" tabindex="{% if player.is_current %}0{% else %}-1{% endif %}"{% if player.is_current %} aria-current="true"{% endif %}>
+      <span class="player-placement"{% if not player.placement %} hidden{% endif %}>{% if player.placement %}{{ player.placement }}位{% endif %}</span>
       <span class="player-avatar-frame">
         <span class="player-avatar {{ player.avatar_class }}">{{ player.avatar }}</span>
       </span>
@@ -63,7 +64,7 @@
     <span class="sparkle sparkle-four" aria-hidden="true">●</span>
     <h2 id="current-letter-title">現在の言葉</h2>
     <strong class="current-word">{{ current_word }}</strong>
-    <p class="current-letter-prompt">次は「{{ session.current_letter }}」からはじまる言葉を入力！</p>
+    <p class="current-letter-prompt">次は「{{ current_letter_display }}」からはじまる言葉を入力！</p>
   </section>
 
   <section class="history-card">
@@ -154,7 +155,7 @@
           <small>DEBUG</small>
           <strong>今回のババの文字</strong>
         </div>
-        <span>{{ session.baba_letter }}</span>
+        <span class="baba-debug-letter">{{ session.baba_letter }}</span>
       </aside>
     </div>
   </dialog>
@@ -164,7 +165,7 @@
     {% csrf_token %}
     <input type="hidden" name="room_id" value="{{ room.room_id }}">
     <div class="answer-input-wrap">
-      <input id="answer-input" name="answer" type="text" maxlength="30" pattern="[ぁ-ゖー]+" placeholder="「{{ session.current_letter }}」から始まる言葉" autocomplete="off" aria-label="ひらがなで回答を入力"{% if not is_my_turn %} disabled{% endif %}>
+      <input id="answer-input" name="answer" type="text" maxlength="30" pattern="[ぁ-ゖー]+" placeholder="「{{ current_letter_display }}」から始まる言葉" autocomplete="off" aria-label="ひらがなで回答を入力"{% if not is_my_turn %} disabled{% endif %}>
       <button id="clear-answer" class="clear-answer" type="button" aria-label="入力を消す">×</button>
     </div>
     <button class="send-answer" type="submit"{% if not is_my_turn %} disabled{% endif %}><span aria-hidden="true">➤</span> 送信</button>
@@ -178,5 +179,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'game/js/game.js' %}?v=20260806-12"></script>
+<script src="{% static 'game/js/game.js' %}?v=20260806-16"></script>
 {% endblock %}

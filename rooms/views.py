@@ -18,7 +18,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .models import DEFAULT_BABA_CHARACTERS, Room, RoomParticipant
+from .models import DEFAULT_BABA_CHARACTERS, Room, RoomParticipant, UserProfile
 
 
 def _clean_baba_characters(value):
@@ -62,11 +62,15 @@ def match(request):
 def normal_match(request):
     active_since = timezone.now() - timedelta(hours=2)
     search_query = request.GET.get("q", "").strip().upper()[:8]
-    rooms = Room.objects.filter(
-        is_active=True,
-        is_started=False,
-        created_at__gte=active_since,
-    ).select_related("host").annotate(participant_count=Count("participants"))
+    rooms = (
+        Room.objects.filter(
+            is_active=True,
+            is_started=False,
+            created_at__gte=active_since,
+        )
+        .select_related("host")
+        .annotate(participant_count=Count("participants"))
+    )
     if search_query:
         rooms = rooms.filter(room_id__icontains=search_query)
     return render(
@@ -109,10 +113,13 @@ def join_normal_room(request, room_id):
         created_at__gte=active_since,
     )
 
-    if room.participants.count() >= room.max_players and not RoomParticipant.objects.filter(
-        room=room,
-        user=request.user,
-    ).exists():
+    if (
+        room.participants.count() >= room.max_players
+        and not RoomParticipant.objects.filter(
+            room=room,
+            user=request.user,
+        ).exists()
+    ):
         return redirect("rooms:normal_match")
 
     access_key = f"room_access_{room.room_id}"
@@ -135,7 +142,11 @@ def join_normal_room(request, room_id):
                 return redirect("rooms:normal_match")
             request.session[access_key] = True
             query = urlencode(
-                {"room_id": room.room_id, "members": room.max_players, "source": "normal"}
+                {
+                    "room_id": room.room_id,
+                    "members": room.max_players,
+                    "source": "normal",
+                }
             )
             return redirect(f"/wait/?{query}")
         error = "合言葉が違います。"
@@ -207,18 +218,21 @@ def create(request):
                 break
 
         room_password = request.POST.get("password", "")
-        room = Room.objects.create(
-            room_id=room_id,
-            host=request.user if request.user.is_authenticated else None,
-            max_players=max_players,
-            time_limit=time_limit,
-            theme=request.POST.get("theme", "").strip()[:80],
-            baba_characters=_clean_baba_characters(
-                request.POST.get("baba_characters", DEFAULT_BABA_CHARACTERS)
-            ),
-            has_password=bool(room_password),
-            password_hash=make_password(room_password) if room_password else "",
-        )
+        with transaction.atomic():
+            room = Room.objects.create(
+                room_id=room_id,
+                host=request.user,
+                max_players=max_players,
+                current_players=1,
+                time_limit=time_limit,
+                theme=request.POST.get("theme", "").strip()[:80],
+                baba_characters=_clean_baba_characters(
+                    request.POST.get("baba_characters", DEFAULT_BABA_CHARACTERS)
+                ),
+                has_password=bool(room_password),
+                password_hash=make_password(room_password) if room_password else "",
+            )
+            RoomParticipant.objects.create(room=room, user=request.user)
         request.session[f"room_access_{room.room_id}"] = True
         query = urlencode({"room_id": room.room_id, "members": room.max_players})
         return redirect(f"/wait/?{query}")
@@ -251,6 +265,12 @@ def wait(request):
 
     room = Room.objects.filter(room_id=room_id, is_active=True).first()
     if room:
+        if (
+            request.user.is_authenticated
+            and room.host_id == request.user.id
+            and not room.participants.filter(user=request.user).exists()
+        ):
+            room, _ = _add_room_participant(room.pk, request.user)
         if room.has_password and not request.session.get(f"room_access_{room.room_id}"):
             return redirect("rooms:join_normal_room", room_id=room.room_id)
         if room.is_started:
@@ -281,10 +301,14 @@ def wait(request):
 
 
 def room_status(request, room_id):
-    room = Room.objects.filter(
-        room_id=room_id.upper(),
-        is_active=True,
-    ).annotate(participant_count=Count("participants")).first()
+    room = (
+        Room.objects.filter(
+            room_id=room_id.upper(),
+            is_active=True,
+        )
+        .annotate(participant_count=Count("participants"))
+        .first()
+    )
     if room is None:
         return JsonResponse({"active": False}, status=404)
     return JsonResponse(
@@ -298,10 +322,22 @@ def room_status(request, room_id):
         }
     )
 
+
 def rule(request):
     return render(request, "rooms/rules.html")
+
+
 def profile(request):
-    return render(request, "rooms/profile.html")
+    coin_balance = 0
+    if request.user.is_authenticated:
+        user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        coin_balance = user_profile.coins
+    return render(
+        request,
+        "rooms/profile.html",
+        {"coin_balance": coin_balance},
+    )
+
 
 def login_page(request):
     next_url = request.POST.get("next") or request.GET.get("next") or ""
@@ -334,6 +370,7 @@ def login_page(request):
         "rooms/login.html",
         {"error": error, "username": username, "next": next_url},
     )
+
 
 def register_page(request):
     next_url = request.POST.get("next") or request.GET.get("next") or ""
@@ -382,13 +419,20 @@ def register_page(request):
         {"error": error, "username": username, "next": next_url},
     )
 
+
 @require_POST
 def logout_page(request):
     auth_logout(request)
     return redirect("rooms:home")
 
+
 def shop(request):
-    return render(request, "rooms/shop.html")
+    coin_balance = 0
+    if request.user.is_authenticated:
+        user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        coin_balance = user_profile.coins
+    return render(request, "rooms/shop.html", {"coin_balance": coin_balance})
+
 
 def ai(request):
     return render(request, "rooms/ai.html")

@@ -283,7 +283,7 @@ button {
   width: auto;
   max-width: none;
   margin: 0 -12px 13px;
-  padding: 0 12px 5px;
+  padding: 20px 12px 5px;
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
@@ -318,6 +318,25 @@ button {
 .battle-player:focus-visible {
   outline: 3px solid rgba(120, 71, 238, 0.3);
   outline-offset: 2px;
+}
+
+.player-placement {
+  position: absolute;
+  z-index: 3;
+  top: -18px;
+  left: 50%;
+  min-width: 42px;
+  padding: 3px 10px;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--purple);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+  transform: translateX(-50%);
+  white-space: nowrap;
 }
 
 .player-avatar-frame {
@@ -397,6 +416,11 @@ button {
 }
 
 .battle-player.is-eliminated {
+  background: #f5f6f8;
+}
+
+.battle-player.is-eliminated .player-avatar-frame,
+.battle-player.is-eliminated .player-name {
   opacity: 0.46;
   filter: grayscale(0.75);
 }
