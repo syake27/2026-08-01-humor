@@ -31,6 +31,20 @@ const gamePickerCloseButton = document.getElementById("game-picker-close");
 const gamePickerButtons = document.querySelectorAll("[data-picker]");
 const gamePickerPanels = document.querySelectorAll("[data-picker-panel]");
 const gamePickerOptions = document.querySelectorAll(".game-picker-option");
+const itemToolButton = document.querySelector(".item-tool");
+const itemPickerPanel = document.querySelector('[data-picker-panel="item"]');
+const cardUseModal = document.getElementById("card-use-modal");
+const cardUseCloseButton = document.getElementById("card-use-close");
+const cardUseCancelButton = document.getElementById("card-use-cancel");
+const cardUseConfirmButton = document.getElementById("card-use-confirm");
+const cardUsePreview = document.getElementById("card-use-preview");
+const cardUseName = document.getElementById("card-use-name");
+const cardUseError = document.getElementById("card-use-error");
+const cardRevealOverlay = document.getElementById("card-reveal-overlay");
+const cardRevealPlayer = document.getElementById("card-reveal-player");
+const cardRevealBack = document.getElementById("card-reveal-back");
+const cardRevealFront = document.getElementById("card-reveal-front");
+const cardRevealName = document.getElementById("card-reveal-name");
 const babaButton = document.getElementById("baba-button");
 const babaGuessModal = document.getElementById("baba-guess-modal");
 const babaGuessForm = document.getElementById("baba-guess-form");
@@ -55,6 +69,8 @@ const PLAYER_POLL_INTERVAL = 750;
 const BABA_RESULT_HOLD_MS = 2600;
 const BABA_EXPLOSION_DELAY_MS = 1000;
 let focusedPlayerId = null;
+let canUseItems = !itemToolButton.disabled;
+let pendingCardOption = null;
 let isComposingAnswer = false;
 let isComposingBaba = false;
 let isMovingToResult = false;
@@ -68,6 +84,12 @@ let babaExplosionEndTimer = null;
 let babaWordExplosionTimer = null;
 let babaRevealSignature = "";
 let lastRenderedStampId = Number(playersStrip.dataset.lastStampId || 0);
+let lastRenderedCardUseId = Number(cardRevealOverlay.dataset.lastCardUseId || 0);
+let cardRevealFlipTimer = null;
+let cardRevealHideTimer = null;
+let cardRevealFinishTimer = null;
+let cardRevealQueue = [];
+let isCardRevealPlaying = false;
 let renderedHistorySignature = JSON.stringify(
   Array.from(modalHistoryList.querySelectorAll("li:not(.history-empty)")).map((row) => ({
     turn_number: row.querySelector("span")?.textContent || "",
@@ -93,6 +115,46 @@ function showMessage(title, detail, isSuccess = false) {
   gameMessage.querySelector(".message-icon").textContent = isSuccess ? "✓" : "!";
   gameMessage.querySelector("strong").textContent = title;
   gameMessage.querySelector("small").textContent = detail;
+}
+
+function renderCardUse(cardUse) {
+  if (!cardUse || Number(cardUse.id) <= lastRenderedCardUseId) return;
+  lastRenderedCardUseId = Number(cardUse.id);
+  cardRevealQueue.push(cardUse);
+  playNextCardUse();
+}
+
+function playNextCardUse() {
+  if (isCardRevealPlaying || !cardRevealQueue.length) return;
+  isCardRevealPlaying = true;
+  const cardUse = cardRevealQueue.shift();
+
+  window.clearTimeout(cardRevealFlipTimer);
+  window.clearTimeout(cardRevealHideTimer);
+  window.clearTimeout(cardRevealFinishTimer);
+  cardRevealPlayer.textContent = cardUse.player_name;
+  cardRevealName.textContent = cardUse.card_name;
+  cardRevealFront.src = cardUse.image_url;
+  cardRevealFront.alt = cardUse.card_name;
+  if (cardUse.back_image_url) cardRevealBack.src = cardUse.back_image_url;
+
+  cardRevealOverlay.hidden = false;
+  cardRevealOverlay.classList.remove("is-revealed", "is-hiding");
+  void cardRevealOverlay.offsetWidth;
+  cardRevealOverlay.classList.add("is-visible");
+
+  cardRevealFlipTimer = window.setTimeout(() => {
+    cardRevealOverlay.classList.add("is-revealed");
+  }, 650);
+  cardRevealHideTimer = window.setTimeout(() => {
+    cardRevealOverlay.classList.add("is-hiding");
+  }, 2450);
+  cardRevealFinishTimer = window.setTimeout(() => {
+    cardRevealOverlay.hidden = true;
+    cardRevealOverlay.classList.remove("is-visible", "is-revealed", "is-hiding");
+    isCardRevealPlaying = false;
+    playNextCardUse();
+  }, 2800);
 }
 
 function resetBabaRoulette() {
@@ -482,8 +544,9 @@ babaGuessForm.addEventListener("submit", async (event) => {
 
 gamePickerButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    if (button.disabled) return;
     const picker = button.dataset.picker;
-    gamePickerTitle.textContent = picker === "stamp" ? "スタンプを選ぶ" : "アイテムを選ぶ";
+    gamePickerTitle.textContent = picker === "stamp" ? "スタンプを選ぶ" : "カードを選ぶ";
     gamePickerPanels.forEach((panel) => {
       panel.hidden = panel.dataset.pickerPanel !== picker;
     });
@@ -499,6 +562,19 @@ gamePickerModal.addEventListener("click", (event) => {
   if (event.target === gamePickerModal) {
     gamePickerModal.close();
   }
+});
+
+function closeCardUseModal() {
+  if (!cardUseConfirmButton.disabled && cardUseModal.open) {
+    cardUseModal.close();
+    pendingCardOption = null;
+  }
+}
+
+cardUseCloseButton.addEventListener("click", closeCardUseModal);
+cardUseCancelButton.addEventListener("click", closeCardUseModal);
+cardUseModal.addEventListener("click", (event) => {
+  if (event.target === cardUseModal) closeCardUseModal();
 });
 
 function renderStamp(stamp) {
@@ -535,8 +611,20 @@ gamePickerOptions.forEach((option) => {
     const name = option.dataset.optionName;
     const kind = option.dataset.optionKind;
     if (kind !== "スタンプ") {
+      if (!canUseItems) {
+        gamePickerModal.close();
+        showMessage(
+          "アイテムは使えません",
+          "アイテムは自分のターンだけ使えます"
+        );
+        return;
+      }
       gamePickerModal.close();
-      showMessage(`${kind}を選びました`, `「${name}」を選択しています`, true);
+      pendingCardOption = option;
+      cardUsePreview.innerHTML = option.querySelector("span").innerHTML;
+      cardUseName.textContent = name;
+      cardUseError.textContent = "";
+      cardUseModal.showModal();
       return;
     }
 
@@ -566,6 +654,60 @@ gamePickerOptions.forEach((option) => {
       option.disabled = false;
     }
   });
+});
+
+cardUseConfirmButton.addEventListener("click", async () => {
+  if (!pendingCardOption || cardUseConfirmButton.disabled) return;
+  if (!canUseItems) {
+    cardUseError.textContent = "カードは自分のターンだけ使用できます。";
+    return;
+  }
+
+  cardUseConfirmButton.disabled = true;
+  cardUseConfirmButton.textContent = "使用中…";
+  cardUseError.textContent = "";
+  const formData = new FormData();
+  formData.append("room_id", gamePickerModal.dataset.roomId);
+  formData.append("card_code", pendingCardOption.dataset.itemCode);
+  formData.append(
+    "csrfmiddlewaretoken",
+    answerForm.querySelector("[name=csrfmiddlewaretoken]").value
+  );
+
+  try {
+    const response = await fetch(gamePickerModal.dataset.itemUrl, {
+      method: "POST",
+      body: formData,
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      cardUseError.textContent = data.error || "カードを使用できませんでした。";
+      return;
+    }
+
+    const usedCardName = pendingCardOption.dataset.optionName;
+    if (data.card_quantity > 0) {
+      pendingCardOption.querySelector("small").textContent = `×${data.card_quantity}`;
+    } else {
+      pendingCardOption.remove();
+      if (!itemPickerPanel.querySelector(".game-picker-option")) {
+        const empty = document.createElement("p");
+        empty.className = "game-picker-empty";
+        empty.textContent = "所持しているカードはありません";
+        itemPickerPanel.append(empty);
+      }
+    }
+    cardUseModal.close();
+    pendingCardOption = null;
+    applyGameState(data);
+    showMessage("カードを使用しました", `「${usedCardName}」 ${data.message}`, true);
+  } catch (error) {
+    cardUseError.textContent = "通信できませんでした。もう一度お試しください。";
+  } finally {
+    cardUseConfirmButton.disabled = false;
+    cardUseConfirmButton.textContent = "使用する";
+  }
 });
 
 gameMenuButton.addEventListener("click", () => {
@@ -682,6 +824,7 @@ function applyGameState(game) {
   const canAnswer = Boolean(
     me && me.is_alive && me.is_current && !babaChallenge
   );
+  canUseItems = canAnswer;
   babaButton.disabled = !(me && me.is_alive) || Boolean(babaChallenge);
   if (babaChallenge) {
     babaChallengerName.textContent = babaChallenge.player_name;
@@ -719,6 +862,16 @@ function applyGameState(game) {
   answerInput.disabled = !canAnswer;
   clearAnswerButton.disabled = !canAnswer;
   sendAnswerButton.disabled = !canAnswer;
+  itemToolButton.disabled = !canAnswer;
+  itemToolButton.title = canAnswer
+    ? ""
+    : "アイテムは自分のターンだけ使えます";
+  if (!canAnswer && gamePickerModal.open && !itemPickerPanel.hidden) {
+    gamePickerModal.close();
+  }
+  if (!canAnswer && cardUseModal.open && !cardUseConfirmButton.disabled) {
+    closeCardUseModal();
+  }
   answerInput.placeholder = babaChallenge
     ? "BABAの判定を待っています"
     : canAnswer
@@ -736,6 +889,8 @@ function applyGameState(game) {
   renderHistory(game.words, game.current_letter);
   renderModalHistory(game.words, game.current_letter);
   game.stamps.forEach(renderStamp);
+  const cardUses = game.card_uses || (game.card_use ? [game.card_use] : []);
+  cardUses.forEach(renderCardUse);
 }
 
 function renderHistory(words, nextLetter) {

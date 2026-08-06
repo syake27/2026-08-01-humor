@@ -1,4 +1,49 @@
-from .models import OwnedItem
+from .models import OwnedItem, UserProfile
+
+
+RANK_TIERS = [
+    ("beginner-1", "ビギナー I", 1000, "◆"),
+    ("beginner-2", "ビギナー II", 1100, "◆"),
+    ("beginner-3", "ビギナー III", 1200, "◆"),
+    ("bronze", "ブロンズ", 1300, "♢"),
+    ("silver", "シルバー", 1500, "◇"),
+    ("gold", "ゴールド", 1700, "★"),
+    ("platinum", "プラチナ", 1900, "✦"),
+    ("diamond", "ダイヤモンド", 2100, "◆"),
+    ("master", "マスター", 2400, "♛"),
+    ("humor-king", "ユーモア王", 2800, "♛"),
+]
+
+
+def rank_title_code(rank_code):
+    return f"title_rank_{rank_code.replace('-', '_')}"
+
+
+def grant_rank_titles(user, rating=None):
+    if rating is None:
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        rating = profile.rating
+
+    granted_codes = []
+    # 全アカウントは1000レート開始なので、降格後も初期ランク称号を保持する。
+    achieved_rating = max(1000, rating)
+    for rank_code, rank_name, minimum_rate, icon in RANK_TIERS:
+        if achieved_rating < minimum_rate:
+            continue
+        item_code = rank_title_code(rank_code)
+        _, created = OwnedItem.objects.get_or_create(
+            user=user,
+            item_code=item_code,
+            defaults={
+                "item_type": "title",
+                "name": rank_name,
+                "icon": icon,
+                "is_equipped": False,
+            },
+        )
+        if created:
+            granted_codes.append(item_code)
+    return granted_codes
 
 
 DEFAULT_OWNED_ITEMS = [
@@ -17,6 +62,10 @@ ITEM_IMAGE_PATHS = {
     "card_time_minus": "rooms/images/cards/card_time_minus.png",
     "frame_tropical_beach": "rooms/images/frames/frame_tropical_beach.png",
     "stamp_coconut": "rooms/images/stamps/stamp_coconut.png",
+}
+
+ITEM_DISPLAY_NAMES = {
+    "card_help_limited": "レートブースト",
 }
 
 FRAME_STYLE_CLASSES = {
@@ -40,6 +89,7 @@ def ensure_default_owned_items(user):
                 "is_equipped": is_equipped,
             },
         )
+    grant_rank_titles(user)
 
 
 def _format_customization(equipped):

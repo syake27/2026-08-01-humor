@@ -15,12 +15,13 @@ from django.views.decorators.http import require_POST
 
 from rooms.models import OwnedItem, Room, UserProfile
 from rooms.services import (
+    ITEM_DISPLAY_NAMES,
     ITEM_IMAGE_PATHS,
     ensure_default_owned_items,
     get_equipped_customizations,
 )
 
-from .models import GamePlayer, GameSession, GameStamp, GameWord
+from .models import GameCardUse, GamePlayer, GameSession, GameStamp, GameWord
 from .services import (
     choose_baba_letter,
     coin_reward_for_placement,
@@ -46,6 +47,7 @@ HIRAGANA_PATTERN = re.compile(r"^[ぁ-ゖー]+$")
 KANA_VOICE_MARKS = {"\u3099", "\u309a"}
 BABA_REVEAL_SECONDS = 6.2
 BABA_WORD_EXPLOSION_SECONDS = 1.2
+CARD_REVEAL_PAUSE_SECONDS = 3.7
 
 
 def _to_hiragana(text):
@@ -112,11 +114,48 @@ def _best_remaining_placement(session):
     return min(_available_placements(session))
 
 
+def _next_alive_turn_order(session, current_order, consume_skip=True):
+    alive_orders = list(
+        session.players.filter(is_alive=True)
+        .order_by("turn_order")
+        .values_list("turn_order", flat=True)
+    )
+    if not alive_orders:
+        return current_order
+
+    direction = 1 if session.turn_direction >= 0 else -1
+    steps = 2 if consume_skip and session.skip_next_turn else 1
+    next_order = current_order
+    for _ in range(steps):
+        if direction > 0:
+            candidates = [order for order in alive_orders if order > next_order]
+            next_order = candidates[0] if candidates else alive_orders[0]
+        else:
+            candidates = [order for order in alive_orders if order < next_order]
+            next_order = candidates[-1] if candidates else alive_orders[-1]
+
+    if consume_skip and session.skip_next_turn:
+        session.skip_next_turn = False
+    return next_order
+
+
 def _tick_game_clock(session):
     now = timezone.now()
     _finalize_baba_reveal_if_due(session)
     if session.is_finished:
         return
+
+    if session.card_reveal_until:
+        if session.card_reveal_until > now:
+            session.turn_started_at = now
+            session.save(update_fields=["turn_started_at"])
+            return
+
+        reveal_ended_at = session.card_reveal_until
+        session.card_reveal_until = None
+        if session.turn_started_at < reveal_ended_at:
+            session.turn_started_at = reveal_ended_at
+        session.save(update_fields=["card_reveal_until", "turn_started_at"])
 
     if session.baba_challenger_id or session.baba_reveal_until:
         session.turn_started_at = now
@@ -155,14 +194,10 @@ def _tick_game_clock(session):
             remaining_players[0].save(update_fields=["placement"])
         session.is_finished = True
     else:
-        later_players = [
-            item
-            for item in remaining_players
-            if item.turn_order > player.turn_order
-        ]
-        session.current_turn_order = (
-            later_players[0] if later_players else remaining_players[0]
-        ).turn_order
+        session.current_turn_order = _next_alive_turn_order(
+            session,
+            player.turn_order,
+        )
 
     session.baba_challenger = player
     session.baba_guess_preview = "0"
@@ -175,6 +210,7 @@ def _tick_game_clock(session):
     session.save(
         update_fields=[
             "current_turn_order",
+            "skip_next_turn",
             "is_finished",
             "baba_challenger",
             "baba_guess_preview",
@@ -230,6 +266,21 @@ def _finalize_baba_reveal_if_due(session):
     return True
 
 
+def _serialize_card_use(card_use):
+    return {
+        "id": card_use.id,
+        "player_name": card_use.player.display_name,
+        "card_code": card_use.card_code,
+        "card_name": card_use.card_name,
+        "image_url": (
+            static(ITEM_IMAGE_PATHS[card_use.card_code])
+            if card_use.card_code in ITEM_IMAGE_PATHS
+            else ""
+        ),
+        "back_image_url": static("rooms/images/cards/caard_back.png"),
+    }
+
+
 def _serialize_game(session, request_user):
     _finalize_baba_reveal_if_due(session)
     players = list(session.players.order_by("turn_order"))
@@ -245,6 +296,10 @@ def _serialize_game(session, request_user):
     stamps = list(
         session.stamps.select_related("player").order_by("-id")[:20]
     )[::-1]
+    card_uses = list(
+        session.card_uses.select_related("player").order_by("-id")[:20]
+    )[::-1]
+    latest_card_use = card_uses[-1] if card_uses else None
     baba_challenger = (
         session.players.filter(pk=session.baba_challenger_id).first()
         if session.baba_challenger_id
@@ -321,6 +376,12 @@ def _serialize_game(session, request_user):
             }
             for stamp in stamps
         ],
+        "card_use": (
+            _serialize_card_use(latest_card_use)
+            if latest_card_use
+            else None
+        ),
+        "card_uses": [_serialize_card_use(card_use) for card_use in card_uses],
     }
 
 
@@ -371,8 +432,12 @@ def game(request):
     ensure_default_owned_items(request.user)
     owned_items = list(OwnedItem.objects.filter(user=request.user))
     for item in owned_items:
+        item.name = ITEM_DISPLAY_NAMES.get(item.item_code, item.name)
         item.image_path = ITEM_IMAGE_PATHS.get(item.item_code, "")
     latest_stamp_id = session.stamps.order_by("-id").values_list("id", flat=True).first() or 0
+    latest_card_use_id = (
+        session.card_uses.order_by("-id").values_list("id", flat=True).first() or 0
+    )
 
     return render(
         request,
@@ -408,9 +473,12 @@ def game(request):
                 if item.item_type == "stamp" and item.is_equipped
             ],
             "owned_game_items": [
-                item for item in owned_items if item.item_type != "stamp"
+                item
+                for item in owned_items
+                if item.item_type == "card" and item.quantity > 0
             ],
             "latest_stamp_id": latest_stamp_id,
+            "latest_card_use_id": latest_card_use_id,
         },
     )
 
@@ -533,6 +601,150 @@ def send_stamp(request):
                     else ""
                 ),
             }
+        }
+    )
+
+
+@require_POST
+@login_required(login_url="rooms:login")
+def use_card(request):
+    room_id = request.POST.get("room_id", "").strip().upper()
+    card_code = request.POST.get("card_code", "").strip()
+    room, accessible_session = _get_accessible_session(request, room_id)
+    if room is None:
+        return JsonResponse({"error": "ルームが見つかりません。"}, status=404)
+    if accessible_session is None:
+        return JsonResponse({"error": "このゲームには参加していません。"}, status=403)
+
+    effect_messages = {
+        "card_help_limited": "勝利時の獲得レートが1.3倍になります。",
+        "card_skip": "現在の自分のターンをスキップしました。",
+        "card_reverse": "ターンの順番を逆転しました。",
+        "card_time_plus": "自分の持ち時間を10秒増やしました。",
+        "card_time_minus": "次のプレイヤーの持ち時間を5秒減らしました。",
+    }
+    if card_code not in effect_messages:
+        return JsonResponse({"error": "このカードは使用できません。"}, status=400)
+
+    with transaction.atomic():
+        session = GameSession.objects.select_for_update().get(
+            pk=accessible_session.pk
+        )
+        _tick_game_clock(session)
+        if session.is_finished:
+            return JsonResponse(
+                {"error": "このゲームは終了しています。"},
+                status=409,
+            )
+        if session.baba_challenger_id:
+            return JsonResponse(
+                {"error": "BABAの挑戦中はカードを使用できません。"},
+                status=409,
+            )
+
+        player = session.players.select_for_update().filter(
+            user=request.user,
+            is_alive=True,
+        ).first()
+        if player is None:
+            return JsonResponse({"error": "脱落後はカードを使用できません。"}, status=403)
+        if player.turn_order != session.current_turn_order:
+            return JsonResponse(
+                {"error": "カードは自分のターンだけ使用できます。"},
+                status=409,
+            )
+
+        card = OwnedItem.objects.select_for_update().filter(
+            user=request.user,
+            item_code=card_code,
+            item_type="card",
+            quantity__gt=0,
+        ).first()
+        if card is None:
+            return JsonResponse({"error": "このカードを所持していません。"}, status=404)
+
+        session_fields = []
+        if card_code == "card_help_limited":
+            if not room.is_ranked:
+                return JsonResponse(
+                    {"error": "レートブーストはランクマッチで使用できます。"},
+                    status=400,
+                )
+            if player.rate_boost_active:
+                return JsonResponse(
+                    {"error": "レートブーストはすでに使用中です。"},
+                    status=409,
+                )
+            player.rate_boost_active = True
+            player.save(update_fields=["rate_boost_active"])
+        elif card_code == "card_skip":
+            session.current_turn_order = _next_alive_turn_order(
+                session,
+                player.turn_order,
+                consume_skip=False,
+            )
+            session.skip_next_turn = False
+            session.turn_number += 1
+            session.turn_started_at = timezone.now()
+            session_fields.extend(
+                [
+                    "current_turn_order",
+                    "skip_next_turn",
+                    "turn_number",
+                    "turn_started_at",
+                ]
+            )
+        elif card_code == "card_reverse":
+            session.turn_direction = -1 if session.turn_direction >= 0 else 1
+            session_fields.append("turn_direction")
+        elif card_code == "card_time_plus":
+            player.remaining_seconds += 10
+            player.save(update_fields=["remaining_seconds"])
+        elif card_code == "card_time_minus":
+            target_order = _next_alive_turn_order(
+                session,
+                player.turn_order,
+                consume_skip=False,
+            )
+            target = session.players.select_for_update().filter(
+                turn_order=target_order,
+                is_alive=True,
+            ).first()
+            if target is None or target.pk == player.pk:
+                return JsonResponse(
+                    {"error": "時間を減らせる相手がいません。"},
+                    status=409,
+                )
+            target.remaining_seconds = max(0, target.remaining_seconds - 5)
+            target.save(update_fields=["remaining_seconds"])
+
+        session.card_reveal_until = timezone.now() + timedelta(
+            seconds=CARD_REVEAL_PAUSE_SECONDS
+        )
+        session.turn_started_at = timezone.now()
+        session_fields.extend(["card_reveal_until", "turn_started_at"])
+        session.save(update_fields=list(dict.fromkeys(session_fields)))
+
+        GameCardUse.objects.create(
+            session=session,
+            player=player,
+            card_code=card.item_code,
+            card_name=ITEM_DISPLAY_NAMES.get(card.item_code, card.name),
+        )
+
+        remaining_quantity = card.quantity - 1
+        if remaining_quantity:
+            card.quantity = remaining_quantity
+            card.save(update_fields=["quantity"])
+        else:
+            card.delete()
+
+    return JsonResponse(
+        {
+            **_serialize_game(session, request.user),
+            "message": effect_messages[card_code],
+            "card_code": card_code,
+            "card_quantity": remaining_quantity,
         }
     )
 
@@ -666,14 +878,10 @@ def guess_baba(request):
                     other_players[0].save(update_fields=["placement"])
                 session.is_finished = True
             elif player.turn_order == session.current_turn_order:
-                later_players = [
-                    item
-                    for item in other_players
-                    if item.turn_order > player.turn_order
-                ]
-                session.current_turn_order = (
-                    later_players[0] if later_players else other_players[0]
-                ).turn_order
+                session.current_turn_order = _next_alive_turn_order(
+                    session,
+                    player.turn_order,
+                )
         else:
             player.placement = _elimination_placement(session)
             player.is_alive = False
@@ -688,14 +896,10 @@ def guess_baba(request):
                     remaining_players[0].save(update_fields=["placement"])
                 session.is_finished = True
             elif player.turn_order == session.current_turn_order:
-                later_players = [
-                    item
-                    for item in remaining_players
-                    if item.turn_order > player.turn_order
-                ]
-                session.current_turn_order = (
-                    later_players[0] if later_players else remaining_players[0]
-                ).turn_order
+                session.current_turn_order = _next_alive_turn_order(
+                    session,
+                    player.turn_order,
+                )
 
         session.baba_guess_preview = guessed_letter
         session.baba_reveal_correct = is_correct
@@ -706,6 +910,7 @@ def guess_baba(request):
         session.save(
             update_fields=[
                 "current_turn_order",
+                "skip_next_turn",
                 "is_finished",
                 "baba_guess_preview",
                 "baba_reveal_correct",
@@ -835,26 +1040,18 @@ def submit_word(request):
 
         if not alive_orders:
             session.current_turn_order = player.turn_order
-        elif baba_hit:
-            later_orders = [
-                turn_order
-                for turn_order in alive_orders
-                if turn_order > session.current_turn_order
-            ]
-            session.current_turn_order = (
-                later_orders[0] if later_orders else alive_orders[0]
-            )
         else:
-            current_index = alive_orders.index(session.current_turn_order)
-            session.current_turn_order = alive_orders[
-                (current_index + 1) % len(alive_orders)
-            ]
+            session.current_turn_order = _next_alive_turn_order(
+                session,
+                player.turn_order,
+            )
         session.turn_number += 1
         session.turn_started_at = timezone.now()
         session.save(
             update_fields=[
                 "current_letter",
                 "current_turn_order",
+                "skip_next_turn",
                 "turn_number",
                 "baba_letter",
                 "is_finished",

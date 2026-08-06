@@ -4,11 +4,21 @@
 {% block title %}しりとりバトル{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260806-37">
+<link rel="stylesheet" href="{% static 'game/css/game.css' %}?v=20260807-40">
 {% endblock %}
 
 {% block content %}
 <div class="game-screen">
+  <div id="card-reveal-overlay" class="card-reveal-overlay" data-last-card-use-id="{{ latest_card_use_id }}" hidden aria-live="assertive">
+    <div class="card-reveal-content">
+      <p><strong id="card-reveal-player"></strong>がカードを使用！</p>
+      <div class="card-reveal-stage" aria-hidden="true">
+        <img id="card-reveal-back" class="card-reveal-face card-reveal-back" src="{% static 'rooms/images/cards/caard_back.png' %}" alt="">
+        <img id="card-reveal-front" class="card-reveal-face card-reveal-front" src="" alt="">
+      </div>
+      <strong id="card-reveal-name" class="card-reveal-name"></strong>
+    </div>
+  </div>
   <div class="corner-shape corner-blue" aria-hidden="true"></div>
   <div class="corner-shape corner-green" aria-hidden="true"></div>
 
@@ -232,7 +242,7 @@
     </form>
   </dialog>
 
-  <dialog id="game-picker-modal" class="game-picker-modal" aria-labelledby="game-picker-title" data-stamp-url="{% url 'game:send_stamp' %}" data-room-id="{{ room.room_id }}">
+  <dialog id="game-picker-modal" class="game-picker-modal" aria-labelledby="game-picker-title" data-stamp-url="{% url 'game:send_stamp' %}" data-item-url="{% url 'game:use_card' %}" data-room-id="{{ room.room_id }}">
     <div class="game-picker-panel">
       <header>
         <div>
@@ -256,14 +266,34 @@
 
       <div class="game-picker-list" data-picker-panel="item" hidden>
         {% for item in owned_game_items %}
-        <button class="game-picker-option" type="button" data-option-name="{{ item.name }}" data-option-kind="アイテム">
-          <span aria-hidden="true">{{ item.icon|default:"◆" }}</span>
+        <button class="game-picker-option" type="button" data-option-name="{{ item.name }}" data-option-kind="カード" data-item-code="{{ item.item_code }}">
+          <span aria-hidden="true">{% if item.image_path %}<img src="{% static item.image_path %}" alt="">{% else %}{{ item.icon|default:"◆" }}{% endif %}</span>
           <strong>{{ item.name }}</strong>
-          <small>{% if item.is_equipped %}装備中{% else %}所持中{% endif %}</small>
+          <small>×{{ item.quantity }}</small>
         </button>
         {% empty %}
-        <p class="game-picker-empty">所持しているアイテムはありません</p>
+        <p class="game-picker-empty">所持しているカードはありません</p>
         {% endfor %}
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="card-use-modal" class="game-picker-modal card-use-modal" aria-labelledby="card-use-title">
+    <div class="game-picker-panel card-use-panel">
+      <header>
+        <div>
+          <span>USE CARD</span>
+          <h2 id="card-use-title">カードを使用</h2>
+        </div>
+        <button id="card-use-close" class="game-picker-close" type="button" aria-label="確認画面を閉じる">×</button>
+      </header>
+      <div id="card-use-preview" class="card-use-preview" aria-hidden="true"></div>
+      <p class="card-use-question">「<strong id="card-use-name"></strong>」を使用しますか？</p>
+      <p class="card-use-note">使用すると所持数が1枚減ります。</p>
+      <p id="card-use-error" class="card-use-error" role="alert"></p>
+      <div class="card-use-actions">
+        <button id="card-use-cancel" type="button">キャンセル</button>
+        <button id="card-use-confirm" type="button">使用する</button>
       </div>
     </div>
   </dialog>
@@ -280,7 +310,7 @@
       <button class="answer-tool stamp-tool" type="button" data-picker="stamp" aria-haspopup="dialog" aria-controls="game-picker-modal">
         <span aria-hidden="true">☺</span><small>スタンプ</small>
       </button>
-      <button class="answer-tool item-tool" type="button" data-picker="item" aria-haspopup="dialog" aria-controls="game-picker-modal">
+      <button class="answer-tool item-tool" type="button" data-picker="item" aria-haspopup="dialog" aria-controls="game-picker-modal"{% if not can_submit_word %} disabled title="アイテムは自分のターンだけ使えます"{% endif %}>
         <span aria-hidden="true">◆</span><small>アイテム</small>
       </button>
       <button class="send-answer" type="submit"{% if not can_submit_word %} disabled{% endif %}><span aria-hidden="true">➤</span> 送信</button>
@@ -295,5 +325,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'game/js/game.js' %}?v=20260806-36"></script>
+<script src="{% static 'game/js/game.js' %}?v=20260807-40"></script>
 {% endblock %}

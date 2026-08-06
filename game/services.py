@@ -5,7 +5,7 @@ from django.db.models import F
 
 from .models import GamePlayer, GameSession
 from rooms.models import DEFAULT_BABA_CHARACTERS, UserProfile
-from rooms.services import get_equipped_customization
+from rooms.services import get_equipped_customization, grant_rank_titles
 
 
 DEFAULT_PLAYER_TITLE = "はじめての一歩"
@@ -66,10 +66,13 @@ def grant_rank_rating_rewards(session):
         profile = UserProfile.objects.select_for_update().get(pk=profile.pk)
         rating_before = profile.rating
         rating_change = rank_rating_change_for_placement(player.placement)
+        if player.placement == 1 and player.rate_boost_active:
+            rating_change = round(rating_change * 1.3)
         rating_after = max(0, rating_before + rating_change)
 
         profile.rating = rating_after
         profile.save(update_fields=["rating"])
+        grant_rank_titles(player.user, rating_after)
         player.rating_before = rating_before
         player.rating_change = rating_change
         player.rating_after = rating_after
