@@ -13,6 +13,7 @@ from .models import (
     RankMatchEntry,
     Room,
     RoomParticipant,
+    ShopPurchaseHistory,
     UserProfile,
 )
 from .services import ensure_default_owned_items
@@ -43,6 +44,11 @@ class ShopPurchaseTests(TestCase):
         self.assertEqual(item.item_type, "avatar")
         self.assertEqual(item.name, "トロピカルパーム")
         self.assertEqual(response.json()["coin_balance"], 200)
+        history = ShopPurchaseHistory.objects.get(user=self.user)
+        self.assertEqual(history.item_code, "avatar_palm_limited")
+        self.assertEqual(history.item_name, "トロピカルパーム")
+        self.assertEqual(history.quantity, 1)
+        self.assertEqual(history.coins_spent, 800)
 
         duplicate_response = self.client.post(
             reverse("rooms:purchase_shop_item"),
@@ -77,6 +83,7 @@ class ShopPurchaseTests(TestCase):
                 item_code="card_help_limited",
             ).exists()
         )
+        self.assertFalse(ShopPurchaseHistory.objects.filter(user=self.user).exists())
 
     def test_card_can_be_purchased_repeatedly_up_to_99(self):
         for expected_quantity in (1, 2):
@@ -134,6 +141,7 @@ class ShopPurchaseTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "所持済み")
         self.assertContains(response, 'id="purchase-modal"')
+        self.assertContains(response, 'id="purchase-history-modal"')
         self.assertContains(response, "商品詳細")
         self.assertContains(response, "購入する")
         self.assertIn(
@@ -191,11 +199,11 @@ class ShopPurchaseTests(TestCase):
         )
         self.assertEqual(
             customization["stamp_image_path"],
-            "rooms/images/stamps/stamp_coconut.png",
+            "rooms/images/stamps/stamp_coconut_good.png",
         )
         self.assertEqual(customization["title_name"], "ババハンター")
         self.assertContains(response, "avatar_palm_limited.png")
-        self.assertContains(response, "stamp_coconut.png")
+        self.assertContains(response, "stamp_coconut_good.png")
         self.assertContains(response, "ババハンター")
 
     def test_card_cannot_be_equipped(self):
@@ -250,6 +258,26 @@ class ShopPurchaseTests(TestCase):
         )
         stamps[6].refresh_from_db()
         self.assertFalse(stamps[6].is_equipped)
+
+    def test_equipped_stamp_can_be_unequipped(self):
+        stamp = OwnedItem.objects.create(
+            user=self.user,
+            item_code="stamp_toggle",
+            item_type="stamp",
+            name="解除テストスタンプ",
+            is_equipped=True,
+        )
+
+        response = self.client.post(
+            reverse("rooms:equip_item"),
+            {"item_code": stamp.item_code},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()["is_equipped"])
+        self.assertIn("装備を解除", response.json()["message"])
+        stamp.refresh_from_db()
+        self.assertFalse(stamp.is_equipped)
 
     def test_equipped_avatar_frame_and_title_are_used_in_game(self):
         ensure_default_owned_items(self.user)

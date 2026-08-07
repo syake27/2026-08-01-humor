@@ -25,6 +25,7 @@ from .models import (
     RankMatchEntry,
     Room,
     RoomParticipant,
+    ShopPurchaseHistory,
     UserProfile,
 )
 from .services import (
@@ -111,6 +112,10 @@ ITEM_CATALOG = [
         "",
         "期間限定ショップで購入",
     ),
+    ("stamp_coconut_battle", "stamp", "バトルスタンプ", "", "ショップで購入"),
+    ("stamp_coconut_sad", "stamp", "かなしいスタンプ", "", "ショップで購入"),
+    ("stamp_coconut_happy", "stamp", "ハッピースタンプ", "", "ショップで購入"),
+    ("stamp_coconut_peace", "stamp", "ピーススタンプ", "", "ショップで購入"),
     ("default_first_step", "title", "はじめての一歩", "★", "アカウント登録時に入手"),
     ("title_word_master", "title", "ことばマスター", "★", "100個の言葉を回答"),
     ("title_baba_hunter", "title", "ババハンター", "◆", "ショップで購入"),
@@ -136,6 +141,10 @@ SHOP_PRODUCT_PRICES = {
     "card_time_plus": 300,
     "card_time_minus": 300,
     "stamp_coconut": 400,
+    "stamp_coconut_battle": 400,
+    "stamp_coconut_sad": 400,
+    "stamp_coconut_happy": 400,
+    "stamp_coconut_peace": 400,
     "title_baba_hunter": 1000,
     "frame_tropical_beach": 500,
 }
@@ -169,6 +178,20 @@ def _get_battle_stats(user):
     )
     battle_count = len(recent_results)
     win_count = sum(player.placement == 1 for player in recent_results)
+    current_win_streak = 0
+    for player in recent_results:
+        if player.placement != 1:
+            break
+        current_win_streak += 1
+
+    best_win_streak = 0
+    running_win_streak = 0
+    for player in recent_results:
+        if player.placement == 1:
+            running_win_streak += 1
+            best_win_streak = max(best_win_streak, running_win_streak)
+        else:
+            running_win_streak = 0
     rank_counts = {
         placement: sum(
             player.placement == placement for player in recent_results
@@ -179,6 +202,8 @@ def _get_battle_stats(user):
         "battle_count": battle_count,
         "win_count": win_count,
         "win_rate": round(win_count / battle_count * 100, 1) if battle_count else 0,
+        "current_win_streak": current_win_streak,
+        "best_win_streak": best_win_streak,
         "total_words": sum(player.word_count for player in recent_results),
         "best_rank": min(
             (player.placement for player in recent_results),
@@ -878,6 +903,17 @@ def equip_item(request):
             )
 
         if item.item_type == "stamp":
+            if item.is_equipped:
+                item.is_equipped = False
+                item.save(update_fields=["is_equipped"])
+                return JsonResponse(
+                    {
+                        "message": f"「{item.name}」の装備を解除しました。",
+                        "item_code": item.item_code,
+                        "item_type": item.item_type,
+                        "is_equipped": False,
+                    }
+                )
             # Stamps are multi-slot customizations, with a maximum of six.
             equipped_stamp_count = len(
                 list(
@@ -908,6 +944,7 @@ def equip_item(request):
             "message": f"「{item.name}」を装備しました。",
             "item_code": item.item_code,
             "item_type": item.item_type,
+            "is_equipped": True,
         }
     )
 
@@ -1001,9 +1038,15 @@ def logout_page(request):
 
 def shop(request):
     coin_balance = 0
+    purchase_history = []
     if request.user.is_authenticated:
         user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
         coin_balance = user_profile.coins
+        purchase_history = list(
+            ShopPurchaseHistory.objects.filter(user=request.user)[:50]
+        )
+        for purchase in purchase_history:
+            purchase.image_path = ITEM_IMAGE_PATHS.get(purchase.item_code, "")
     owned_item_codes = set()
     owned_item_quantities = {item_code: 0 for item_code in SHOP_PRODUCT_PRICES}
     if request.user.is_authenticated:
@@ -1019,6 +1062,7 @@ def shop(request):
             "coin_balance": coin_balance,
             "owned_item_codes": owned_item_codes,
             "owned_item_quantities": owned_item_quantities,
+            "purchase_history": purchase_history,
         },
     )
 
@@ -1082,6 +1126,14 @@ def purchase_shop_item(request):
                 name=name,
                 icon=icon,
             )
+        purchase_history_entry = ShopPurchaseHistory.objects.create(
+            user=request.user,
+            item_code=item_code,
+            item_type=item_type,
+            item_name=name,
+            quantity=1,
+            coins_spent=price,
+        )
 
     return JsonResponse(
         {
@@ -1092,6 +1144,12 @@ def purchase_shop_item(request):
             "max_quantity": 99 if item_type == "card" else 1,
             "is_maxed": item_type == "card" and owned_item.quantity >= 99,
             "coin_balance": profile.coins,
+            "purchase_history": {
+                "id": purchase_history_entry.id,
+                "item_name": purchase_history_entry.item_name,
+                "coins_spent": purchase_history_entry.coins_spent,
+                "purchased_at": purchase_history_entry.purchased_at.isoformat(),
+            },
         }
     )
 
