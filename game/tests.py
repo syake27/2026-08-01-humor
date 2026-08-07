@@ -539,14 +539,14 @@ class GameResultFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json()["stamp"]["image_url"],
-            "/static/rooms/images/stamps/stamp_coconut.png",
+            "/static/rooms/images/stamps/stamp_coconut_good.png",
         )
         status = self.client.get(
             f'{reverse("game:players_status")}?room_id={room.room_id}'
         )
         self.assertEqual(
             status.json()["stamps"][0]["image_url"],
-            "/static/rooms/images/stamps/stamp_coconut.png",
+            "/static/rooms/images/stamps/stamp_coconut_good.png",
         )
 
     def test_rating_resolves_current_and_next_rank(self):
@@ -774,6 +774,8 @@ class GameResultFlowTests(TestCase):
         )
         self.assertEqual(stats_context["battle_count"], 1)
         self.assertEqual(stats_context["win_count"], 0)
+        self.assertEqual(stats_context["current_win_streak"], 0)
+        self.assertEqual(stats_context["best_win_streak"], 0)
         self.assertEqual(stats_context["total_words"], 1)
         self.assertEqual(stats_context["rank_counts"][2], 1)
 

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link rel="stylesheet" href="{% static 'rooms/css/shop.css' %}?v=20260807-13">
+<link rel="stylesheet" href="{% static 'rooms/css/shop.css' %}?v=20260807-14">
 {% endblock %}
 
 {% block content %}
@@ -59,7 +59,7 @@
 
         </div>
 
-        <button class="history-button" type="button">
+        <button id="purchase-history-open" class="history-button" type="button" aria-haspopup="dialog" aria-controls="purchase-history-modal">
             <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
             <span>購入履歴</span>
         </button>
@@ -169,7 +169,7 @@
             <div class="left">
 
                 <div class="item-icon product-image-wrap">
-                    <img src="{% static 'rooms/images/stamps/stamp_coconut.png' %}" alt="親指を立てたココナッツのキャラクタースタンプ">
+                    <img src="{% static 'rooms/images/stamps/stamp_coconut_good.png' %}" alt="親指を立てたココナッツのキャラクタースタンプ">
                 </div>
 
                 <div>
@@ -388,6 +388,50 @@
 
         </div>
 
+        <div class="item purple compact-item" data-categories="stamp">
+            <div class="left">
+                <div class="item-icon product-image-wrap"><img src="{% static 'rooms/images/stamps/stamp_coconut_battle.png' %}" alt="バトルスタンプ"></div>
+                <div><h4>バトルスタンプ</h4><p>気合いを伝えるスタンプ！</p></div>
+            </div>
+            <div class="right">
+                <div class="price">400 <i class="fa-solid fa-coins"></i></div>
+                <button class="buy purple-btn" type="button" data-item-code="stamp_coconut_battle" data-item-name="バトルスタンプ" data-price="400"{% if "stamp_coconut_battle" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "stamp_coconut_battle" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
+            </div>
+        </div>
+
+        <div class="item purple compact-item" data-categories="stamp">
+            <div class="left">
+                <div class="item-icon product-image-wrap"><img src="{% static 'rooms/images/stamps/stamp_coconut_sad.png' %}" alt="かなしいスタンプ"></div>
+                <div><h4>かなしいスタンプ</h4><p>悲しい気持ちを伝えるスタンプ！</p></div>
+            </div>
+            <div class="right">
+                <div class="price">400 <i class="fa-solid fa-coins"></i></div>
+                <button class="buy purple-btn" type="button" data-item-code="stamp_coconut_sad" data-item-name="かなしいスタンプ" data-price="400"{% if "stamp_coconut_sad" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "stamp_coconut_sad" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
+            </div>
+        </div>
+
+        <div class="item purple compact-item" data-categories="stamp">
+            <div class="left">
+                <div class="item-icon product-image-wrap"><img src="{% static 'rooms/images/stamps/stamp_coconut_happy.png' %}" alt="ハッピースタンプ"></div>
+                <div><h4>ハッピースタンプ</h4><p>嬉しい気持ちを伝えるスタンプ！</p></div>
+            </div>
+            <div class="right">
+                <div class="price">400 <i class="fa-solid fa-coins"></i></div>
+                <button class="buy purple-btn" type="button" data-item-code="stamp_coconut_happy" data-item-name="ハッピースタンプ" data-price="400"{% if "stamp_coconut_happy" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "stamp_coconut_happy" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
+            </div>
+        </div>
+
+        <div class="item purple compact-item" data-categories="stamp">
+            <div class="left">
+                <div class="item-icon product-image-wrap"><img src="{% static 'rooms/images/stamps/stamp_coconut_peace.png' %}" alt="ピーススタンプ"></div>
+                <div><h4>ピーススタンプ</h4><p>ピースを送れるスタンプ！</p></div>
+            </div>
+            <div class="right">
+                <div class="price">400 <i class="fa-solid fa-coins"></i></div>
+                <button class="buy purple-btn" type="button" data-item-code="stamp_coconut_peace" data-item-name="ピーススタンプ" data-price="400"{% if "stamp_coconut_peace" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "stamp_coconut_peace" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
+            </div>
+        </div>
+
     </div>
 
     <dialog id="purchase-modal" class="purchase-modal" aria-labelledby="purchase-modal-name">
@@ -419,9 +463,46 @@
         </div>
     </dialog>
 
+    <dialog id="purchase-history-modal" class="purchase-modal purchase-history-modal" aria-labelledby="purchase-history-title">
+        <div class="purchase-modal-panel purchase-history-panel">
+            <header>
+                <div>
+                    <small>SHOPPING HISTORY</small>
+                    <h2 id="purchase-history-title">購入履歴</h2>
+                </div>
+                <button id="purchase-history-close" class="purchase-modal-close" type="button" aria-label="購入履歴を閉じる">×</button>
+            </header>
+
+            <div class="purchase-history-list">
+                {% if user.is_authenticated %}
+                    {% for purchase in purchase_history %}
+                    <article class="purchase-history-item">
+                        <span class="purchase-history-image">
+                            {% if purchase.image_path %}<img src="{% static purchase.image_path %}" alt="">
+                            {% else %}<i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>{% endif %}
+                        </span>
+                        <div>
+                            <strong>{{ purchase.item_name }}</strong>
+                            <small>{{ purchase.purchased_at|date:"Y/m/d H:i" }}</small>
+                        </div>
+                        <p><strong>-{{ purchase.coins_spent }}</strong><small>コイン</small></p>
+                    </article>
+                    {% empty %}
+                    <p class="purchase-history-empty">購入履歴はまだありません</p>
+                    {% endfor %}
+                {% else %}
+                    <div class="purchase-history-login">
+                        <p>購入履歴を見るにはログインしてください</p>
+                        <a href="{% url 'rooms:login' %}?next={% url 'rooms:shop' %}">ログイン</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </dialog>
+
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'rooms/js/shop.js' %}?v=20260807-5"></script>
+<script src="{% static 'rooms/js/shop.js' %}?v=20260807-6"></script>
 {% endblock %}

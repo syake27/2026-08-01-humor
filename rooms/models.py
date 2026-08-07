@@ -59,6 +59,26 @@ class OwnedItem(models.Model):
         return f"{self.user.username}: {self.name}"
 
 
+class ShopPurchaseHistory(models.Model):
+    user = models.ForeignKey(
+        "auth.User",
+        on_delete=models.CASCADE,
+        related_name="shop_purchase_history",
+    )
+    item_code = models.CharField(max_length=50)
+    item_type = models.CharField(max_length=12, choices=OwnedItem.ITEM_TYPES)
+    item_name = models.CharField(max_length=50)
+    quantity = models.PositiveSmallIntegerField(default=1)
+    coins_spent = models.PositiveIntegerField()
+    purchased_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-purchased_at", "-id"]
+
+    def __str__(self):
+        return f"{self.user.username}: {self.item_name}"
+
+
 class Room(models.Model):
     room_id = models.CharField(max_length=8, unique=True)
     host = models.ForeignKey(

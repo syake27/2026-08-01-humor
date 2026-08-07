@@ -61,7 +61,11 @@ ITEM_IMAGE_PATHS = {
     "card_time_plus": "rooms/images/cards/card_time_plus.png",
     "card_time_minus": "rooms/images/cards/card_time_minus.png",
     "frame_tropical_beach": "rooms/images/frames/frame_tropical_beach.png",
-    "stamp_coconut": "rooms/images/stamps/stamp_coconut.png",
+    "stamp_coconut": "rooms/images/stamps/stamp_coconut_good.png",
+    "stamp_coconut_battle": "rooms/images/stamps/stamp_coconut_battle.png",
+    "stamp_coconut_sad": "rooms/images/stamps/stamp_coconut_sad.png",
+    "stamp_coconut_happy": "rooms/images/stamps/stamp_coconut_happy.png",
+    "stamp_coconut_peace": "rooms/images/stamps/stamp_coconut_peace.png",
 }
 
 ITEM_DISPLAY_NAMES = {

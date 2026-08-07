@@ -16,6 +16,15 @@ const itemEquipButton = document.getElementById("item-equip-button");
 const itemModalMessage = document.getElementById("item-modal-message");
 let activeItemCard = null;
 
+function restoreEquipButton() {
+  const isStampEquipped =
+    activeItemCard?.dataset.itemType === "stamp" &&
+    activeItemCard.dataset.isEquipped === "true";
+  itemEquipButton.disabled =
+    activeItemCard?.dataset.isEquipped === "true" && !isStampEquipped;
+  itemEquipButton.textContent = isStampEquipped ? "装備解除" : "装備する";
+}
+
 function updateCardBadge(card, isEquipped) {
   const badge = card.querySelector(
     ".equipped-badge, .owned-badge, .locked-badge"
@@ -46,8 +55,13 @@ function openItemModal(card) {
   itemLockState.hidden = isOwned;
   itemEquipForm.hidden = !isOwned || !canEquip;
   equipItemCode.value = card.dataset.itemCode;
-  itemEquipButton.disabled = isEquipped;
-  itemEquipButton.textContent = isEquipped ? "装備中" : "装備する";
+  const canUnequip = itemType === "stamp" && isEquipped;
+  itemEquipButton.disabled = isEquipped && !canUnequip;
+  itemEquipButton.textContent = canUnequip
+    ? "装備解除"
+    : isEquipped
+      ? "装備中"
+      : "装備する";
   itemModalMessage.textContent = "";
   itemModal.showModal();
 }
@@ -83,8 +97,7 @@ itemEquipForm.addEventListener("submit", async (event) => {
     const result = await response.json();
 
     if (!response.ok) {
-      itemEquipButton.disabled = false;
-      itemEquipButton.textContent = "装備する";
+      restoreEquipButton();
       itemModalMessage.textContent = result.error || "装備を変更できませんでした";
       return;
     }
@@ -99,18 +112,22 @@ itemEquipForm.addEventListener("submit", async (event) => {
         // single-select as before.
         if (result.item_type === "stamp") {
           if (card.dataset.itemCode === result.item_code) {
-            updateCardBadge(card, true);
+            updateCardBadge(card, result.is_equipped);
           }
         } else {
           updateCardBadge(card, card.dataset.itemCode === result.item_code);
         }
       }
     });
-    itemEquipButton.textContent = "装備中";
+    if (result.item_type === "stamp") {
+      itemEquipButton.disabled = false;
+      itemEquipButton.textContent = result.is_equipped ? "装備解除" : "装備する";
+    } else {
+      itemEquipButton.textContent = "装備中";
+    }
     itemModalMessage.textContent = result.message;
   } catch (error) {
-    itemEquipButton.disabled = false;
-    itemEquipButton.textContent = "装備する";
+    restoreEquipButton();
     itemModalMessage.textContent = "通信を確認してもう一度お試しください";
   }
 });

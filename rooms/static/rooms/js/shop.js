@@ -18,6 +18,10 @@
   const modalPrice = document.getElementById("purchase-modal-price");
   const modalBalance = document.getElementById("purchase-modal-balance");
   const modalError = document.getElementById("purchase-modal-error");
+  const historyOpen = document.getElementById("purchase-history-open");
+  const historyModal = document.getElementById("purchase-history-modal");
+  const historyClose = document.getElementById("purchase-history-close");
+  const historyList = historyModal.querySelector(".purchase-history-list");
   let activeBuyButton = null;
 
   const selectCategory = (category) => {
@@ -51,6 +55,41 @@
     if (purchaseModal.open && !modalConfirm.disabled) purchaseModal.close();
   };
 
+  const prependPurchaseHistory = (purchase, item) => {
+    if (!purchase || !historyList) return;
+    historyList.querySelector(".purchase-history-empty")?.remove();
+
+    const row = document.createElement("article");
+    row.className = "purchase-history-item";
+
+    const image = document.createElement("span");
+    image.className = "purchase-history-image";
+    image.innerHTML = item.querySelector(".item-icon").innerHTML;
+
+    const details = document.createElement("div");
+    const name = document.createElement("strong");
+    name.textContent = purchase.item_name;
+    const date = document.createElement("small");
+    date.textContent = new Intl.DateTimeFormat("ja-JP", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(purchase.purchased_at));
+    details.append(name, date);
+
+    const price = document.createElement("p");
+    const amount = document.createElement("strong");
+    amount.textContent = `-${purchase.coins_spent}`;
+    const unit = document.createElement("small");
+    unit.textContent = "コイン";
+    price.append(amount, unit);
+
+    row.append(image, details, price);
+    historyList.prepend(row);
+  };
+
   buyButtons.forEach((button) => {
     button.addEventListener("click", () => {
       if (button.disabled) return;
@@ -75,6 +114,12 @@
   });
   purchaseModal.addEventListener("cancel", (event) => {
     if (modalConfirm.disabled) event.preventDefault();
+  });
+
+  historyOpen.addEventListener("click", () => historyModal.showModal());
+  historyClose.addEventListener("click", () => historyModal.close());
+  historyModal.addEventListener("click", (event) => {
+    if (event.target === historyModal) historyModal.close();
   });
 
   modalConfirm.addEventListener("click", async () => {
@@ -134,6 +179,10 @@
       }
       coinBalance.textContent = String(result.coin_balance);
       modalBalance.textContent = String(result.coin_balance);
+      prependPurchaseHistory(
+        result.purchase_history,
+        activeBuyButton.closest(".item")
+      );
       purchaseModal.close();
       showMessage(result.message);
     } catch (_error) {

@@ -704,6 +704,104 @@ header h1{
     opacity:.58;
 }
 
+.purchase-history-panel{
+    max-height:calc(100dvh - 28px);
+    display:flex;
+    flex-direction:column;
+}
+
+.purchase-history-list{
+    min-height:180px;
+    max-height:min(520px,calc(100dvh - 120px));
+    padding:12px 2px 2px;
+    overflow-y:auto;
+    scrollbar-width:none;
+}
+
+.purchase-history-list::-webkit-scrollbar{
+    display:none;
+}
+
+.purchase-history-item{
+    min-height:66px;
+    display:grid;
+    grid-template-columns:48px minmax(0,1fr) auto;
+    align-items:center;
+    gap:10px;
+    padding:9px 4px;
+    border-bottom:1px solid #edf0f3;
+}
+
+.purchase-history-image{
+    width:48px;
+    height:48px;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    border-radius:13px;
+    color:#8251dc;
+    background:#f2edff;
+}
+
+.purchase-history-image img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+.purchase-history-item > div strong,
+.purchase-history-item > div small,
+.purchase-history-item > p strong,
+.purchase-history-item > p small{
+    display:block;
+}
+
+.purchase-history-item > div strong{
+    font-size:12px;
+}
+
+.purchase-history-item > div small{
+    margin-top:3px;
+    color:#8994a0;
+    font-size:9px;
+}
+
+.purchase-history-item > p{
+    margin:0;
+    color:#7650b8;
+    text-align:right;
+}
+
+.purchase-history-item > p strong{
+    font-size:13px;
+}
+
+.purchase-history-item > p small{
+    color:#9099a3;
+    font-size:8px;
+}
+
+.purchase-history-empty,
+.purchase-history-login{
+    margin:48px 0;
+    color:#87929e;
+    font-size:12px;
+    font-weight:700;
+    text-align:center;
+}
+
+.purchase-history-login a{
+    width:150px;
+    min-height:42px;
+    margin:14px auto 0;
+    display:grid;
+    place-items:center;
+    border-radius:13px;
+    color:#fff;
+    background:#8052dc;
+    text-decoration:none;
+}
+
 /* 左におすすめ1件、右に小さな商品を並べる商品棚 */
 .shop{
     display:grid;
