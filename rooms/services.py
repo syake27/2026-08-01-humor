@@ -66,6 +66,10 @@ ITEM_IMAGE_PATHS = {
     "stamp_coconut_sad": "rooms/images/stamps/stamp_coconut_sad.png",
     "stamp_coconut_happy": "rooms/images/stamps/stamp_coconut_happy.png",
     "stamp_coconut_peace": "rooms/images/stamps/stamp_coconut_peace.png",
+    "stamp_poop": "rooms/images/stamps/stump_poop.jpg",
+    "stamp_special_wait": "rooms/images/stamps/special/stumo_sato_wait.png",
+    "stamp_special_ma": "rooms/images/stamps/special/stump_sato_ma.png",
+    "stamp_special_amazon": "rooms/images/stamps/special/stump_sato_amazon.png",
 }
 
 ITEM_DISPLAY_NAMES = {

@@ -585,11 +585,15 @@ function renderStamp(stamp) {
   const avatarFrame = playerCard?.querySelector(".player-avatar-frame");
   if (!avatarFrame) return;
 
-  const previousStamp = avatarFrame.querySelector(".player-stamp-pop");
+  const gameScreen = document.querySelector(".game-screen");
+  const previousStamp = gameScreen.querySelector(
+    `.player-stamp-pop[data-player-id="${stamp.player_id}"]`
+  );
   if (previousStamp) previousStamp.remove();
 
   const bubble = document.createElement("span");
-  bubble.className = "player-stamp-pop";
+  bubble.className = `player-stamp-pop${stamp.is_super ? " is-super" : ""}`;
+  bubble.dataset.playerId = stamp.player_id;
   const icon = stamp.image_url
     ? document.createElement("img")
     : document.createElement("strong");
@@ -602,7 +606,20 @@ function renderStamp(stamp) {
   }
   label.textContent = stamp.name;
   bubble.append(icon, label);
-  avatarFrame.append(bubble);
+  if (stamp.is_super) {
+    const avatarRect = avatarFrame.getBoundingClientRect();
+    const screenRect = gameScreen.getBoundingClientRect();
+    const safeHalfWidth = 82;
+    const centerX = Math.min(
+      gameScreen.clientWidth - safeHalfWidth,
+      Math.max(safeHalfWidth, avatarRect.left - screenRect.left + avatarRect.width / 2)
+    );
+    bubble.style.left = `${centerX}px`;
+    bubble.style.top = `${avatarRect.top - screenRect.top + gameScreen.scrollTop + avatarRect.height / 2}px`;
+    gameScreen.append(bubble);
+  } else {
+    avatarFrame.append(bubble);
+  }
   bubble.addEventListener("animationend", () => bubble.remove(), { once: true });
 }
 

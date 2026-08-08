@@ -144,6 +144,10 @@ class ShopPurchaseTests(TestCase):
         self.assertContains(response, 'id="purchase-history-modal"')
         self.assertContains(response, "商品詳細")
         self.assertContains(response, "購入する")
+        self.assertContains(response, "stumo_sato_wait.png")
+        self.assertContains(response, "stump_sato_ma.png")
+        self.assertContains(response, "stump_sato_amazon.png")
+        self.assertContains(response, "stump_poop.jpg")
         self.assertIn(
             "frame_tropical_beach",
             response.context["owned_item_codes"],
