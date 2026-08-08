@@ -520,6 +520,27 @@ button {
   white-space: nowrap;
 }
 
+.player-stamp-pop.is-super {
+  z-index: 30;
+  min-width: 148px;
+  max-width: 164px;
+  min-height: 142px;
+  padding: 10px 12px;
+  border-width: 3px;
+  border-radius: 22px 22px 22px 7px;
+}
+
+.player-stamp-pop.is-super > img {
+  width: 126px;
+  height: 126px;
+  border-radius: 20px;
+}
+
+.player-stamp-pop.is-super small {
+  max-width: 138px;
+  font-size: 11px;
+}
+
 @keyframes stamp-pop-stay {
   0% {
     opacity: 0;

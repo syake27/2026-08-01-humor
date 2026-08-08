@@ -432,6 +432,50 @@
             </div>
         </div>
 
+        <div class="item purple compact-item" data-categories="stamp">
+            <div class="left">
+                <div class="item-icon product-image-wrap"><img src="{% static 'rooms/images/stamps/stump_poop.jpg' %}" alt="うんちスタンプ"></div>
+                <div><h4>うんちスタンプ</h4><p>ゆるくリアクションできるスタンプ！</p></div>
+            </div>
+            <div class="right">
+                <div class="price">400 <i class="fa-solid fa-coins"></i></div>
+                <button class="buy purple-btn" type="button" data-item-code="stamp_poop" data-item-name="うんちスタンプ" data-price="400"{% if "stamp_poop" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "stamp_poop" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
+            </div>
+        </div>
+
+        <div class="item purple compact-item" data-categories="stamp">
+            <div class="left">
+                <div class="item-icon product-image-wrap"><img src="{% static 'rooms/images/stamps/special/stumo_sato_wait.png' %}" alt="まだかなースタンプ"></div>
+                <div><h4>まだかなー？</h4><p>待っている気持ちを伝えるスペシャルスタンプ！</p></div>
+            </div>
+            <div class="right">
+                <div class="price">500 <i class="fa-solid fa-coins"></i></div>
+                <button class="buy purple-btn" type="button" data-item-code="stamp_special_wait" data-item-name="まだかなー？" data-price="500"{% if "stamp_special_wait" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "stamp_special_wait" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
+            </div>
+        </div>
+
+        <div class="item purple compact-item" data-categories="stamp">
+            <div class="left">
+                <div class="item-icon product-image-wrap"><img src="{% static 'rooms/images/stamps/special/stump_sato_ma.png' %}" alt="ま？スタンプ"></div>
+                <div><h4>ま？</h4><p>驚きを伝えるスペシャルスタンプ！</p></div>
+            </div>
+            <div class="right">
+                <div class="price">500 <i class="fa-solid fa-coins"></i></div>
+                <button class="buy purple-btn" type="button" data-item-code="stamp_special_ma" data-item-name="ま？" data-price="500"{% if "stamp_special_ma" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "stamp_special_ma" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
+            </div>
+        </div>
+
+        <div class="item purple compact-item" data-categories="stamp">
+            <div class="left">
+                <div class="item-icon product-image-wrap"><img src="{% static 'rooms/images/stamps/special/stump_sato_amazon.png' %}" alt="Amazonスタンプ"></div>
+                <div><h4>Amazon！</h4><p>プレゼント気分を伝えるスーパースタンプ！</p></div>
+            </div>
+            <div class="right">
+                <div class="price">500 <i class="fa-solid fa-coins"></i></div>
+                <button class="buy purple-btn" type="button" data-item-code="stamp_special_amazon" data-item-name="Amazon！" data-price="500"{% if "stamp_special_amazon" in owned_item_codes %} disabled data-owned="true"{% endif %}>{% if "stamp_special_amazon" in owned_item_codes %}所持済み{% else %}購入{% endif %}</button>
+            </div>
+        </div>
+
     </div>
 
     <dialog id="purchase-modal" class="purchase-modal" aria-labelledby="purchase-modal-name">

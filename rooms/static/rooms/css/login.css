@@ -88,15 +88,19 @@ body {
 .login-brand {
   display: flex;
   justify-content: center;
-  font-size: 3.25rem;
-  font-weight: 900;
-  line-height: 1;
+  align-items: flex-start;
+  height: 130px;
+  overflow: visible;
 }
 
-.brand-red { color: #ff4350; }
-.brand-blue { color: #3a91f2; }
-.brand-yellow { color: #ffb315; }
-.brand-green { color: #38b861; }
+.login-brand img {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: min(190px, 58vw);
+  height: auto;
+  transform: translateY(-18px);
+}
 
 .login-message {
   margin: 22px 0 0;
@@ -225,7 +229,8 @@ body {
 @media (max-height: 700px) {
   .login-screen { padding-top: 20px; }
   .login-content { margin-top: 25px; }
-  .login-brand { font-size: 2.75rem; }
+  .login-brand { height: 105px; }
+  .login-brand img { width: min(165px, 52vw); transform: translateY(-16px); }
   .login-message { margin-top: 13px; }
   .login-form { margin-top: 20px; }
   .login-form input { height: 48px; margin-bottom: 13px; }
@@ -233,7 +238,8 @@ body {
   .login-submit { height: 52px; }
   .register-guide { margin-top: 18px; }
   .register-content { margin-top: 16px; }
-  .register-content .login-brand { font-size: 2.4rem; }
+  .register-content .login-brand { height: 90px; }
+  .register-content .login-brand img { width: min(145px, 47vw); }
   .register-content .login-message { line-height: 1.55; }
   .register-form { margin-top: 13px; }
   .register-form input { height: 43px; margin-bottom: 8px; }

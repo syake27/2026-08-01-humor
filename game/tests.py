@@ -541,12 +541,32 @@ class GameResultFlowTests(TestCase):
             response.json()["stamp"]["image_url"],
             "/static/rooms/images/stamps/stamp_coconut_good.png",
         )
+        self.assertFalse(response.json()["stamp"]["is_super"])
         status = self.client.get(
             f'{reverse("game:players_status")}?room_id={room.room_id}'
         )
         self.assertEqual(
             status.json()["stamps"][0]["image_url"],
             "/static/rooms/images/stamps/stamp_coconut_good.png",
+        )
+        self.assertFalse(status.json()["stamps"][0]["is_super"])
+
+        special_stamp = OwnedItem.objects.create(
+            user=user,
+            item_code="stamp_special_wait",
+            item_type="stamp",
+            name="まだかなー？",
+            is_equipped=True,
+        )
+        special_response = self.client.post(
+            reverse("game:send_stamp"),
+            {"room_id": room.room_id, "stamp_code": special_stamp.item_code},
+        )
+        self.assertEqual(special_response.status_code, 200)
+        self.assertTrue(special_response.json()["stamp"]["is_super"])
+        self.assertIn(
+            "stumo_sato_wait.png",
+            special_response.json()["stamp"]["image_url"],
         )
 
     def test_rating_resolves_current_and_next_rank(self):

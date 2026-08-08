@@ -373,6 +373,7 @@ def _serialize_game(session, request_user):
                     if stamp.stamp_code in ITEM_IMAGE_PATHS
                     else ""
                 ),
+                "is_super": stamp.stamp_code.startswith("stamp_special_"),
             }
             for stamp in stamps
         ],
@@ -600,6 +601,7 @@ def send_stamp(request):
                     if stamp.stamp_code in ITEM_IMAGE_PATHS
                     else ""
                 ),
+                "is_super": stamp.stamp_code.startswith("stamp_special_"),
             }
         }
     )

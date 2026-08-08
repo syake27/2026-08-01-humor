@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local special stamp assets
+/rooms/static/rooms/images/stamps/special/
